@@ -97,3 +97,18 @@
 @utility hero-slide-in {
   animation: hero-slide-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes auth-card-in {
+  0% { opacity: 0; transform: translateY(24px) scale(0.97); filter: blur(8px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes auth-row-in {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@utility auth-card-in {
+  animation: auth-card-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility auth-row-in {
+  animation: auth-row-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
