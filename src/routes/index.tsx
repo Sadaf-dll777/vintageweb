@@ -158,7 +158,7 @@ function Index() {
             <Link
               key={c.id}
               to="/shop"
-              search={{ category: c.id } as never}
+              hash={c.id}
               className="group relative flex aspect-square flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/70 hover:shadow-[0_10px_40px_-10px_var(--color-primary)]"
             >
               <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 opacity-0 transition-opacity duration-300 group-hover:from-primary/15 group-hover:to-primary/0 group-hover:opacity-100" />
