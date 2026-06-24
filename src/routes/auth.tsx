@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { LogIn, UserPlus, Mail, Lock, User, Eye, EyeOff, ShieldCheck, Zap, Sparkles, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,8 @@ type Mode = "signin" | "signup";
 function AuthPage() {
   const [mode, setMode] = useState<Mode>("signin");
   const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const isSignIn = mode === "signin";
 
@@ -84,6 +86,11 @@ function AuthPage() {
             className="mt-6 space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
+              setLoading(true);
+              setTimeout(() => {
+                setLoading(false);
+                navigate({ to: "/" });
+              }, 600);
             }}
           >
             {!isSignIn && (
@@ -120,10 +127,11 @@ function AuthPage() {
 
             <button
               type="submit"
+              disabled={loading}
               style={{ animationDelay: `${!isSignIn ? 440 : 340}ms` }}
-              className="auth-row-in group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold tracking-widest text-primary-foreground glow-red transition-all hover:brightness-110 hover:-translate-y-0.5"
+              className="auth-row-in group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold tracking-widest text-primary-foreground glow-red transition-all hover:brightness-110 hover:-translate-y-0.5 disabled:opacity-70"
             >
-              {isSignIn ? "SIGN IN" : "CREATE ACCOUNT"}
+              {loading ? "PLEASE WAIT…" : isSignIn ? "SIGN IN" : "CREATE ACCOUNT"}
             </button>
           </form>
 
