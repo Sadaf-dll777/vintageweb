@@ -30,7 +30,7 @@ export function Header() {
         </Link>
 
         {/* Nav */}
-        <nav className="mx-auto hidden items-center gap-1 rounded-full border border-border/60 bg-card/60 px-2 py-1.5 md:flex">
+        <nav className="mx-auto hidden items-center gap-1 rounded-full border border-border/60 bg-card/40 px-2 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] md:flex">
           {navItems.map((n) => {
             const active = path === n.to;
             return (
@@ -38,13 +38,21 @@ export function Header() {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                  "group relative rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300",
+                  active ? "text-primary" : "text-muted-foreground hover:text-primary",
                 )}
               >
-                {n.label}
+                {/* glowing red pill — visible on active + hover */}
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute inset-0 rounded-full border transition-all duration-300 ease-out",
+                    active
+                      ? "scale-100 border-primary/60 bg-primary/15 opacity-100 shadow-[0_0_20px_-2px_var(--color-primary),inset_0_0_12px_-4px_var(--color-primary)]"
+                      : "scale-90 border-transparent bg-primary/0 opacity-0 group-hover:scale-100 group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:opacity-100 group-hover:shadow-[0_0_18px_-4px_var(--color-primary),inset_0_0_10px_-4px_var(--color-primary)]",
+                  )}
+                />
+                <span className="relative">{n.label}</span>
               </Link>
             );
           })}
