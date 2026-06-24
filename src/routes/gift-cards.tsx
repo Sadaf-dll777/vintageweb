@@ -1,0 +1,21 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { products } from "@/data/products";
+import { ProductCard } from "@/components/ProductCard";
+
+export const Route = createFileRoute("/gift-cards")({
+  head: () => ({ meta: [{ title: "Gift Cards — VintageStore" }] }),
+  component: GCPage,
+});
+
+function GCPage() {
+  const list = products.filter((p) => p.category === "gift-cards");
+  return (
+    <div className="container-wide py-12">
+      <span className="text-xs font-bold uppercase tracking-widest text-primary">⚡ Category</span>
+      <h1 className="mt-3 font-display text-5xl uppercase sm:text-6xl">Gift Cards</h1>
+      <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {list.map((p) => <ProductCard key={p.id} product={p} />)}
+      </div>
+    </div>
+  );
+}
