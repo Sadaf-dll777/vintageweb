@@ -5,6 +5,10 @@ import { products } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 import { ProductCard } from "@/components/ProductCard";
 import { NewArrivals } from "@/components/NewArrivals";
+import { CategorySection } from "@/components/CategorySection";
+import { Reviews } from "@/components/Reviews";
+import { WhyUs } from "@/components/WhyUs";
+import { Partners } from "@/components/Partners";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -194,6 +198,21 @@ function Index() {
           ))}
         </div>
       </section>
+
+      {/* CATEGORY SECTIONS */}
+      <CategorySection category="top-up" title="Top-Up" Icon={Gamepad2} accent="text-purple-400" />
+      <CategorySection category="subscriptions" title="Subscriptions" Icon={Tv} accent="text-blue-400" />
+      <CategorySection category="gift-cards" title="Gift Cards" Icon={Gift} accent="text-orange-400" />
+      <CategorySection category="region-change" title="Region Change" Icon={Globe} accent="text-cyan-400" />
+
+      {/* WHY US */}
+      <WhyUs />
+
+      {/* REVIEWS */}
+      <Reviews />
+
+      {/* PARTNERS */}
+      <Partners />
     </div>
   );
 }
