@@ -49,15 +49,15 @@ function Index() {
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
         <div className="container-wide relative grid grid-cols-1 items-center gap-10 py-16 lg:grid-cols-[1.4fr_1fr] lg:py-24">
           {/* Left */}
-          <div className="min-w-0">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
+          <div key={`text-${idx}`} className="min-w-0">
+            <span className="hero-rise inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary" style={{ animationDelay: "0ms" }}>
               <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> {hero.badge ?? "Featured"}
             </span>
-            <h1 className="mt-5 font-display text-5xl uppercase leading-[0.95] tracking-wide sm:text-6xl lg:text-7xl xl:text-8xl">
+            <h1 className="hero-rise mt-5 font-display text-5xl uppercase leading-[0.95] tracking-wide sm:text-6xl lg:text-7xl xl:text-8xl" style={{ animationDelay: "100ms" }}>
               {hero.name}
             </h1>
-            <p className="mt-5 max-w-xl text-base text-muted-foreground">{hero.tagline}</p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <p className="hero-rise mt-5 max-w-xl text-base text-muted-foreground" style={{ animationDelay: "220ms" }}>{hero.tagline}</p>
+            <div className="hero-rise mt-7 flex flex-wrap gap-3" style={{ animationDelay: "320ms" }}>
               <button
                 onClick={() => add(hero)}
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-base uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
@@ -71,7 +71,7 @@ function Index() {
                 <ShoppingBag className="h-4 w-4" /> Game Top-Up
               </Link>
             </div>
-            <div className="mt-7 flex items-center gap-4">
+            <div className="hero-rise mt-7 flex items-center gap-4" style={{ animationDelay: "420ms" }}>
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Starting at</span>
               <span className="font-display text-2xl text-gold">{formatPrice(hero.price, currency)}</span>
             </div>
@@ -101,8 +101,8 @@ function Index() {
           </div>
 
           {/* Right product card preview */}
-          <div className="relative">
-            <div className="overflow-hidden rounded-3xl border border-border bg-card glow-red">
+          <div key={`card-${idx}`} className="relative">
+            <div className="hero-slide-in overflow-hidden rounded-3xl border border-border bg-card glow-red">
               <div className="aspect-[4/3] overflow-hidden">
                 <img src={hero.image} alt={hero.name} className="h-full w-full object-cover" />
               </div>
