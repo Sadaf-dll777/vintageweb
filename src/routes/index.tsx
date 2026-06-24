@@ -174,6 +174,9 @@ function Index() {
         </div>
       </section>
 
+      {/* NEW ARRIVALS */}
+      <NewArrivals products={products.slice(0, 10)} />
+
       {/* POPULAR */}
       <section className="container-wide py-16">
         <div className="mb-8 flex items-end justify-between">
