@@ -1,5 +1,11 @@
 export type Category = "top-up" | "subscriptions" | "gift-cards" | "accounts" | "games" | "region-change";
 
+export interface ProductOption {
+  label: string;
+  price: number; // USD
+  outOfStock?: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -11,6 +17,11 @@ export interface Product {
   tagline?: string;
   description?: string;
   delivery?: string;
+  rating?: number;
+  reviews?: number;
+  sold?: number;
+  stock?: number;
+  options?: ProductOption[];
 }
 
 const img = (q: string, seed: number) =>
