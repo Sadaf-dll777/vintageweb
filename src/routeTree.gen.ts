@@ -17,7 +17,6 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
-import { Route as PaymentMethodRouteImport } from './routes/payment.$method'
 
 const TopUpRoute = TopUpRouteImport.update({
   id: '/top-up',
@@ -59,11 +58,6 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
   path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PaymentMethodRoute = PaymentMethodRouteImport.update({
-  id: '/payment/$method',
-  path: '/payment/$method',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,7 +67,6 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/top-up': typeof TopUpRoute
-  '/payment/$method': typeof PaymentMethodRoute
   '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRoutesByTo {
@@ -84,7 +77,6 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/top-up': typeof TopUpRoute
-  '/payment/$method': typeof PaymentMethodRoute
   '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRoutesById {
@@ -96,7 +88,6 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/top-up': typeof TopUpRoute
-  '/payment/$method': typeof PaymentMethodRoute
   '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRouteTypes {
@@ -109,7 +100,6 @@ export interface FileRouteTypes {
     | '/shop'
     | '/subscriptions'
     | '/top-up'
-    | '/payment/$method'
     | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -120,7 +110,6 @@ export interface FileRouteTypes {
     | '/shop'
     | '/subscriptions'
     | '/top-up'
-    | '/payment/$method'
     | '/product/$slug'
   id:
     | '__root__'
@@ -131,7 +120,6 @@ export interface FileRouteTypes {
     | '/shop'
     | '/subscriptions'
     | '/top-up'
-    | '/payment/$method'
     | '/product/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -143,7 +131,6 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
   TopUpRoute: typeof TopUpRoute
-  PaymentMethodRoute: typeof PaymentMethodRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
 
@@ -205,13 +192,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/payment/$method': {
-      id: '/payment/$method'
-      path: '/payment/$method'
-      fullPath: '/payment/$method'
-      preLoaderRoute: typeof PaymentMethodRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -223,7 +203,6 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SubscriptionsRoute: SubscriptionsRoute,
   TopUpRoute: TopUpRoute,
-  PaymentMethodRoute: PaymentMethodRoute,
   ProductSlugRoute: ProductSlugRoute,
 }
 export const routeTree = rootRouteImport
