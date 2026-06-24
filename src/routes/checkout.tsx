@@ -1,7 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft } from "lucide-react";
-import { formatPrice, useShop, USD_TO_BDT } from "@/lib/store";
+import {
+  Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
+  Copy, Smartphone, Building2, Sparkles,
+} from "lucide-react";
+import { useShop, USD_TO_BDT } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/checkout")({
@@ -9,26 +12,118 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
 });
 
-const providers = [
-  { id: "bkash", name: "bKash", color: "#E2136E" },
-  { id: "nagad", name: "Nagad", color: "#F47A1F" },
-  { id: "rocket", name: "Rocket", color: "#8C3494" },
-  { id: "upay", name: "Upay", color: "#E73C7E" },
-  { id: "binance", name: "Binance", color: "#F3BA2F" },
+type Stage = "method" | "provider" | "pay";
+type MethodId = "mobile" | "bank";
+
+interface Provider {
+  id: string;
+  name: string;
+  number: string;
+  color: string;
+  short?: string;
+  steps: string[];
+}
+
+const mobileProviders: Provider[] = [
+  {
+    id: "bkash", name: "bKash", number: "01737784088", color: "#E2136E",
+    steps: [
+      "Open your bKash App",
+      "Tap on Send Money or from Agent Choose Cash In",
+      "Enter the number: 01737784088",
+      "Enter exact amount",
+      "Tap Next and confirm with your PIN",
+      "Note down your Transaction ID (TxID)",
+      "Enter the Transaction ID below to complete your order",
+    ],
+  },
+  {
+    id: "nagad", name: "Nagad", number: "01737784088", color: "#F47A1F",
+    steps: [
+      "Open Nagad App or dial *167#",
+      "Choose Send Money",
+      "Enter the number: 01737784088",
+      "Enter exact amount",
+      "Confirm with your PIN",
+      "Note down the Transaction ID",
+      "Enter it below",
+    ],
+  },
+  {
+    id: "rocket", name: "Rocket", number: "017377840880", color: "#8C3494",
+    steps: [
+      "Dial *322# or open Rocket App",
+      "Choose Send Money",
+      "Enter the number: 017377840880",
+      "Enter exact amount",
+      "Confirm with your PIN",
+      "Copy the Transaction ID",
+      "Enter it below",
+    ],
+  },
+  {
+    id: "upay", name: "Upay", number: "01737784088", color: "#E73C7E",
+    steps: [
+      "Open Upay App",
+      "Choose Send Money",
+      "Enter the number: 01737784088",
+      "Enter exact amount",
+      "Confirm with your PIN",
+      "Copy the Transaction ID",
+      "Enter it below",
+    ],
+  },
 ];
 
+const bankProvider: Provider = {
+  id: "bank", name: "Bank Transfer", number: "1234 5678 9012 3456", color: "#3B82F6",
+  steps: [
+    "Log in to your online banking",
+    "Choose Transfer / Send Money",
+    "Account Number: 1234 5678 9012 3456",
+    "Account Name: VintageStore Ltd",
+    "Bank: City Bank PLC",
+    "Send exact amount in BDT",
+    "Copy the Transaction Reference and enter it below",
+  ],
+};
+
 function CheckoutPage() {
-  const nav = useNavigate();
-  const { items, currency, setQty, remove } = useShop();
+  const { items, currency, setQty, remove, clear } = useShop();
   const subtotalUSD = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   const subtotalBDT = Math.round(subtotalUSD * USD_TO_BDT);
   const [tip, setTip] = useState(0);
-  const [provider, setProvider] = useState<string | null>(null);
   const totalBDT = subtotalBDT + tip;
+
+  const [stage, setStage] = useState<Stage>("method");
+  const [method, setMethod] = useState<MethodId | null>(null);
+  const [providerId, setProviderId] = useState<string | null>(null);
+  const [txn, setTxn] = useState("");
+  const [sender, setSender] = useState("");
+  const [done, setDone] = useState(false);
+
+  const provider: Provider | null =
+    providerId === "bank" ? bankProvider : mobileProviders.find((p) => p.id === providerId) ?? null;
+
+  if (done) {
+    return (
+      <div className="container-wide flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
+        <div className="grid h-20 w-20 place-items-center rounded-full bg-success/20 text-success animate-scale-in">
+          <Check className="h-10 w-10" />
+        </div>
+        <h1 className="mt-6 font-display text-5xl uppercase">Order Received!</h1>
+        <p className="mt-3 max-w-md text-muted-foreground">
+          We've got your payment details. Our team will verify and deliver shortly.
+        </p>
+        <Link to="/shop" className="mt-6 rounded-full bg-primary px-7 py-3 font-display uppercase tracking-wider text-primary-foreground glow-red">
+          Continue Shopping
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="container-wide py-10">
-      {/* steps */}
       <div className="mx-auto mb-10 flex max-w-xl items-center justify-center gap-2 text-xs font-bold uppercase">
         <Step n={<Check className="h-3 w-3" />} label="Cart" done />
         <Bar />
@@ -55,49 +150,179 @@ function CheckoutPage() {
             </div>
           </section>
 
-          {/* Provider */}
+          {/* Payment Stepper */}
           <section className="rounded-2xl border border-border bg-card p-6">
-            <div className="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-wider">
-              <span className="flex items-center gap-2 text-success"><Check className="h-4 w-4" /> Payment Methods</span>
-              <span className="h-px flex-1 bg-border" />
-              <span className="flex items-center gap-2 text-primary"><span className="grid h-6 w-6 place-items-center rounded-full bg-primary text-primary-foreground">2</span> Provider</span>
-              <span className="h-px flex-1 bg-border" />
-              <span className="flex items-center gap-2 text-muted-foreground"><span className="grid h-6 w-6 place-items-center rounded-full bg-secondary">3</span> Pay</span>
-            </div>
-            <div className="mb-4 flex items-center justify-between">
-              <Link to="/cart" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-4 w-4" /> Back
-              </Link>
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Mobile Banking</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {providers.map((p) => {
-                const sel = provider === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => setProvider(p.id)}
-                    className={cn(
-                      "group relative flex flex-col items-center gap-3 rounded-2xl border-2 bg-background p-5 transition-all",
-                      sel ? "border-primary bg-primary/5 glow-red" : "border-border hover:border-primary/50",
-                    )}
-                  >
-                    {sel && (
-                      <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-primary text-primary-foreground">
-                        <Check className="h-3 w-3" />
-                      </span>
-                    )}
-                    <span
-                      className="grid h-12 w-12 place-items-center rounded-xl font-display text-lg text-white"
-                      style={{ background: p.color }}
-                    >
-                      {p.name[0]}
-                    </span>
-                    <span className="font-display tracking-wider">{p.name.toUpperCase()}</span>
+            <StageHeader stage={stage} />
+
+            {/* STAGE: choose method */}
+            {stage === "method" && (
+              <div className="mt-6 animate-fade-in">
+                <p className="mb-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Choose how you'd like to pay
+                </p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <MethodTile
+                    icon={<Smartphone className="h-6 w-6" />}
+                    title="Mobile Banking"
+                    subtitle="bKash, Nagad, Rocket, Upay"
+                    count={`${mobileProviders.length} options`}
+                    swatches={mobileProviders.map((p) => p.color)}
+                    selected={method === "mobile"}
+                    onClick={() => { setMethod("mobile"); setStage("provider"); }}
+                  />
+                  <MethodTile
+                    icon={<Building2 className="h-6 w-6" />}
+                    title="Bank Transfer"
+                    subtitle="Local & International banks"
+                    count="1 option"
+                    swatches={[bankProvider.color]}
+                    selected={method === "bank"}
+                    onClick={() => {
+                      setMethod("bank");
+                      setProviderId("bank");
+                      setStage("pay");
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* STAGE: choose provider */}
+            {stage === "provider" && method === "mobile" && (
+              <div className="mt-6 animate-fade-in">
+                <div className="mb-4 flex items-center justify-between">
+                  <button onClick={() => setStage("method")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+                    <ArrowLeft className="h-4 w-4" /> Back
                   </button>
-                );
-              })}
-            </div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Mobile Banking
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {mobileProviders.map((p) => {
+                    const sel = providerId === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => { setProviderId(p.id); setStage("pay"); }}
+                        className={cn(
+                          "group relative flex flex-col items-center gap-3 rounded-2xl border-2 bg-background p-5 transition-all hover:-translate-y-0.5",
+                          sel ? "border-primary bg-primary/5 glow-red" : "border-border hover:border-primary/50",
+                        )}
+                      >
+                        {sel && (
+                          <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-primary text-primary-foreground">
+                            <Check className="h-3 w-3" />
+                          </span>
+                        )}
+                        <span
+                          className="grid h-12 w-12 place-items-center rounded-xl font-display text-lg text-white"
+                          style={{ background: p.color }}
+                        >
+                          {p.name[0]}
+                        </span>
+                        <span className="font-display tracking-wider">{p.name.toUpperCase()}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* STAGE: pay */}
+            {stage === "pay" && provider && (
+              <div className="mt-6 space-y-6 animate-fade-in">
+                <button
+                  onClick={() => setStage(method === "mobile" ? "provider" : "method")}
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Change provider
+                </button>
+
+                {/* Pay card */}
+                <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-background p-6">
+                  <div
+                    className="absolute inset-0 opacity-20 pointer-events-none"
+                    style={{ background: `radial-gradient(circle at top right, ${provider.color}, transparent 60%)` }}
+                  />
+                  <div className="relative flex flex-wrap items-start gap-6">
+                    <span
+                      className="grid h-16 w-16 place-items-center rounded-2xl bg-card text-2xl font-display"
+                      style={{ color: provider.color }}
+                    >
+                      {provider.name[0]}
+                    </span>
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Pay With</div>
+                        <div className="font-display text-2xl">{provider.name}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Send To</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-display text-2xl text-primary tracking-wider break-all">{provider.number}</span>
+                          <button onClick={() => navigator.clipboard.writeText(provider.number)} className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:border-primary">
+                            <Copy className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Exact Amount</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-display text-3xl">{totalBDT} BDT</span>
+                          <button onClick={() => navigator.clipboard.writeText(String(totalBDT))} className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:border-primary">
+                            <Copy className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hidden h-28 w-28 shrink-0 rounded-xl bg-white p-2 sm:block">
+                      <img
+                        alt="QR"
+                        className="h-full w-full"
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(provider.number)}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Steps */}
+                <div className="rounded-2xl border border-border bg-background p-6">
+                  <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
+                    <Sparkles className="h-3.5 w-3.5" /> Step-by-step
+                  </div>
+                  <ol className="space-y-3">
+                    {provider.steps.map((s, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
+                        <span className="text-sm text-foreground/90">{s}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                {/* Confirm */}
+                <div className="rounded-2xl border border-border bg-background p-6">
+                  <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
+                    <Shield className="h-3.5 w-3.5" /> Confirm Your Provider
+                  </div>
+                  <div className="space-y-4">
+                    <Field
+                      label="Transaction ID *"
+                      placeholder="Enter Transaction ID"
+                      value={txn}
+                      onChange={(e) => setTxn(e.target.value)}
+                    />
+                    <Field
+                      label={method === "mobile" ? "Sender Number *" : "Sender Account *"}
+                      placeholder={method === "mobile" ? "Enter your mobile number" : "Enter account number"}
+                      value={sender}
+                      onChange={(e) => setSender(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         </div>
 
@@ -154,8 +379,10 @@ function CheckoutPage() {
 
           <button
             onClick={() => {
-              if (!provider) return alert("Select a payment provider");
-              nav({ to: "/payment/$method", params: { method: provider } });
+              if (stage !== "pay" || !provider) return alert("Choose a payment provider");
+              if (!txn || !sender) return alert("Enter Transaction ID and Sender details");
+              clear();
+              setDone(true);
             }}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-display text-base uppercase tracking-wider text-primary-foreground glow-red hover:brightness-110"
           >
@@ -170,12 +397,78 @@ function CheckoutPage() {
             <span className="flex items-center gap-1"><Zap className="h-3 w-3" /> Fast Delivery</span>
             <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" /> 24/7 Support</span>
           </div>
-
-          {/* hidden currency var to silence ts */}
           <span className="hidden">{currency}</span>
         </aside>
       </div>
     </div>
+  );
+}
+
+function StageHeader({ stage }: { stage: Stage }) {
+  const items: { id: Stage; n: number; label: string }[] = [
+    { id: "method", n: 1, label: "Payment Methods" },
+    { id: "provider", n: 2, label: "Provider" },
+    { id: "pay", n: 3, label: "Pay" },
+  ];
+  const order: Stage[] = ["method", "provider", "pay"];
+  const currentIdx = order.indexOf(stage);
+  return (
+    <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider">
+      {items.map((it, idx) => {
+        const done = idx < currentIdx;
+        const active = idx === currentIdx;
+        return (
+          <span key={it.id} className="flex flex-1 items-center gap-3">
+            <span className="flex items-center gap-2">
+              <span className={cn(
+                "grid h-6 w-6 place-items-center rounded-full",
+                done ? "bg-success text-background" : active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground",
+              )}>
+                {done ? <Check className="h-3 w-3" /> : it.n}
+              </span>
+              <span className={cn(done ? "text-success" : active ? "text-foreground" : "text-muted-foreground")}>
+                {it.label}
+              </span>
+            </span>
+            {idx < items.length - 1 && <span className="h-px flex-1 bg-border" />}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function MethodTile({
+  icon, title, subtitle, count, swatches, selected, onClick,
+}: {
+  icon: React.ReactNode; title: string; subtitle: string; count: string;
+  swatches: string[]; selected: boolean; onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "group relative flex items-center gap-4 rounded-2xl border-2 bg-background p-5 text-left transition-all hover:-translate-y-0.5",
+        selected ? "border-primary glow-red" : "border-border hover:border-primary/50",
+      )}
+    >
+      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-secondary text-foreground">
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="font-display text-lg">{title}</div>
+        <div className="truncate text-xs text-muted-foreground">{subtitle}</div>
+        <div className="mt-2 flex items-center gap-2">
+          <div className="flex -space-x-1">
+            {swatches.map((c, i) => (
+              <span key={i} className="h-4 w-4 rounded-full border-2 border-background" style={{ background: c }} />
+            ))}
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{count}</span>
+        </div>
+      </div>
+      <span className="text-muted-foreground transition group-hover:translate-x-1 group-hover:text-primary">→</span>
+    </button>
   );
 }
 
