@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Zap, ShoppingBag, Gamepad2, Tv, Gift, User, 
 import { products } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 import { ProductCard } from "@/components/ProductCard";
+import { NewArrivals } from "@/components/NewArrivals";
 
 export const Route = createFileRoute("/")({
   head: () => ({
