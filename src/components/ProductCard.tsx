@@ -45,6 +45,7 @@ export function ProductCard({ product }: { product: Product }) {
             <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> Buy Now
           </button>
         </div>
+      </div>
     </Link>
   );
 }
