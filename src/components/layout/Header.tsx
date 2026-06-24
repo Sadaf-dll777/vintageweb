@@ -43,6 +43,7 @@ export function Header() {
   }, [searchFocused]);
 
   return (
+    <>
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
       <div className="container-wide flex h-16 items-center gap-4">
         {/* Logo */}
@@ -108,8 +109,9 @@ export function Header() {
           </div>
           <button
             onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
               setSearchFocused(true);
-              setTimeout(() => inputRef.current?.focus(), 30);
+              setTimeout(() => inputRef.current?.focus(), 350);
             }}
             aria-label="Search"
             className={cn(
@@ -141,9 +143,10 @@ export function Header() {
           </Link>
         </div>
       </div>
+    </header>
 
-      {/* Always-visible search row */}
-      <div ref={wrapRef} className="border-t border-border/60 bg-background/80 backdrop-blur-xl">
+    {/* Search row — not sticky, scrolls away with the page */}
+    <div ref={wrapRef} className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="container-wide py-3">
           <div className="mx-auto max-w-2xl">
             <div
@@ -229,6 +232,6 @@ export function Header() {
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }
