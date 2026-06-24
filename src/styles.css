@@ -112,3 +112,25 @@
 @utility auth-row-in {
   animation: auth-row-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes search-expand {
+  0% { opacity: 0; transform: translateY(-12px) scaleX(0.6); transform-origin: right center; }
+  100% { opacity: 1; transform: translateY(0) scaleX(1); }
+}
+@keyframes search-drop {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes chip-pop {
+  0% { opacity: 0; transform: translateY(6px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@utility search-expand {
+  animation: search-expand 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility search-drop {
+  animation: search-drop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility chip-pop {
+  animation: chip-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
