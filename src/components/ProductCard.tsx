@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Clock } from "lucide-react";
+import { Clock, Zap } from "lucide-react";
 import type { Product } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 
@@ -7,11 +7,8 @@ export function ProductCard({ product }: { product: Product }) {
   const currency = useShop((s) => s.currency);
   return (
     <Link
-      to="/cart"
-      onClick={(e) => {
-        e.preventDefault();
-        useShop.getState().add(product);
-      }}
+      to="/product/$slug"
+      params={{ slug: product.id }}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/60 hover:glow-red"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
@@ -32,13 +29,22 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
         <h3 className="font-display text-lg leading-tight tracking-wide">{product.name}</h3>
-        <div className="mt-auto flex items-center justify-between">
-          <span className="font-display text-xl text-primary">{formatPrice(product.price, currency)}</span>
-          <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[10px] font-bold text-success">
-            <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
-          </span>
+        <div className="mt-auto space-y-2">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
+            <div className="font-display text-xl text-primary">{formatPrice(product.price, currency)}</div>
+          </div>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              useShop.getState().add(product);
+            }}
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition hover:brightness-110"
+          >
+            <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> Buy Now
+          </button>
         </div>
-      </div>
     </Link>
   );
 }
