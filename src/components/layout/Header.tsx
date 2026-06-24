@@ -94,10 +94,13 @@ export function Header() {
               </span>
             )}
           </Link>
-          <button className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground glow-red hover:brightness-110">
+          <Link
+            to="/auth"
+            className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground glow-red hover:brightness-110"
+          >
             <User className="h-4 w-4" />
             Sign In
-          </button>
+          </Link>
         </div>
       </div>
     </header>
