@@ -81,3 +81,19 @@
 @utility glow-red {
   box-shadow: 0 10px 40px -10px oklch(0.62 0.22 25 / 0.55);
 }
+
+@keyframes hero-rise {
+  0% { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes hero-slide-in {
+  0% { opacity: 0; transform: translateX(60px) scale(0.96); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@utility hero-rise {
+  animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility hero-slide-in {
+  animation: hero-slide-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
