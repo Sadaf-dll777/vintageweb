@@ -18,6 +18,7 @@ export function Header() {
   const cartCount = items.reduce((s, i) => s + i.qty, 0);
 
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
   const [query, setQuery] = useState("");
   const [recent, setRecent] = useState<string[]>([
     "Discord Nitro Premium Subscription",
@@ -28,20 +29,18 @@ export function Header() {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!searchOpen) return;
-    const t = setTimeout(() => inputRef.current?.focus(), 50);
+    if (!searchFocused) return;
     const onClick = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setSearchOpen(false);
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setSearchFocused(false);
     };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSearchOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setSearchFocused(false); inputRef.current?.blur(); } };
     document.addEventListener("mousedown", onClick);
     document.addEventListener("keydown", onKey);
     return () => {
-      clearTimeout(t);
       document.removeEventListener("mousedown", onClick);
       document.removeEventListener("keydown", onKey);
     };
-  }, [searchOpen]);
+  }, [searchFocused]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
@@ -107,18 +106,6 @@ export function Header() {
               USD
             </button>
           </div>
-          <button
-            onClick={() => setSearchOpen((v) => !v)}
-            aria-label="Search"
-            className={cn(
-              "grid h-9 w-9 place-items-center rounded-full border bg-card transition-colors",
-              searchOpen
-                ? "border-primary/60 text-primary"
-                : "border-border text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <Search className="h-4 w-4" />
-          </button>
           <Link
             to="/cart"
             className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground"
@@ -140,32 +127,40 @@ export function Header() {
         </div>
       </div>
 
-      {/* Expandable search row */}
-      {searchOpen && (
-        <div ref={wrapRef} className="border-t border-border/60 bg-background/95 backdrop-blur-xl">
-          <div className="container-wide py-4">
-            <div className="search-expand mx-auto max-w-2xl">
-              <div className="relative flex items-center rounded-full border border-primary/60 bg-card/60 shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12),0_20px_60px_-20px_rgba(0,0,0,0.8)] transition-all">
-                <Search className="ml-5 h-4 w-4 text-muted-foreground" />
-                <input
-                  ref={inputRef}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted-foreground"
-                />
-                {query && (
-                  <button
-                    onClick={() => setQuery("")}
-                    className="mr-4 grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground"
-                    aria-label="Clear"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                )}
-              </div>
+      {/* Always-visible search row */}
+      <div ref={wrapRef} className="border-t border-border/60 bg-background/80 backdrop-blur-xl">
+        <div className="container-wide py-3">
+          <div className="mx-auto max-w-2xl">
+            <div
+              className={cn(
+                "relative flex items-center rounded-full border bg-card/60 transition-all duration-300",
+                searchFocused
+                  ? "border-primary/60 shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12),0_20px_60px_-20px_rgba(0,0,0,0.8)]"
+                  : "border-border/60 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]",
+              )}
+            >
+              <Search className={cn("ml-5 h-4 w-4 transition-colors", searchFocused ? "text-primary" : "text-muted-foreground")} />
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                placeholder="Search products..."
+                className="w-full bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted-foreground"
+              />
+              {query && (
+                <button
+                  onClick={() => setQuery("")}
+                  className="mr-4 grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  aria-label="Clear"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
 
-              {/* Dropdown */}
+            {/* Dropdown — opens on focus */}
+            {searchFocused && (
               <div className="search-drop mt-3 overflow-hidden rounded-2xl border border-border/60 bg-card/80 p-4 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl">
                 {recent.length > 0 && (
                   <div>
@@ -215,10 +210,10 @@ export function Header() {
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }
