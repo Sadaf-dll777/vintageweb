@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Minus, Plus, Trash2, Zap, Shield, MessageCircle, ArrowRight } from "lucide-react";
+import { Minus, Plus, Trash2, Zap, Shield, MessageCircle, ArrowRight, ShoppingBag } from "lucide-react";
 import { formatPrice, useShop } from "@/lib/store";
 
 export const Route = createFileRoute("/cart")({
@@ -12,6 +12,41 @@ function CartPage() {
   const subtotal = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   const count = items.reduce((s, i) => s + i.qty, 0);
 
+  if (items.length === 0) {
+    return (
+      <div className="container-wide flex min-h-[70vh] items-center justify-center py-16">
+        <div className="relative w-full max-w-3xl overflow-hidden rounded-3xl border border-border bg-card/60 p-16 text-center backdrop-blur animate-fade-in">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-40"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 0%, color-mix(in oklab, var(--color-primary) 18%, transparent), transparent 60%)",
+            }}
+          />
+          <div className="relative">
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-2xl border border-border bg-background/60">
+              <ShoppingBag className="h-9 w-9 text-muted-foreground" strokeWidth={1.6} />
+            </div>
+            <h1 className="mt-6 font-display text-4xl uppercase tracking-wide sm:text-5xl">
+              Your cart is empty
+            </h1>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Looks like you haven't added anything yet. Browse our store!
+            </p>
+            <Link
+              to="/shop"
+              className="group mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-sm uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
+            >
+              <ShoppingBag className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+              Browse Products
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container-wide py-12">
       <h1 className="font-display text-5xl uppercase">Your Cart</h1>
@@ -19,13 +54,7 @@ function CartPage() {
 
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1.5fr_1fr]">
         <div>
-          {items.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-card p-12 text-center">
-              <p className="text-muted-foreground">Your cart is empty.</p>
-              <Link to="/shop" className="mt-4 inline-block rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground">Browse Shop</Link>
-            </div>
-          ) : (
-            <ul className="space-y-3">
+          <ul className="space-y-3">
               {items.map((i) => (
                 <li key={i.product.id} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
                   <img src={i.product.image} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
@@ -44,8 +73,7 @@ function CartPage() {
                   <button onClick={() => remove(i.product.id)} className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
                 </li>
               ))}
-            </ul>
-          )}
+          </ul>
 
           <div className="mt-5 flex flex-wrap gap-5 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5"><Zap className="h-3.5 w-3.5 text-primary" /> Fast Delivery</span>
