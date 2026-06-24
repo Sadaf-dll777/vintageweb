@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Search, ShoppingCart, Zap, User } from "lucide-react";
+import { Search, ShoppingCart, Zap, User, Clock, TrendingUp, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useShop } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,32 @@ export function Header() {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const { items, currency, setCurrency } = useShop();
   const cartCount = items.reduce((s, i) => s + i.qty, 0);
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [recent, setRecent] = useState<string[]>([
+    "Discord Nitro Premium Subscription",
+    "Spotify Family Join Premium Subscription",
+  ]);
+  const trending = ["steam", "visa", "Discord Nitro Premium Subscription", "chat", "steam region", "spotify"];
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    const t = setTimeout(() => inputRef.current?.focus(), 50);
+    const onClick = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setSearchOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSearchOpen(false); };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [searchOpen]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
@@ -80,7 +107,16 @@ export function Header() {
               USD
             </button>
           </div>
-          <button className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground">
+          <button
+            onClick={() => setSearchOpen((v) => !v)}
+            aria-label="Search"
+            className={cn(
+              "grid h-9 w-9 place-items-center rounded-full border bg-card transition-colors",
+              searchOpen
+                ? "border-primary/60 text-primary"
+                : "border-border text-muted-foreground hover:text-foreground",
+            )}
+          >
             <Search className="h-4 w-4" />
           </button>
           <Link
@@ -103,6 +139,86 @@ export function Header() {
           </Link>
         </div>
       </div>
+
+      {/* Expandable search row */}
+      {searchOpen && (
+        <div ref={wrapRef} className="border-t border-border/60 bg-background/95 backdrop-blur-xl">
+          <div className="container-wide py-4">
+            <div className="search-expand mx-auto max-w-2xl">
+              <div className="relative flex items-center rounded-full border border-primary/60 bg-card/60 shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12),0_20px_60px_-20px_rgba(0,0,0,0.8)] transition-all">
+                <Search className="ml-5 h-4 w-4 text-muted-foreground" />
+                <input
+                  ref={inputRef}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="w-full bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted-foreground"
+                />
+                {query && (
+                  <button
+                    onClick={() => setQuery("")}
+                    className="mr-4 grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    aria-label="Clear"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Dropdown */}
+              <div className="search-drop mt-3 overflow-hidden rounded-2xl border border-border/60 bg-card/80 p-4 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+                {recent.length > 0 && (
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                        <Clock className="h-3.5 w-3.5" />
+                        RECENT
+                      </div>
+                      <button
+                        onClick={() => setRecent([])}
+                        className="text-xs text-muted-foreground hover:text-primary"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {recent.map((r, i) => (
+                        <button
+                          key={r}
+                          style={{ animationDelay: `${i * 40}ms` }}
+                          onClick={() => setQuery(r)}
+                          className="chip-pop rounded-lg border border-border bg-secondary/60 px-3 py-1.5 text-xs text-foreground hover:border-primary/40 hover:bg-secondary"
+                        >
+                          {r}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className={cn(recent.length > 0 && "mt-4")}>
+                  <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                    <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                    TRENDING NOW
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {trending.map((t, i) => (
+                      <button
+                        key={t}
+                        style={{ animationDelay: `${i * 40 + 80}ms` }}
+                        onClick={() => setQuery(t)}
+                        className="chip-pop rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20"
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
