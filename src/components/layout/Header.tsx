@@ -106,6 +106,21 @@ export function Header() {
               USD
             </button>
           </div>
+          <button
+            onClick={() => {
+              setSearchFocused(true);
+              setTimeout(() => inputRef.current?.focus(), 30);
+            }}
+            aria-label="Search"
+            className={cn(
+              "grid h-9 w-9 place-items-center rounded-full border bg-card transition-colors",
+              searchFocused
+                ? "border-primary/60 text-primary"
+                : "border-border text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Search className="h-4 w-4" />
+          </button>
           <Link
             to="/cart"
             className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground"
