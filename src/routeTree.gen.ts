@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TopUpRouteImport } from './routes/top-up'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as GiftCardsRouteImport } from './routes/gift-cards'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -32,6 +33,11 @@ const SubscriptionsRoute = SubscriptionsRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GiftCardsRoute = GiftCardsRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gift-cards': typeof GiftCardsRoute
+  '/profile': typeof ProfileRoute
   '/shop': typeof ShopRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/top-up': typeof TopUpRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gift-cards': typeof GiftCardsRoute
+  '/profile': typeof ProfileRoute
   '/shop': typeof ShopRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/top-up': typeof TopUpRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gift-cards': typeof GiftCardsRoute
+  '/profile': typeof ProfileRoute
   '/shop': typeof ShopRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/top-up': typeof TopUpRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/gift-cards'
+    | '/profile'
     | '/shop'
     | '/subscriptions'
     | '/top-up'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/gift-cards'
+    | '/profile'
     | '/shop'
     | '/subscriptions'
     | '/top-up'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/gift-cards'
+    | '/profile'
     | '/shop'
     | '/subscriptions'
     | '/top-up'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   GiftCardsRoute: typeof GiftCardsRoute
+  ProfileRoute: typeof ProfileRoute
   ShopRoute: typeof ShopRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
   TopUpRoute: typeof TopUpRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gift-cards': {
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   GiftCardsRoute: GiftCardsRoute,
+  ProfileRoute: ProfileRoute,
   ShopRoute: ShopRoute,
   SubscriptionsRoute: SubscriptionsRoute,
   TopUpRoute: TopUpRoute,

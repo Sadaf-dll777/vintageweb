@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Search, ShoppingCart, Zap, User, Clock, TrendingUp, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useShop } from "@/lib/store";
+import { useShop, useAuth } from "@/lib/store";
 import { products } from "@/data/products";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -17,6 +17,7 @@ const navItems = [
 export function Header() {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const { items, currency, setCurrency } = useShop();
+  const user = useAuth((s) => s.user);
   const cartCount = items.reduce((s, i) => s + i.qty, 0);
 
   const [searchOpen, setSearchOpen] = useState(false);
@@ -219,13 +220,29 @@ export function Header() {
               </span>
             )}
           </Link>
-          <Link
-            to="/auth"
-            className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground glow-red hover:brightness-110"
-          >
-            <User className="h-4 w-4" />
-            Sign In
-          </Link>
+          {user ? (
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/20"
+            >
+              {user.avatar ? (
+                <img src={user.avatar} alt="" className="h-6 w-6 rounded-full object-cover" />
+              ) : (
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                  {(user.displayName || user.email).charAt(0).toUpperCase()}
+                </span>
+              )}
+              <span className="hidden max-w-[120px] truncate sm:inline">{user.displayName || user.email}</span>
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground glow-red hover:brightness-110"
+            >
+              <User className="h-4 w-4" />
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </header>
