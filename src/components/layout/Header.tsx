@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useShop } from "@/lib/store";
 import { products } from "@/data/products";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -110,6 +111,7 @@ export function Header() {
 
         {/* Right cluster */}
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
           <div className="hidden items-center rounded-full border border-border bg-card p-0.5 text-xs font-bold sm:flex">
             <button
               onClick={() => setCurrency("BDT")}
