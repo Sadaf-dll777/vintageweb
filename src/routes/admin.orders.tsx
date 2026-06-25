@@ -23,7 +23,12 @@ function activeStep(s: ApiOrder["status"]): number {
 
 function OrdersAdmin() {
   const qc = useQueryClient();
-  const orders = useQuery({ queryKey: ["admin-orders"], queryFn: api.listOrders });
+  const orders = useQuery({
+    queryKey: ["admin-orders"],
+    queryFn: api.listOrders,
+    refetchInterval: 3000,
+    refetchOnWindowFocus: true,
+  });
   const [openId, setOpenId] = useState<string | null>(null);
   const open = orders.data?.find((o) => o.id === openId) ?? null;
 
