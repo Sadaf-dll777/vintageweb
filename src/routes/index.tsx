@@ -292,21 +292,35 @@ function StatCard({
   return (
     <div
       ref={ref}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/70 hover:shadow-[0_15px_50px_-15px_var(--color-primary)]"
+      className="stat-card group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 text-center transition-all duration-500 ease-out hover:-translate-y-2 hover:border-primary/70 hover:shadow-[0_25px_70px_-20px_var(--color-primary)]"
     >
+      {/* Animated conic gradient border on hover */}
+      <span aria-hidden className="stat-conic pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      {/* Radial glow */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/0 to-primary/0 transition-all duration-500 group-hover:from-primary/10 group-hover:to-primary/0"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,var(--color-primary)/0.18,transparent_60%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      />
+      {/* Shimmer sweep */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-primary/15 to-transparent transition-transform duration-1000 ease-out group-hover:translate-x-full"
+      />
+      {/* Top accent line */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-6 top-0 h-px scale-x-0 bg-gradient-to-r from-transparent via-primary to-transparent transition-transform duration-500 group-hover:scale-x-100"
       />
       <div className="relative">
-        <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
-          <Icon className="h-5 w-5" fill={fill ? "currentColor" : "none"} strokeWidth={fill ? 0 : 2} />
+        <span className="relative mx-auto grid h-12 w-12 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-all duration-500 group-hover:scale-110 group-hover:border-primary group-hover:bg-primary/20 group-hover:shadow-[0_0_30px_-4px_var(--color-primary)]">
+          <span aria-hidden className="absolute inset-0 rounded-xl bg-primary/30 opacity-0 transition-opacity duration-500 group-hover:animate-ping group-hover:opacity-40" />
+          <Icon className="relative h-5 w-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" fill={fill ? "currentColor" : "none"} strokeWidth={fill ? 0 : 2} />
         </span>
-        <div className="mt-4 font-display text-4xl text-foreground">
+        <div className="mt-4 font-display text-4xl text-foreground transition-transform duration-500 group-hover:scale-105">
           {val}
           <span className="text-primary">{suffix}</span>
         </div>
-        <div className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+        <div className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
           {label}
         </div>
       </div>
