@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product } from "@/data/products";
 import { brand } from "@/config/site";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Currency = "USD" | "BDT";
 export const USD_TO_BDT = brand.usdToBdt;
@@ -67,66 +68,61 @@ export interface AuthUser {
 
 interface AuthState {
   user: AuthUser | null;
-  // store mock credentials so sign-in can re-validate after sign-out
-  accounts: Record<string, { password: string; user: AuthUser }>;
-  signUp: (email: string, password: string, displayName: string) => { ok: boolean; error?: string };
-  signIn: (email: string, password: string) => { ok: boolean; error?: string };
-  signOut: () => void;
-  updateProfile: (patch: Partial<AuthUser>) => void;
+  ready: boolean;
+  setUser: (u: AuthUser | null) => void;
+  signOut: () => Promise<void>;
+  updateProfile: (patch: Partial<AuthUser>) => Promise<void>;
 }
 
 export const useAuth = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      accounts: {},
-      signUp: (email, password, displayName) => {
-        const key = email.trim().toLowerCase();
-        if (!key || !password) return { ok: false, error: "Email and password required" };
-        const accounts = get().accounts;
-        if (accounts[key]) return { ok: false, error: "Account already exists. Try signing in." };
-        const user: AuthUser = {
-          email: key,
-          displayName: displayName || key.split("@")[0],
-          createdAt: Date.now(),
-        };
-        set({
-          accounts: { ...accounts, [key]: { password, user } },
-          user,
-        });
-        return { ok: true };
-      },
-      signIn: (email, password) => {
-        const key = email.trim().toLowerCase();
-        const accounts = get().accounts;
-        const rec = accounts[key];
-        if (!rec) {
-          // Temporary convenience: auto-create on first sign-in so the user
-          // can get into the profile editor without a separate signup step.
-          const user: AuthUser = {
-            email: key,
-            displayName: key.split("@")[0] || "User",
-            createdAt: Date.now(),
-          };
-          set({ accounts: { ...accounts, [key]: { password, user } }, user });
-          return { ok: true };
-        }
-        if (rec.password !== password) return { ok: false, error: "Incorrect password" };
-        set({ user: rec.user });
-        return { ok: true };
-      },
-      signOut: () => set({ user: null }),
-      updateProfile: (patch) => {
-        const cur = get().user;
-        if (!cur) return;
-        const next = { ...cur, ...patch };
-        const accounts = { ...get().accounts };
-        if (accounts[cur.email]) {
-          accounts[cur.email] = { ...accounts[cur.email], user: next };
-        }
-        set({ user: next, accounts });
-      },
-    }),
-    { name: "vintage-store-auth" },
-  ),
+  (set, get) => ({
+    user: null,
+    ready: false,
+    setUser: (user) => set({ user, ready: true }),
+    signOut: async () => {
+      await supabase.auth.signOut();
+      set({ user: null });
+    },
+    updateProfile: async (patch) => {
+      const cur = get().user;
+      if (!cur) return;
+      const next = { ...cur, ...patch };
+      set({ user: next });
+      await supabase.auth.updateUser({
+        data: {
+          display_name: next.displayName,
+          phone: next.phone,
+          bio: next.bio,
+          avatar: next.avatar,
+          country: next.country,
+        },
+      });
+    },
+  }),
 );
+
+function sessionToUser(session: Awaited<ReturnType<typeof supabase.auth.getSession>>["data"]["session"]): AuthUser | null {
+  if (!session?.user) return null;
+  const u = session.user;
+  const meta = (u.user_metadata ?? {}) as Record<string, unknown>;
+  const str = (k: string) => (typeof meta[k] === "string" ? (meta[k] as string) : undefined);
+  return {
+    email: (u.email ?? "").toLowerCase(),
+    displayName: str("display_name") || str("full_name") || str("name") || (u.email ?? "").split("@")[0],
+    phone: str("phone"),
+    bio: str("bio"),
+    avatar: str("avatar") || str("avatar_url"),
+    country: str("country"),
+    createdAt: u.created_at ? new Date(u.created_at).getTime() : Date.now(),
+  };
+}
+
+// Initialise + subscribe to auth state on the client.
+if (typeof window !== "undefined") {
+  supabase.auth.getSession().then(({ data }) => {
+    useAuth.getState().setUser(sessionToUser(data.session));
+  });
+  supabase.auth.onAuthStateChange((_event, session) => {
+    useAuth.getState().setUser(sessionToUser(session));
+  });
+}
