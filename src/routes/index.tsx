@@ -299,8 +299,9 @@ function StatCard({
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/0 to-primary/0 transition-all duration-500 group-hover:from-primary/10 group-hover:to-primary/0"
       />
       <div className="relative">
-        <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
-          <Icon className="h-5 w-5" fill={fill ? "currentColor" : "none"} strokeWidth={fill ? 0 : 2} />
+        <span className="relative mx-auto grid h-11 w-11 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-all duration-500 ease-out group-hover:scale-125 group-hover:border-primary group-hover:bg-primary/20 group-hover:text-primary group-hover:shadow-[0_0_25px_var(--color-primary),inset_0_0_15px_oklch(0.62_0.22_25_/_0.4)]">
+          <span aria-hidden className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:animate-pulse group-hover:opacity-100 group-hover:bg-[radial-gradient(circle_at_center,var(--color-primary)_0%,transparent_70%)]" />
+          <Icon className="relative h-5 w-5 transition-transform duration-500 group-hover:scale-110" fill={fill ? "currentColor" : "none"} strokeWidth={fill ? 0 : 2} />
         </span>
         <div className="mt-4 font-display text-4xl text-foreground">
           {val}
