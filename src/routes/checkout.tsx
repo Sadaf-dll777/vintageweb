@@ -251,10 +251,9 @@ function CheckoutPage() {
                   <MethodTile
                     icon={<Building2 className="h-6 w-6" />}
                     title="Bank Transfer"
-                    subtitle="Local & International banks"
+                    subtitle="Brac Bank — Banpara Sub Branch"
                     count="1 option"
-                    logos={[]}
-                    swatches={[bankProvider.color]}
+                    logos={[{ src: bracBankLogo.url, alt: "Brac Bank" }]}
                     selected={method === "bank"}
                     tint="from-sky-500/25 via-sky-500/10 to-transparent"
                     ringColor="rgba(59,130,246,0.45)"
