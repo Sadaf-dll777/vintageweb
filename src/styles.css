@@ -200,3 +200,18 @@
 @utility dash-row-in {
   animation: dash-row-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes checkout-card-in {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes ck-pop {
+  0% { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@utility checkout-card-in {
+  animation: checkout-card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility ck-pop {
+  animation: ck-pop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
