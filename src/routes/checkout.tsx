@@ -11,6 +11,7 @@ import bkashLogo from "@/assets/bkash.png.asset.json";
 import nagadLogo from "@/assets/nagad.png.asset.json";
 import rocketLogo from "@/assets/rocket.png.asset.json";
 import upayLogo from "@/assets/upay.png.asset.json";
+import bracBankLogo from "@/assets/brac-bank.png.asset.json";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — VintageStore" }] }),
@@ -86,13 +87,14 @@ const mobileProviders: Provider[] = [
 ];
 
 const bankProvider: Provider = {
-  id: "bank", name: "Bank Transfer", number: "1234 5678 9012 3456", color: "#3B82F6",
+  id: "bank", name: "Brac Bank", number: "1076776160001", color: "#0054A6",
+  logo: bracBankLogo.url,
   steps: [
     "Log in to your online banking",
     "Choose Transfer / Send Money",
-    "Account Number: 1234 5678 9012 3456",
-    "Account Name: VintageStore Ltd",
-    "Bank: City Bank PLC",
+    "Account Number: 1076776160001",
+    "Account Name: MD FARUQ HOSSAIN",
+    "Bank: Brac Bank — Banpara Sub Branch",
     "Send exact amount in BDT",
     "Copy the Transaction Reference and enter it below",
   ],
