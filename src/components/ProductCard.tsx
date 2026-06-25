@@ -26,6 +26,7 @@ export function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
           loading="lazy"
         />
+        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full" />
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
         <h3 className="font-display text-lg leading-tight tracking-wide transition-colors duration-300 group-hover:text-primary">
@@ -42,9 +43,9 @@ export function ProductCard({ product }: { product: Product }) {
               e.stopPropagation();
               useShop.getState().add(product);
             }}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110"
+            className="group/btn inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110"
           >
-            <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> Buy Now
+            <Zap className="h-3 w-3 fill-current transition-transform duration-300 group-hover:scale-110 group-hover/btn:-rotate-12" strokeWidth={0} /> Buy Now
           </button>
         </div>
       </div>
