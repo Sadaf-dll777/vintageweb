@@ -239,7 +239,7 @@ function CheckoutPage() {
                     title="Mobile Banking"
                     subtitle="bKash, Nagad, Rocket, Upay"
                     count={`${mobileProviders.length} options`}
-                    swatches={mobileProviders.map((p) => p.color)}
+                    logos={mobileProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
                     selected={method === "mobile"}
                     onClick={() => { setMethod("mobile"); setStage("provider"); }}
                   />
@@ -248,6 +248,7 @@ function CheckoutPage() {
                     title="Bank Transfer"
                     subtitle="Local & International banks"
                     count="1 option"
+                    logos={[]}
                     swatches={[bankProvider.color]}
                     selected={method === "bank"}
                     onClick={() => {
@@ -518,10 +519,10 @@ function StageHeader({ stage }: { stage: Stage }) {
 }
 
 function MethodTile({
-  icon, title, subtitle, count, swatches, selected, onClick,
+  icon, title, subtitle, count, swatches, logos, selected, onClick,
 }: {
   icon: React.ReactNode; title: string; subtitle: string; count: string;
-  swatches: string[]; selected: boolean; onClick: () => void;
+  swatches?: string[]; logos?: { src: string; alt: string }[]; selected: boolean; onClick: () => void;
 }) {
   return (
     <button
@@ -538,11 +539,21 @@ function MethodTile({
         <div className="font-display text-lg">{title}</div>
         <div className="truncate text-xs text-muted-foreground">{subtitle}</div>
         <div className="mt-2 flex items-center gap-2">
-          <div className="flex -space-x-1">
-            {swatches.map((c, i) => (
-              <span key={i} className="h-4 w-4 rounded-full border-2 border-background" style={{ background: c }} />
-            ))}
-          </div>
+          {logos && logos.length > 0 ? (
+            <div className="flex -space-x-2">
+              {logos.map((l, i) => (
+                <span key={i} className="grid h-6 w-6 place-items-center overflow-hidden rounded-full border-2 border-background bg-white p-0.5">
+                  <img src={l.src} alt={l.alt} className="h-full w-full object-contain" />
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="flex -space-x-1">
+              {(swatches ?? []).map((c, i) => (
+                <span key={i} className="h-4 w-4 rounded-full border-2 border-background" style={{ background: c }} />
+              ))}
+            </div>
+          )}
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{count}</span>
         </div>
       </div>
