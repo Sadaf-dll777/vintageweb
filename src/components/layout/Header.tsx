@@ -113,32 +113,38 @@ export function Header() {
         {/* Right cluster */}
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          <div className="relative hidden items-center rounded-full border border-border bg-card p-0.5 text-xs font-bold sm:flex">
+          <div className="relative hidden items-center rounded-full border border-border/80 bg-card/80 p-0.5 text-xs font-bold backdrop-blur sm:flex shadow-[inset_0_1px_0_oklch(1_0_0_/_0.04)]">
             <span
               aria-hidden
               className={cn(
-                "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]",
                 currency === "BDT"
-                  ? "left-0.5 bg-foreground shadow-[0_4px_18px_-6px_rgba(255,255,255,0.4)]"
-                  : "left-[calc(50%+0px)] bg-primary shadow-[0_6px_20px_-6px_oklch(0.62_0.22_25_/_0.7)]",
+                  ? "left-0.5 bg-[linear-gradient(135deg,oklch(0.78_0.18_150),oklch(0.62_0.20_160))] shadow-[0_6px_20px_-6px_oklch(0.7_0.18_150_/_0.7)]"
+                  : "left-[calc(50%+0px)] bg-[linear-gradient(135deg,oklch(0.85_0.16_85),oklch(0.7_0.18_60))] shadow-[0_6px_20px_-6px_oklch(0.82_0.16_85_/_0.75)]",
               )}
             />
             <button
               onClick={() => setCurrency("BDT")}
               className={cn(
-                "relative z-10 rounded-full px-3 py-1 transition-colors duration-300",
-                currency === "BDT" ? "text-background" : "text-muted-foreground hover:text-foreground",
+                "relative z-10 inline-flex items-center gap-1 rounded-full px-3 py-1 transition-all duration-300",
+                currency === "BDT"
+                  ? "text-background scale-105"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
+              <span className={cn("text-[10px] font-black transition-opacity", currency === "BDT" ? "opacity-100" : "opacity-60")}>৳</span>
               BDT
             </button>
             <button
               onClick={() => setCurrency("USD")}
               className={cn(
-                "relative z-10 rounded-full px-3 py-1 transition-colors duration-300",
-                currency === "USD" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                "relative z-10 inline-flex items-center gap-1 rounded-full px-3 py-1 transition-all duration-300",
+                currency === "USD"
+                  ? "text-background scale-105"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
+              <span className={cn("text-[10px] font-black transition-opacity", currency === "USD" ? "opacity-100" : "opacity-60")}>$</span>
               USD
             </button>
           </div>
