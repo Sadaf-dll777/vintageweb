@@ -9,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
     <Link
       to="/product/$slug"
       params={{ slug: product.id }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-2 hover:border-primary/70 hover:shadow-[0_25px_60px_-15px_var(--color-primary)]"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-primary hover:shadow-[0_10px_30px_-18px_var(--color-primary)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-gold/40 bg-background/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gold backdrop-blur">
@@ -42,7 +42,7 @@ export function ProductCard({ product }: { product: Product }) {
               e.stopPropagation();
               useShop.getState().add(product);
             }}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110 group-hover:shadow-[0_8px_24px_-6px_var(--color-primary)]"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110"
           >
             <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> Buy Now
           </button>
