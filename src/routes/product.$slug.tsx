@@ -13,6 +13,7 @@ import {
   BadgeCheck,
   ChevronLeft,
   ChevronRight,
+  Gauge,
 } from "lucide-react";
 import { products, type Product, type ProductOption } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
@@ -357,14 +358,17 @@ function ProductPage() {
             <h2 className="mt-2 font-display text-4xl uppercase sm:text-5xl">You May Also Like</h2>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1 text-[10px] font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1 pl-3 text-[10px] font-bold uppercase tracking-wider">
+              <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
               {(["slow", "normal", "fast"] as const).map((s) => (
                 <button
                   key={s}
                   onClick={() => setSpeed(s)}
                   className={cn(
                     "rounded-full px-3 py-1.5 transition",
-                    speed === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                    speed === s
+                      ? "bg-primary text-primary-foreground glow-red"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {s}
