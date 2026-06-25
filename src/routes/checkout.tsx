@@ -83,9 +83,6 @@ function CheckoutPage() {
     setTip(0);
   }, [currency]);
 
-  const bankDetailsText =
-    "Bank: Brac Bank\nAccount Name: MD FARUQ HOSSAIN\nAccount Number: 1076776160001\nBranch: Banpara Sub Branch";
-
   if (done) {
     return (
       <div className="container-wide flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
