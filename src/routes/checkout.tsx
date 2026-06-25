@@ -6,6 +6,10 @@ import {
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import bkashLogo from "@/assets/bkash.png.asset.json";
+import nagadLogo from "@/assets/nagad.png.asset.json";
+import rocketLogo from "@/assets/rocket.png.asset.json";
+import upayLogo from "@/assets/upay.png.asset.json";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — VintageStore" }] }),
@@ -21,12 +25,14 @@ interface Provider {
   number: string;
   color: string;
   short?: string;
+  logo?: string;
   steps: string[];
 }
 
 const mobileProviders: Provider[] = [
   {
     id: "bkash", name: "bKash", number: "01737784088", color: "#E2136E",
+    logo: bkashLogo.url,
     steps: [
       "Open your bKash App",
       "Tap on Send Money or from Agent Choose Cash In",
@@ -39,6 +45,7 @@ const mobileProviders: Provider[] = [
   },
   {
     id: "nagad", name: "Nagad", number: "01737784088", color: "#F47A1F",
+    logo: nagadLogo.url,
     steps: [
       "Open Nagad App or dial *167#",
       "Choose Send Money",
@@ -51,6 +58,7 @@ const mobileProviders: Provider[] = [
   },
   {
     id: "rocket", name: "Rocket", number: "017377840880", color: "#8C3494",
+    logo: rocketLogo.url,
     steps: [
       "Dial *322# or open Rocket App",
       "Choose Send Money",
@@ -63,6 +71,7 @@ const mobileProviders: Provider[] = [
   },
   {
     id: "upay", name: "Upay", number: "01737784088", color: "#E73C7E",
+    logo: upayLogo.url,
     steps: [
       "Open Upay App",
       "Choose Send Money",
@@ -280,10 +289,13 @@ function CheckoutPage() {
                           </span>
                         )}
                         <span
-                          className="grid h-12 w-12 place-items-center rounded-xl font-display text-lg text-white"
-                          style={{ background: p.color }}
+                          className="grid h-14 w-14 place-items-center overflow-hidden rounded-xl bg-white p-1.5"
                         >
-                          {p.name[0]}
+                          {p.logo ? (
+                            <img src={p.logo} alt={p.name} className="h-full w-full object-contain" />
+                          ) : (
+                            <span className="font-display text-lg" style={{ color: p.color }}>{p.name[0]}</span>
+                          )}
                         </span>
                         <span className="font-display tracking-wider">{p.name.toUpperCase()}</span>
                       </button>
@@ -311,10 +323,13 @@ function CheckoutPage() {
                   />
                   <div className="relative flex flex-wrap items-start gap-6">
                     <span
-                      className="grid h-16 w-16 place-items-center rounded-2xl bg-card text-2xl font-display"
-                      style={{ color: provider.color }}
+                      className="grid h-16 w-16 place-items-center overflow-hidden rounded-2xl bg-white p-2"
                     >
-                      {provider.name[0]}
+                      {provider.logo ? (
+                        <img src={provider.logo} alt={provider.name} className="h-full w-full object-contain" />
+                      ) : (
+                        <span className="text-2xl font-display" style={{ color: provider.color }}>{provider.name[0]}</span>
+                      )}
                     </span>
                     <div className="min-w-0 flex-1 space-y-3">
                       <div>
