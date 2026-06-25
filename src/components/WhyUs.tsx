@@ -34,13 +34,16 @@ export function WhyUs() {
           {ITEMS.map((it) => (
             <div
               key={it.title}
-              className="group rounded-2xl border border-border bg-card/80 p-6 backdrop-blur transition-all hover:-translate-y-1 hover:border-primary/60 hover:glow-red"
+              className="group relative overflow-hidden rounded-2xl border border-border bg-card/80 p-6 backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:glow-red"
             >
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/15 text-primary transition group-hover:scale-110">
+              <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+                <span className="absolute left-1/2 top-1/2 h-[260%] w-[40%] -translate-x-[160%] -translate-y-1/2 rotate-45 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-all duration-[1600ms] ease-out group-hover:translate-x-[60%] group-hover:opacity-100" />
+              </span>
+              <span className="relative grid h-11 w-11 place-items-center rounded-xl bg-primary/15 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/25 group-hover:shadow-[0_0_24px_-2px_var(--color-primary)]">
                 <it.Icon className="h-5 w-5" />
               </span>
-              <h3 className="mt-4 font-display text-xl tracking-wide">{it.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{it.desc}</p>
+              <h3 className="relative mt-4 font-display text-xl tracking-wide transition-colors duration-300 group-hover:text-primary">{it.title}</h3>
+              <p className="relative mt-2 text-sm text-muted-foreground">{it.desc}</p>
             </div>
           ))}
         </div>
