@@ -352,18 +352,14 @@ function CheckoutPage() {
                         <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Send To</div>
                         <div className="flex items-center gap-2">
                           <span className="font-display text-2xl text-primary tracking-wider break-all">{provider.number}</span>
-                          <button onClick={() => navigator.clipboard.writeText(provider.number)} className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:border-primary">
-                            <Copy className="h-3 w-3" />
-                          </button>
+                          <CopyButton value={provider.number} tone="primary" />
                         </div>
                       </div>
                       <div>
                         <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Exact Amount</div>
                         <div className="flex items-center gap-2">
                           <span className="font-display text-3xl">{totalBDT} BDT</span>
-                          <button onClick={() => navigator.clipboard.writeText(String(totalBDT))} className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:border-primary">
-                            <Copy className="h-3 w-3" />
-                          </button>
+                          <CopyButton value={String(totalBDT)} />
                         </div>
                       </div>
                     </div>
@@ -385,12 +381,7 @@ function CheckoutPage() {
                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                           <Landmark className="h-3.5 w-3.5" /> Bank Details
                         </div>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(bankDetailsText)}
-                          className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-                        >
-                          <Copy className="h-3 w-3" /> Copy all
-                        </button>
+                        <CopyButton value={bankDetailsText} label="Copy all" />
                       </div>
                       <div className="space-y-1.5 text-sm">
                         <div><span className="text-muted-foreground">Bank:</span> Brac Bank</div>
@@ -681,6 +672,79 @@ function Field({ label, ...rest }: { label: string } & React.InputHTMLAttributes
       <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
       <input {...rest} className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
     </label>
+  );
+}
+
+function CopyButton({
+  value,
+  label,
+  tone = "default",
+}: {
+  value: string;
+  label?: string;
+  tone?: "default" | "primary";
+}) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      /* ignore */
+    }
+    setCopied(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 1400);
+  };
+
+  const ring = tone === "primary"
+    ? "border-primary/40 text-primary hover:border-primary"
+    : "border-border text-muted-foreground hover:border-primary hover:text-primary";
+
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      aria-label={copied ? "Copied" : "Copy"}
+      className={cn(
+        "group/copy relative inline-flex items-center gap-1.5 overflow-hidden rounded-lg border bg-background/40 px-2 py-1 text-[11px] font-bold uppercase tracking-wider backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-10px_oklch(0.62_0.22_25_/_0.55)] active:scale-95",
+        copied ? "border-success/60 text-success" : ring,
+        !label && "h-7 w-7 justify-center px-0 py-0",
+      )}
+    >
+      {/* hover sheen */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-foreground/10 to-transparent transition-transform duration-700 group-hover/copy:translate-x-full"
+      />
+      {/* ripple on click */}
+      {copied && (
+        <span
+          aria-hidden
+          key={String(copied)}
+          className="pointer-events-none absolute inset-0 animate-step-ring rounded-lg bg-success/30"
+        />
+      )}
+      <span className="relative grid h-3.5 w-3.5 place-items-center">
+        <Copy
+          className={cn(
+            "absolute h-3.5 w-3.5 transition-all duration-300",
+            copied ? "scale-50 opacity-0" : "scale-100 opacity-100",
+          )}
+        />
+        <Check
+          className={cn(
+            "absolute h-3.5 w-3.5 transition-all duration-300",
+            copied ? "scale-100 opacity-100" : "scale-50 opacity-0",
+          )}
+        />
+      </span>
+      {label && (
+        <span className="relative">{copied ? "Copied!" : label}</span>
+      )}
+    </button>
   );
 }
 
