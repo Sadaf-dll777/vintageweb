@@ -112,12 +112,21 @@ export function Header() {
         {/* Right cluster */}
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          <div className="hidden items-center rounded-full border border-border bg-card p-0.5 text-xs font-bold sm:flex">
+          <div className="relative hidden items-center rounded-full border border-border bg-card p-0.5 text-xs font-bold sm:flex">
+            <span
+              aria-hidden
+              className={cn(
+                "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                currency === "BDT"
+                  ? "left-0.5 bg-foreground shadow-[0_4px_18px_-6px_rgba(255,255,255,0.4)]"
+                  : "left-[calc(50%+0px)] bg-primary shadow-[0_6px_20px_-6px_oklch(0.62_0.22_25_/_0.7)]",
+              )}
+            />
             <button
               onClick={() => setCurrency("BDT")}
               className={cn(
-                "rounded-full px-3 py-1 transition",
-                currency === "BDT" ? "bg-foreground text-background" : "text-muted-foreground",
+                "relative z-10 rounded-full px-3 py-1 transition-colors duration-300",
+                currency === "BDT" ? "text-background" : "text-muted-foreground hover:text-foreground",
               )}
             >
               BDT
@@ -125,8 +134,8 @@ export function Header() {
             <button
               onClick={() => setCurrency("USD")}
               className={cn(
-                "rounded-full px-3 py-1 transition",
-                currency === "USD" ? "bg-primary text-primary-foreground" : "text-muted-foreground",
+                "relative z-10 rounded-full px-3 py-1 transition-colors duration-300",
+                currency === "USD" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
               USD
