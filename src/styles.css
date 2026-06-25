@@ -216,3 +216,11 @@
 @utility ck-pop {
   animation: ck-pop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes price-pop {
+  0% { opacity: 0; transform: translateY(8px) scale(0.96); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@utility animate-price-pop {
+  animation: price-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
