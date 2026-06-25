@@ -19,7 +19,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 type Stage = "method" | "provider" | "pay";
-type MethodId = "mobile" | "bank";
+type MethodId = "mobile" | "bank" | "crypto";
 
 interface Provider {
   id: string;
@@ -99,6 +99,25 @@ const bankProvider: Provider = {
     "Copy the Transaction Reference and enter it below",
   ],
 };
+
+const cryptoProviders: Provider[] = [
+  {
+    id: "binance", name: "Binance", number: "851074382", color: "#F0B90B",
+    steps: [
+      "Send via Binance Pay Option.",
+      "Binance ID: 851074382",
+      "Enter the Transaction ID below.",
+    ],
+  },
+  {
+    id: "bybit", name: "Bybit", number: "561054132", color: "#F7A600",
+    steps: [
+      "Send via Bybit Pay",
+      "Bybit Pay UID: 561054132",
+      "Enter the Transaction ID below",
+    ],
+  },
+];
 
 function CheckoutPage() {
   const { items, currency, setCurrency, setQty, remove, clear } = useShop();
