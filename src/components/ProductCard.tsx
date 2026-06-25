@@ -50,7 +50,21 @@ export function ProductCard({ product }: { product: Product }) {
         className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(600px circle at var(--mx,50%) var(--my,50%), oklch(1 0 0 / 0.06), transparent 45%)",
+            "radial-gradient(380px circle at var(--mx,50%) var(--my,50%), oklch(0.62 0.22 25 / 0.10), transparent 50%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-30 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          padding: "1px",
+          background:
+            "radial-gradient(180px circle at var(--mx,50%) var(--my,50%), oklch(0.85 0.18 30 / 0.9), transparent 70%)",
+          WebkitMask:
+            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
         }}
       />
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
