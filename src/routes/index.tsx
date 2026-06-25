@@ -36,7 +36,7 @@ function Index() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border/60">
+      <section className="relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-30 transition-all duration-1000"
           style={{
@@ -121,7 +121,9 @@ function Index() {
       </section>
 
       {/* TRUST STRIP — features row */}
-      <section className="border-b border-border/60 bg-card/20">
+      <section className="relative bg-card/20">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(to_right,transparent,oklch(0.62_0.22_25_/_0.35),transparent)]" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(to_right,transparent,oklch(0.62_0.22_25_/_0.35),transparent)]" />
         <div className="container-wide flex flex-wrap items-center justify-center gap-x-12 gap-y-4 py-5">
           {[
             { Icon: Zap, t: "Instant Delivery", d: "Get codes in seconds" },
