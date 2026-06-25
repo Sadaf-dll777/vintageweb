@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Zap, ShoppingBag, Gamepad2, Tv, Gift, User, Joystick, Globe } from "lucide-react";
+import { ChevronLeft, ChevronRight, Zap, ShoppingBag, Gamepad2, Tv, Gift, User, Joystick, Globe, ShieldCheck, Tag, Package, Users, Award } from "lucide-react";
 import { products } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 import { ProductCard } from "@/components/ProductCard";
@@ -120,24 +120,44 @@ function Index() {
         </div>
       </section>
 
-      {/* TRUST STRIP */}
-      <section className="border-b border-border/60 bg-card/30">
-        <div className="container-wide grid grid-cols-2 gap-6 py-8 md:grid-cols-4">
+      {/* TRUST STRIP — features row */}
+      <section className="border-b border-border/60 bg-card/20">
+        <div className="container-wide flex flex-wrap items-center justify-center gap-x-12 gap-y-4 py-5">
           {[
-            { t: "Instant Delivery", d: "Most orders within minutes" },
-            { t: "Secure Payment", d: "bKash, Nagad, Rocket, Binance" },
-            { t: "24/7 Support", d: "We're here whenever you need" },
-            { t: "Trusted by Thousands", d: "Bangladesh's go-to digital shop" },
+            { Icon: Zap, t: "Instant Delivery", d: "Get codes in seconds" },
+            { Icon: ShieldCheck, t: "Secure Payments", d: "bKash, Nagad & more" },
+            { Icon: Tag, t: "Best Prices in Worldwide", d: "Guaranteed Full Support" },
           ].map((f) => (
-            <div key={t} className="flex items-start gap-3">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
-                <Zap className="h-4 w-4 fill-current" strokeWidth={0} />
+            <div key={f.t} className="flex items-center gap-3">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-primary/40 bg-primary/10 text-primary">
+                <f.Icon className="h-3.5 w-3.5" fill={f.Icon === Zap ? "currentColor" : "none"} strokeWidth={f.Icon === Zap ? 0 : 2} />
               </span>
               <div className="min-w-0">
-                <div className="font-display text-base tracking-wide">{f.t}</div>
-                <div className="text-xs text-muted-foreground">{f.d}</div>
+                <div className="text-sm font-bold leading-tight">{f.t}</div>
+                <div className="text-[11px] text-muted-foreground">{f.d}</div>
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* STATS — trusted by gamers */}
+      <section className="container-wide py-14">
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <span className="h-px w-10 bg-border" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+            Trusted by Gamers Worldwide
+          </span>
+          <span className="h-px w-10 bg-border" />
+        </div>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {[
+            { n: 53, suffix: "+", label: "Orders Delivered", Icon: Package },
+            { n: 31, suffix: "+now", label: "Happy Gamers", Icon: Users },
+            { n: 74, suffix: "+", label: "Products Available", Icon: Zap, fill: true },
+            { n: 26, suffix: "+", label: "5-Star Reviews", Icon: Award },
+          ].map((s) => (
+            <StatCard key={s.label} {...s} />
           ))}
         </div>
       </section>
@@ -219,3 +239,52 @@ function Index() {
 
 // suppress TS unused
 const t = "t";
+
+function StatCard({
+  n,
+  suffix,
+  label,
+  Icon,
+  fill,
+}: {
+  n: number;
+  suffix: string;
+  label: string;
+  Icon: typeof Zap;
+  fill?: boolean;
+}) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const dur = 1200;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(n * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [n]);
+  return (
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/70 hover:shadow-[0_15px_50px_-15px_var(--color-primary)]">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/0 to-primary/0 transition-all duration-500 group-hover:from-primary/10 group-hover:to-primary/0"
+      />
+      <div className="relative">
+        <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
+          <Icon className="h-5 w-5" fill={fill ? "currentColor" : "none"} strokeWidth={fill ? 0 : 2} />
+        </span>
+        <div className="mt-4 font-display text-4xl text-foreground">
+          {val}
+          <span className="text-primary">{suffix}</span>
+        </div>
+        <div className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          {label}
+        </div>
+      </div>
+    </div>
+  );
+}
