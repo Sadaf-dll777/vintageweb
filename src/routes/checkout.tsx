@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
   Copy, Smartphone, Building2, Sparkles, User, MapPin, ChevronDown, Gamepad2,
-  ChevronRight, Landmark, Upload,
+  ChevronRight, Landmark, Upload, Bitcoin,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
