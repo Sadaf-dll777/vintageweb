@@ -217,19 +217,47 @@ function ProductPage() {
                     onClick={() => !o.outOfStock && setSelected(i)}
                     disabled={o.outOfStock}
                     className={cn(
-                      "relative rounded-2xl border bg-card px-4 py-4 text-center transition-all duration-300 ease-out",
+                      "group/opt relative overflow-hidden rounded-2xl border bg-card px-4 py-4 text-center transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
                       active
-                        ? "border-primary glow-red scale-[1.02]"
-                        : "border-border hover:-translate-y-0.5 hover:border-primary/60",
-                      o.outOfStock && "cursor-not-allowed opacity-60",
+                        ? "border-primary scale-[1.04] shadow-[0_15px_45px_-15px_var(--color-primary),inset_0_0_30px_-10px_var(--color-primary)]"
+                        : "border-border hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-[0_10px_30px_-15px_var(--color-primary)]",
+                      o.outOfStock && "cursor-not-allowed opacity-60 hover:translate-y-0 hover:border-border",
                     )}
                   >
+                    {/* gradient bg slide */}
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent transition-opacity duration-500",
+                        active ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                    {/* shimmer sweep on select */}
                     {active && !o.outOfStock && (
-                      <span className="absolute right-3 top-3 h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_10px_var(--color-primary)]" />
+                      <span
+                        key={`shimmer-${i}-${selected}`}
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-opt-shimmer"
+                      />
+                    )}
+                    {/* indicator dot + ripple */}
+                    {active && !o.outOfStock && (
+                      <>
+                        <span
+                          key={`dot-${i}-${selected}`}
+                          className="absolute right-3 top-3 h-2 w-2 rounded-full bg-primary shadow-[0_0_12px_var(--color-primary)] animate-opt-pop"
+                        />
+                        <span
+                          key={`ring-${i}-${selected}`}
+                          aria-hidden
+                          className="absolute right-3 top-3 h-2 w-2 rounded-full border border-primary animate-opt-ring"
+                        />
+                      </>
                     )}
                     <div
                       className={cn(
-                        "font-bold",
+                        "relative font-bold transition-all duration-500",
+                        active && !o.outOfStock && "text-foreground",
                         o.outOfStock && "line-through text-muted-foreground",
                       )}
                     >
@@ -237,10 +265,12 @@ function ProductPage() {
                     </div>
                     <div
                       className={cn(
-                        "mt-1 text-xs",
+                        "relative mt-1 text-xs transition-colors duration-500",
                         o.outOfStock
                           ? "font-bold uppercase tracking-wider text-primary"
-                          : "text-muted-foreground",
+                          : active
+                            ? "font-bold text-primary"
+                            : "text-muted-foreground",
                       )}
                     >
                       {o.outOfStock ? "Out of Stock" : formatPrice(o.price, currency)}
