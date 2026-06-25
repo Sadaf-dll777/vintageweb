@@ -309,26 +309,7 @@
 @keyframes detail-border-spin {
   to { transform: rotate(360deg); }
 }
-.detail-row { position: relative; isolation: isolate; overflow: hidden; }
-.detail-row::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: conic-gradient(from 0deg,
-    transparent 0deg,
-    oklch(0.62 0.22 25 / 0.9) 70deg,
-    transparent 140deg,
-    transparent 220deg,
-    oklch(0.82 0.16 85 / 0.9) 290deg,
-    transparent 360deg);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  animation: detail-border-spin 5s linear infinite;
-  pointer-events: none;
-  z-index: 0;
+.detail-row {
+  position: relative;
+  border: 1px solid oklch(0.62 0.22 25 / 0.45);
 }
-.detail-row > * { position: relative; z-index: 1; }
