@@ -315,9 +315,14 @@ function ProductPage() {
                 for (let i = 0; i < qty; i++) add(product);
                 navigate({ to: "/checkout" });
               }}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 font-display text-lg uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
+              className="group/buy relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-6 py-4 font-display text-lg uppercase tracking-wider text-primary-foreground glow-red transition-all duration-300 hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]"
             >
-              <Zap className="h-5 w-5 fill-current" strokeWidth={0} /> Buy Now
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-out group-hover/buy:translate-x-full"
+              />
+              <Zap className="relative h-5 w-5 fill-current transition-transform duration-500 group-hover/buy:-translate-x-0.5 group-hover/buy:scale-110" strokeWidth={0} />
+              <span className="relative">Buy Now</span>
             </button>
             <button
               onClick={() => add(product)}
