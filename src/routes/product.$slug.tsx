@@ -319,9 +319,9 @@ function ProductPage() {
             >
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-out group-hover/buy:translate-x-full"
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-[1400ms] ease-out group-hover/buy:translate-x-full"
               />
-              <Zap className="relative h-5 w-5 fill-current transition-transform duration-500 group-hover/buy:-translate-x-0.5 group-hover/buy:scale-110" strokeWidth={0} />
+              <Zap className="relative h-5 w-5 fill-current transition-transform duration-700 ease-out group-hover/buy:-translate-x-0.5 group-hover/buy:scale-105" strokeWidth={0} />
               <span className="relative">Buy Now</span>
             </button>
             <button
