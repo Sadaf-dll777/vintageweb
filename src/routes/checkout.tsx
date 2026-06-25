@@ -183,14 +183,24 @@ function CheckoutPage() {
               {/* Full name with saved-address dropdown */}
               <div ref={addrRef} className="relative">
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Full Name *</span>
+                  <span className="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Full Name
+                    <span className={cn("text-primary", errors.fullName && "animate-step-pulse")} aria-hidden>*</span>
+                  </span>
                   <input
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     onFocus={() => setAddressesOpen(true)}
                     placeholder="Your full name"
-                    className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm outline-none transition-all focus:border-primary/60 focus:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]"
+                    aria-invalid={errors.fullName || undefined}
+                    className={cn(
+                      "w-full rounded-lg border bg-background/60 px-4 py-3 text-sm outline-none transition-all focus:border-primary/60 focus:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]",
+                      errors.fullName ? "border-destructive/70 bg-destructive/5" : "border-border",
+                    )}
                   />
+                  {errors.fullName && (
+                    <span className="mt-1 block text-[11px] font-semibold text-destructive">This field is required</span>
+                  )}
                 </label>
                 {addressesOpen && (
                   <div className="ck-pop absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-border/70 bg-card/95 p-1 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl">
