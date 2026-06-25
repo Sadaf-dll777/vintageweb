@@ -160,11 +160,10 @@ function ProductPage() {
           </div>
 
           {/* Price */}
-          <div className="mt-6 rounded-2xl border border-border bg-card/50 p-6">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
+          <div className="mt-6 overflow-hidden rounded-2xl bg-card/50 p-6">
             <div
               key={`${selected}-${qty}`}
-              className="mt-1 font-display text-5xl text-foreground animate-fade-in"
+              className="font-display text-5xl text-foreground animate-price-pop"
             >
               {formatPrice(totalPrice, currency)}
             </div>
