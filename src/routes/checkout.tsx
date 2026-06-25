@@ -456,13 +456,17 @@ function CheckoutPage() {
                   {method === "bank" ? (
                     <div className="space-y-4">
                       <Field
-                        label="Your Bank Name *"
+                        label="Your Bank Name"
+                        required
+                        invalid={errors.bankName}
                         placeholder="e.g. DBBL, Brac Bank, City Bank"
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
                       />
                       <Field
-                        label="Reference / Transaction ID *"
+                        label="Reference / Transaction ID"
+                        required
+                        invalid={errors.txn}
                         placeholder="Enter bank transfer reference"
                         value={txn}
                         onChange={(e) => setTxn(e.target.value)}
@@ -484,13 +488,17 @@ function CheckoutPage() {
                   ) : (
                     <div className="space-y-4">
                       <Field
-                        label="Transaction ID *"
+                        label="Transaction ID"
+                        required
+                        invalid={errors.txn}
                         placeholder="Enter Transaction ID"
                         value={txn}
                         onChange={(e) => setTxn(e.target.value)}
                       />
                       <Field
-                        label="Sender Number *"
+                        label="Sender Number"
+                        required
+                        invalid={errors.sender}
                         placeholder="Enter your mobile number"
                         value={sender}
                         onChange={(e) => setSender(e.target.value)}
