@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
   Copy, Smartphone, Building2, Sparkles, User, MapPin, ChevronDown, Gamepad2,
+  ChevronRight,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -241,6 +242,8 @@ function CheckoutPage() {
                     count={`${mobileProviders.length} options`}
                     logos={mobileProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
                     selected={method === "mobile"}
+                    tint="from-primary/25 via-primary/10 to-transparent"
+                    ringColor="oklch(0.62 0.22 25 / 0.45)"
                     onClick={() => { setMethod("mobile"); setStage("provider"); }}
                   />
                   <MethodTile
@@ -251,6 +254,8 @@ function CheckoutPage() {
                     logos={[]}
                     swatches={[bankProvider.color]}
                     selected={method === "bank"}
+                    tint="from-sky-500/25 via-sky-500/10 to-transparent"
+                    ringColor="rgba(59,130,246,0.45)"
                     onClick={() => {
                       setMethod("bank");
                       setProviderId("bank");
@@ -499,18 +504,45 @@ function StageHeader({ stage }: { stage: Stage }) {
         const active = idx === currentIdx;
         return (
           <span key={it.id} className="flex flex-1 items-center gap-3">
-            <span className="flex items-center gap-2">
-              <span className={cn(
-                "grid h-6 w-6 place-items-center rounded-full",
-                done ? "bg-success text-background" : active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground",
-              )}>
-                {done ? <Check className="h-3 w-3" /> : it.n}
+            <span className="flex items-center gap-2.5">
+              <span className="relative grid place-items-center">
+                {active && (
+                  <span
+                    aria-hidden
+                    className="animate-step-ring absolute inset-0 rounded-full bg-primary/40"
+                  />
+                )}
+                <span
+                  className={cn(
+                    "relative grid h-7 w-7 place-items-center rounded-full text-[11px] transition-all duration-500",
+                    done && "bg-success text-background",
+                    active && "animate-step-pulse bg-primary text-primary-foreground scale-110",
+                    !done && !active && "bg-secondary text-muted-foreground",
+                  )}
+                >
+                  {done ? <Check className="h-3.5 w-3.5" /> : it.n}
+                </span>
               </span>
-              <span className={cn(done ? "text-success" : active ? "text-foreground" : "text-muted-foreground")}>
+              <span
+                className={cn(
+                  "transition-colors duration-500",
+                  done ? "text-success" : active ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
                 {it.label}
               </span>
             </span>
-            {idx < items.length - 1 && <span className="h-px flex-1 bg-border" />}
+            {idx < items.length - 1 && (
+              <span className="relative h-px flex-1 overflow-hidden bg-border/60">
+                <span
+                  key={`fill-${currentIdx}-${idx}`}
+                  className={cn(
+                    "absolute inset-0 origin-left",
+                    idx < currentIdx ? "animate-step-line bg-success" : "scale-x-0 bg-primary",
+                  )}
+                />
+              </span>
+            )}
           </span>
         );
       })}
@@ -519,30 +551,45 @@ function StageHeader({ stage }: { stage: Stage }) {
 }
 
 function MethodTile({
-  icon, title, subtitle, count, swatches, logos, selected, onClick,
+  icon, title, subtitle, count, swatches, logos, selected, onClick, tint, ringColor,
 }: {
   icon: React.ReactNode; title: string; subtitle: string; count: string;
   swatches?: string[]; logos?: { src: string; alt: string }[]; selected: boolean; onClick: () => void;
+  tint?: string; ringColor?: string;
 }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "group relative flex items-center gap-4 rounded-2xl border-2 bg-background p-5 text-left transition-all hover:-translate-y-0.5",
-        selected ? "border-primary glow-red" : "border-border hover:border-primary/50",
+        "group relative flex items-center gap-4 overflow-hidden rounded-2xl border bg-background/40 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]",
+        selected ? "border-primary/70" : "border-border/70 hover:border-primary/40",
       )}
+      style={selected && ringColor ? { boxShadow: `0 0 0 1px ${ringColor}, 0 20px 60px -20px ${ringColor}` } : undefined}
     >
-      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-secondary text-foreground">
+      {/* gradient tint background */}
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-70 transition-opacity duration-500 group-hover:opacity-100",
+          tint ?? "from-primary/15 via-transparent to-transparent",
+        )}
+      />
+      {/* sheen on hover */}
+      <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <span className="absolute top-0 -left-1/2 h-full w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-tile-sheen" />
+      </span>
+
+      <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-border/60 bg-background/80 text-foreground shadow-inner transition-transform duration-300 group-hover:scale-105">
         {icon}
       </span>
-      <div className="min-w-0 flex-1">
-        <div className="font-display text-lg">{title}</div>
+      <div className="relative min-w-0 flex-1">
+        <div className="font-display text-xl tracking-wide">{title}</div>
         <div className="truncate text-xs text-muted-foreground">{subtitle}</div>
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-2.5 flex items-center gap-2">
           {logos && logos.length > 0 ? (
-            <div className="flex -space-x-2">
+            <div className="flex -space-x-1.5">
               {logos.map((l, i) => (
-                <span key={i} className="grid h-6 w-6 place-items-center overflow-hidden rounded-full border-2 border-background bg-white p-0.5">
+                <span key={i} className="grid h-7 w-7 place-items-center overflow-hidden rounded-full border-2 border-background bg-white p-0.5 shadow-md transition-transform duration-300 hover:z-10 hover:-translate-y-0.5 hover:scale-110" style={{ transitionDelay: `${i * 40}ms` }}>
                   <img src={l.src} alt={l.alt} className="h-full w-full object-contain" />
                 </span>
               ))}
@@ -550,14 +597,16 @@ function MethodTile({
           ) : (
             <div className="flex -space-x-1">
               {(swatches ?? []).map((c, i) => (
-                <span key={i} className="h-4 w-4 rounded-full border-2 border-background" style={{ background: c }} />
+                <span key={i} className="h-5 w-5 rounded-full border-2 border-background shadow-md" style={{ background: c }} />
               ))}
             </div>
           )}
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{count}</span>
         </div>
       </div>
-      <span className="text-muted-foreground transition group-hover:translate-x-1 group-hover:text-primary">→</span>
+      <span className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border/60 bg-background/60 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:border-primary/60 group-hover:text-primary">
+        <ChevronRight className="h-4 w-4" />
+      </span>
     </button>
   );
 }
