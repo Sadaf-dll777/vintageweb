@@ -125,6 +125,13 @@ function CheckoutPage() {
   const subtotalBDT = Math.round(subtotalUSD * USD_TO_BDT);
   const [tip, setTip] = useState(0);
   const totalBDT = subtotalBDT + tip;
+  const tipUSD = currency === "USD" ? tip : 0;
+  const totalUSD = subtotalUSD + tipUSD;
+  const fmt = (usd: number) =>
+    currency === "USD" ? `$${usd.toFixed(2)} USD` : `${Math.round(usd * USD_TO_BDT)} BDT`;
+  const totalAmount = currency === "USD" ? totalUSD : totalBDT;
+  const totalDisplay = currency === "USD" ? `$${totalUSD.toFixed(2)} USD` : `${totalBDT} BDT`;
+  const tipOptions = currency === "USD" ? [0, 1, 5, 10, 50] : [0, 10, 20, 50, 100];
 
   const [stage, setStage] = useState<Stage>("method");
   const [method, setMethod] = useState<MethodId | null>(null);
@@ -157,7 +164,19 @@ function CheckoutPage() {
   }, [addressesOpen]);
 
   const provider: Provider | null =
-    providerId === "bank" ? bankProvider : mobileProviders.find((p) => p.id === providerId) ?? null;
+    providerId === "bank"
+      ? bankProvider
+      : cryptoProviders.find((p) => p.id === providerId)
+        ?? mobileProviders.find((p) => p.id === providerId)
+        ?? null;
+
+  // Reset payment flow + tip when currency changes (USD = crypto only; BDT = mobile/bank only)
+  useEffect(() => {
+    setStage("method");
+    setMethod(null);
+    setProviderId(null);
+    setTip(0);
+  }, [currency]);
 
   const bankDetailsText =
     "Bank: Brac Bank\nAccount Name: MD FARUQ HOSSAIN\nAccount Number: 1076776160001\nBranch: Banpara Sub Branch";
