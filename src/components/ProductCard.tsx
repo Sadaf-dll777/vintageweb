@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Clock, Zap } from "lucide-react";
 import { useRef } from "react";
 import type { Product } from "@/data/products";
@@ -6,6 +6,7 @@ import { formatPrice, useShop } from "@/lib/store";
 
 export function ProductCard({ product }: { product: Product }) {
   const currency = useShop((s) => s.currency);
+  const navigate = useNavigate();
   const cardRef = useRef<HTMLAnchorElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -109,6 +110,7 @@ export function ProductCard({ product }: { product: Product }) {
               e.preventDefault();
               e.stopPropagation();
               useShop.getState().add(product);
+              navigate({ to: "/checkout" });
             }}
             className="group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 ease-out hover:scale-[1.03] hover:brightness-110 active:scale-[0.98]"
           >
