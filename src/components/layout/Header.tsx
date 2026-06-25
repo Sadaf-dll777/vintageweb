@@ -126,7 +126,7 @@ export function Header() {
             <button
               onClick={() => setCurrency("BDT")}
               className={cn(
-                "relative z-10 rounded-full px-2.5 py-1 font-black tracking-wide transition-all duration-300",
+                "relative z-10 rounded-full px-4 py-1.5 text-xs font-bold tracking-wide transition-all duration-300",
                 currency === "BDT"
                   ? "text-background scale-105"
                   : "text-muted-foreground hover:text-foreground",
@@ -137,7 +137,7 @@ export function Header() {
             <button
               onClick={() => setCurrency("USD")}
               className={cn(
-                "relative z-10 rounded-full px-2.5 py-1 font-black tracking-wide transition-all duration-300",
+                "relative z-10 rounded-full px-4 py-1.5 text-xs font-bold tracking-wide transition-all duration-300",
                 currency === "USD"
                   ? "text-background scale-105"
                   : "text-muted-foreground hover:text-foreground",
