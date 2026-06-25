@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product } from "@/data/products";
+import { brand } from "@/config/site";
 
 export type Currency = "USD" | "BDT";
-export const USD_TO_BDT = 119;
+export const USD_TO_BDT = brand.usdToBdt;
 
 export interface CartItem {
   product: Product;

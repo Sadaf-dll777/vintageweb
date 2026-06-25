@@ -2,15 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-
-const REVIEWS = [
-  { name: "Rakib H.", text: "He is lil bit slow but he always one of the best guy.", stars: 5 },
-  { name: "Sadia A.", text: "Service was a bit slow, took a day to receive my codes and with no email confirmation, but in the end I got what I wanted and for great prices.", stars: 5 },
-  { name: "Tanvir M.", text: "good pricing with best delivery system", stars: 5 },
-  { name: "Nayeem R.", text: "Smooth checkout, instant delivery on PUBG UC. Highly recommend!", stars: 5 },
-  { name: "Sumaiya K.", text: "Best place for Netflix subs in BD. Fair price, no hassle.", stars: 5 },
-  { name: "Imran F.", text: "Used bKash to pay, got my Steam key in 10 minutes. Legit shop.", stars: 5 },
-];
+import { reviews as REVIEWS } from "@/config/site";
 
 export function Reviews() {
   const [emblaRef, embla] = useEmblaCarousel(

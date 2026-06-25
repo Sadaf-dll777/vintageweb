@@ -1,5 +1,6 @@
-const PAY = ["bKash", "Nagad", "Rocket", "Upay", "Binance"];
-const PLATFORMS = ["Steam", "PlayStation", "Xbox", "Epic Games", "Nintendo", "EA Play", "Riot Games", "Blizzard"];
+import { partners } from "@/config/site";
+const PAY = partners.payments;
+const PLATFORMS = partners.platforms;
 
 export function Partners() {
   return (
