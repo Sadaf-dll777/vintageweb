@@ -7,13 +7,14 @@ import {
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import bkashLogo from "@/assets/bkash.png.asset.json";
-import nagadLogo from "@/assets/nagad.png.asset.json";
-import rocketLogo from "@/assets/rocket.png.asset.json";
-import upayLogo from "@/assets/upay.png.asset.json";
 import bracBankLogo from "@/assets/brac-bank.png.asset.json";
-import binanceLogo from "@/assets/binance.png.asset.json";
-import bybitLogo from "@/assets/bybit.png.asset.json";
+import {
+  mobileProviders,
+  bankProvider,
+  cryptoProviders,
+  bankDetailsText,
+  type PaymentProvider as Provider,
+} from "@/config/site";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — VintageStore" }] }),
@@ -22,106 +23,6 @@ export const Route = createFileRoute("/checkout")({
 
 type Stage = "method" | "provider" | "pay";
 type MethodId = "mobile" | "bank" | "crypto";
-
-interface Provider {
-  id: string;
-  name: string;
-  number: string;
-  color: string;
-  short?: string;
-  logo?: string;
-  steps: string[];
-}
-
-const mobileProviders: Provider[] = [
-  {
-    id: "bkash", name: "bKash", number: "01737784088", color: "#E2136E",
-    logo: bkashLogo.url,
-    steps: [
-      "Open your bKash App",
-      "Tap on Send Money or from Agent Choose Cash In",
-      "Enter the number: 01737784088",
-      "Enter exact amount",
-      "Tap Next and confirm with your PIN",
-      "Note down your Transaction ID (TxID)",
-      "Enter the Transaction ID below to complete your order",
-    ],
-  },
-  {
-    id: "nagad", name: "Nagad", number: "01737784088", color: "#F47A1F",
-    logo: nagadLogo.url,
-    steps: [
-      "Open Nagad App or dial *167#",
-      "Choose Send Money",
-      "Enter the number: 01737784088",
-      "Enter exact amount",
-      "Confirm with your PIN",
-      "Note down the Transaction ID",
-      "Enter it below",
-    ],
-  },
-  {
-    id: "rocket", name: "Rocket", number: "017377840880", color: "#8C3494",
-    logo: rocketLogo.url,
-    steps: [
-      "Dial *322# or open Rocket App",
-      "Choose Send Money",
-      "Enter the number: 017377840880",
-      "Enter exact amount",
-      "Confirm with your PIN",
-      "Copy the Transaction ID",
-      "Enter it below",
-    ],
-  },
-  {
-    id: "upay", name: "Upay", number: "01737784088", color: "#E73C7E",
-    logo: upayLogo.url,
-    steps: [
-      "Open Upay App",
-      "Choose Send Money",
-      "Enter the number: 01737784088",
-      "Enter exact amount",
-      "Confirm with your PIN",
-      "Copy the Transaction ID",
-      "Enter it below",
-    ],
-  },
-];
-
-const bankProvider: Provider = {
-  id: "bank", name: "Brac Bank", number: "1076776160001", color: "#0054A6",
-  logo: bracBankLogo.url,
-  steps: [
-    "Log in to your online banking",
-    "Choose Transfer / Send Money",
-    "Account Number: 1076776160001",
-    "Account Name: MD FARUQ HOSSAIN",
-    "Bank: Brac Bank — Banpara Sub Branch",
-    "Send exact amount in BDT",
-    "Copy the Transaction Reference and enter it below",
-  ],
-};
-
-const cryptoProviders: Provider[] = [
-  {
-    id: "binance", name: "Binance", number: "851074382", color: "#F0B90B",
-    logo: binanceLogo.url,
-    steps: [
-      "Send via Binance Pay Option.",
-      "Binance ID: 851074382",
-      "Enter the Transaction ID below.",
-    ],
-  },
-  {
-    id: "bybit", name: "Bybit", number: "561054132", color: "#F7A600",
-    logo: bybitLogo.url,
-    steps: [
-      "Send via Bybit Pay",
-      "Bybit Pay UID: 561054132",
-      "Enter the Transaction ID below",
-    ],
-  },
-];
 
 function CheckoutPage() {
   const { items, currency, setCurrency, setQty, remove, clear } = useShop();
