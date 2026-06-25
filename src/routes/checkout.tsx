@@ -754,11 +754,9 @@ function Field({
         required={required}
         aria-invalid={invalid || undefined}
         className={cn(
-          "w-full rounded-lg border bg-background px-4 py-3 text-sm outline-none transition-colors",
-          required && "focus:animate-focus-glow focus:border-primary",
-          !required && "focus:border-primary/60 focus:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]",
+          "w-full rounded-lg border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary",
           invalid
-            ? "border-destructive/70 bg-destructive/5 animate-focus-glow"
+            ? "border-destructive/70 bg-destructive/5 focus:border-destructive"
             : "border-border",
         )}
       />

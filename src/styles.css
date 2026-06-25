@@ -304,24 +304,3 @@
 @utility animate-tile-sheen {
   animation: tile-sheen 1.2s ease-out;
 }
-
-/* Focused required input — animated red glow border */
-@keyframes focus-glow {
-  0%, 100% {
-    border-color: oklch(0.62 0.22 25 / 0.95);
-    box-shadow:
-      0 0 0 1px oklch(0.62 0.22 25 / 0.55),
-      0 0 14px 1px oklch(0.62 0.22 25 / 0.45),
-      0 0 28px 4px oklch(0.62 0.22 25 / 0.18);
-  }
-  50% {
-    border-color: oklch(0.7 0.24 25 / 1);
-    box-shadow:
-      0 0 0 2px oklch(0.62 0.22 25 / 0.7),
-      0 0 22px 4px oklch(0.62 0.22 25 / 0.65),
-      0 0 40px 10px oklch(0.62 0.22 25 / 0.28);
-  }
-}
-@utility animate-focus-glow {
-  animation: focus-glow 1.8s ease-in-out infinite;
-}
