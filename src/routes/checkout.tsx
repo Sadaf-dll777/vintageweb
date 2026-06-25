@@ -141,10 +141,14 @@ function CheckoutPage() {
 
   return (
     <div className="container-wide py-10">
-      <div className="flex items-end justify-between gap-4">
-        <h1 className="font-display text-5xl uppercase tracking-wide">Checkout</h1>
-        <MiniCurrencyToggle currency={currency} onChange={setCurrency} />
+      {/* Top progress stepper */}
+      <div className="relative flex items-center justify-center">
+        <CheckoutStepper current={done ? 3 : 2} />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2">
+          <MiniCurrencyToggle currency={currency} onChange={setCurrency} />
+        </div>
       </div>
+      <h1 className="mt-6 font-display text-5xl uppercase tracking-wide">Checkout</h1>
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1.5fr_1fr]">
         <div className="space-y-6">
@@ -555,6 +559,18 @@ function Step({ n, label, active, done }: { n: React.ReactNode; label: string; a
 
 function Bar() {
   return <span className="h-px w-12 bg-border" />;
+}
+
+function CheckoutStepper({ current }: { current: 1 | 2 | 3 }) {
+  return (
+    <div className="flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-4 py-2 text-xs font-bold uppercase tracking-wider backdrop-blur-xl">
+      <Step n={current > 1 ? <Check className="h-3 w-3" /> : 1} label="Cart" done={current > 1} active={current === 1} />
+      <Bar />
+      <Step n={current > 2 ? <Check className="h-3 w-3" /> : 2} label="Checkout" done={current > 2} active={current === 2} />
+      <Bar />
+      <Step n={3} label="Complete" active={current === 3} />
+    </div>
+  );
 }
 
 function MiniCurrencyToggle({ currency, onChange }: { currency: Currency; onChange: (c: Currency) => void }) {
