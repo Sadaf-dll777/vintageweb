@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
   Copy, Smartphone, Building2, Sparkles, User, MapPin, ChevronDown, Gamepad2,
-  ChevronRight,
+  ChevronRight, Landmark, Upload,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -112,6 +112,8 @@ function CheckoutPage() {
   const [providerId, setProviderId] = useState<string | null>(null);
   const [txn, setTxn] = useState("");
   const [sender, setSender] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [receiptName, setReceiptName] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
   // Customer info
@@ -133,6 +135,9 @@ function CheckoutPage() {
 
   const provider: Provider | null =
     providerId === "bank" ? bankProvider : mobileProviders.find((p) => p.id === providerId) ?? null;
+
+  const bankDetailsText =
+    "Bank: Brac Bank\nAccount Name: MD FARUQ HOSSAIN\nAccount Number: 1076776160001\nBranch: Banpara Sub Branch";
 
   if (done) {
     return (
@@ -413,7 +418,7 @@ function CheckoutPage() {
         </div>
 
         {/* Order summary */}
-        <aside className="h-fit rounded-2xl border border-border bg-card p-6">
+        <aside className="h-fit self-start rounded-2xl border border-border bg-card p-6 lg:sticky lg:top-24">
           <h2 className="font-display text-2xl">Order Summary</h2>
 
           <ul className="mt-5 space-y-3">
