@@ -1,16 +1,58 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, Zap } from "lucide-react";
+import { useRef } from "react";
 import type { Product } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 
 export function ProductCard({ product }: { product: Product }) {
   const currency = useShop((s) => s.currency);
+  const cardRef = useRef<HTMLAnchorElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const px = x / rect.width;
+    const py = y / rect.height;
+    const rx = (py - 0.5) * -10; // rotateX
+    const ry = (px - 0.5) * 12;  // rotateY
+    el.style.setProperty("--rx", `${rx}deg`);
+    el.style.setProperty("--ry", `${ry}deg`);
+    el.style.setProperty("--mx", `${px * 100}%`);
+    el.style.setProperty("--my", `${py * 100}%`);
+  };
+
+  const handleMouseLeave = () => {
+    const el = cardRef.current;
+    if (!el) return;
+    el.style.setProperty("--rx", `0deg`);
+    el.style.setProperty("--ry", `0deg`);
+  };
+
   return (
     <Link
+      ref={cardRef}
       to="/product/$slug"
       params={{ slug: product.id }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-primary hover:shadow-[0_10px_30px_-18px_var(--color-primary)]"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform:
+          "perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))",
+        transformStyle: "preserve-3d",
+      }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color,box-shadow] duration-300 ease-out hover:border-primary hover:shadow-[0_20px_50px_-20px_var(--color-primary)] will-change-transform"
     >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(420px circle at var(--mx,50%) var(--my,50%), oklch(1 0 0 / 0.12), transparent 40%)",
+        }}
+      />
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
           <span className="relative flex h-1.5 w-1.5">
