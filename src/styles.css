@@ -31,8 +31,8 @@
   --color-ring: var(--ring);
   --color-gold: var(--gold);
   --color-success: var(--success);
-  --font-display: "Saira Condensed", "Archivo Black", "Bebas Neue", sans-serif;
-  --font-sans: "Barlow", "Inter", sans-serif;
+  --font-display: "Archivo Black", "Montserrat", sans-serif;
+  --font-sans: "Montserrat", "Inter", sans-serif;
 }
 
 :root {
@@ -119,7 +119,7 @@
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
     font-weight: 900;
-    letter-spacing: 0.005em;
+    letter-spacing: -0.01em;
   }
 }
 
