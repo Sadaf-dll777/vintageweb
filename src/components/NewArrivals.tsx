@@ -63,7 +63,7 @@ export function NewArrivals({ products }: { products: Product[] }) {
                     className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-500 ${
                       isActive
                         ? "scale-105 border-primary/70 shadow-[0_20px_60px_-15px_var(--color-primary)]"
-                        : "scale-95 border-border opacity-70 hover:border-primary hover:opacity-100 hover:shadow-[0_0_30px_-6px_var(--color-primary),0_0_60px_-20px_var(--color-primary)]"
+                        : "scale-95 border-border opacity-70 hover:opacity-100"
                     }`}
                   >
                     <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
@@ -73,9 +73,12 @@ export function NewArrivals({ products }: { products: Product[] }) {
                       <img
                         src={p.image}
                         alt={p.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                         loading="lazy"
                       />
+                      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                        <div className="absolute top-1/2 left-1/2 h-[260%] w-[40%] -translate-x-[260%] -translate-y-1/2 rotate-[70deg] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-all duration-[1600ms] ease-out group-hover:translate-x-[160%] group-hover:opacity-100" />
+                      </div>
                     </div>
                     <div className="flex flex-1 flex-col gap-3 p-4">
                       <h3
