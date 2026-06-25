@@ -435,13 +435,13 @@ function TabBtn({
     <button
       onClick={onClick}
       className={cn(
-        "relative pb-3 font-display text-base uppercase tracking-wider transition",
+        "relative w-full py-5 text-center text-base font-semibold transition",
         active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
       )}
     >
       {children}
       {active && (
-        <span className="absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-primary" />
+        <span className="absolute -bottom-px left-1/2 h-0.5 w-2/3 -translate-x-1/2 rounded-full bg-primary" />
       )}
     </button>
   );
