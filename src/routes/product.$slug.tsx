@@ -310,8 +310,8 @@ function ProductPage() {
       </div>
 
       {/* TABS */}
-      <div className="mt-16 border-b border-border">
-        <div className="flex gap-10">
+      <div className="mt-16 overflow-hidden rounded-3xl border border-border bg-card/30">
+        <div className="grid grid-cols-2 border-b border-border">
           <TabBtn active={tab === "description"} onClick={() => setTab("description")}>
             Description
           </TabBtn>
@@ -319,35 +319,37 @@ function ProductPage() {
             Reviews ({reviews})
           </TabBtn>
         </div>
-      </div>
-      <div className="py-8">
-        {tab === "description" ? (
-          <div className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            {readMore ? description : `${short}${description.length > short.length ? "…" : ""}`}
-            {description.length > short.length && (
-              <button
-                onClick={() => setReadMore((v) => !v)}
-                className="ml-2 font-bold uppercase tracking-wider text-primary hover:underline"
-              >
-                {readMore ? "Read less ←" : "Read more →"}
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-border bg-card p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-gold text-gold" />
-                  ))}
+        <div className="p-8">
+          {tab === "description" ? (
+            <div className="max-w-3xl text-sm leading-relaxed text-muted-foreground animate-fade-in">
+              {readMore ? description : `${short}${description.length > short.length ? "…" : ""}`}
+              {description.length > short.length && (
+                <div className="mt-5">
+                  <button
+                    onClick={() => setReadMore((v) => !v)}
+                    className="text-sm font-semibold text-primary hover:underline"
+                  >
+                    {readMore ? "Read less ←" : "Read more →"}
+                  </button>
                 </div>
-                <span className="text-xs text-muted-foreground">Verified buyer</span>
-              </div>
-              <p className="mt-2 text-sm">Delivered super fast. Working perfectly!</p>
+              )}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="space-y-4 animate-fade-in">
+              <div className="rounded-2xl border border-border bg-card p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-gold text-gold" />
+                    ))}
+                  </div>
+                  <span className="text-xs text-muted-foreground">Verified buyer</span>
+                </div>
+                <p className="mt-2 text-sm">Delivered super fast. Working perfectly!</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* RECOMMENDED */}
@@ -433,13 +435,13 @@ function TabBtn({
     <button
       onClick={onClick}
       className={cn(
-        "relative pb-3 font-display text-base uppercase tracking-wider transition",
+        "relative w-full py-5 text-center text-base font-semibold transition",
         active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
       )}
     >
       {children}
       {active && (
-        <span className="absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-primary" />
+        <span className="absolute -bottom-px left-1/2 h-0.5 w-2/3 -translate-x-1/2 rounded-full bg-primary" />
       )}
     </button>
   );
