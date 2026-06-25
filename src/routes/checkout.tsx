@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
@@ -29,6 +29,13 @@ type MethodId = "mobile" | "bank" | "crypto";
 function CheckoutPage() {
   const { items, currency, setCurrency, setQty, remove, clear } = useShop();
   const user = useAuth((s) => s.user);
+  const authReady = useAuth((s) => s.ready);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (authReady && !user) {
+      navigate({ to: "/auth", search: { redirect: "/checkout" } });
+    }
+  }, [authReady, user, navigate]);
   const subtotalUSD = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   const subtotalBDT = Math.round(subtotalUSD * USD_TO_BDT);
   const [tip, setTip] = useState(0);
