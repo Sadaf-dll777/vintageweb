@@ -364,7 +364,11 @@ function CheckoutPage() {
                 </button>
 
                 {/* Pay card */}
-                <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-background p-6">
+                <div className="animate-detail-card relative overflow-hidden rounded-2xl border border-primary/40 bg-background p-6">
+                  <span
+                    aria-hidden
+                    className="animate-detail-sweep pointer-events-none absolute inset-y-0 -inset-x-1 bg-gradient-to-r from-transparent via-primary/15 to-transparent"
+                  />
                   <div
                     className="absolute inset-0 opacity-20 pointer-events-none"
                     style={{ background: `radial-gradient(circle at top right, ${provider.color}, transparent 60%)` }}
@@ -410,7 +414,7 @@ function CheckoutPage() {
                 </div>
 
                 {/* Steps */}
-                <div className="rounded-2xl border border-border bg-background p-6">
+                <div className="animate-detail-card rounded-2xl border border-border bg-background p-6" style={{ animationDelay: "120ms" }}>
                   {method === "bank" && (
                     <div className="-mt-1 mb-5">
                       <div className="mb-3 flex items-center justify-between">
@@ -420,10 +424,20 @@ function CheckoutPage() {
                         <CopyButton value={bankDetailsText} label="Copy all" />
                       </div>
                       <div className="space-y-1.5 text-sm">
-                        <div><span className="text-muted-foreground">Bank:</span> Brac Bank</div>
-                        <div><span className="text-muted-foreground">Account Name:</span> MD FARUQ HOSSAIN</div>
-                        <div><span className="text-muted-foreground">Account Number:</span> 1076776160001</div>
-                        <div><span className="text-muted-foreground">Branch:</span> Banpara Sub Branch</div>
+                        {[
+                          ["Bank", "Brac Bank"],
+                          ["Account Name", "MD FARUQ HOSSAIN"],
+                          ["Account Number", "1076776160001"],
+                          ["Branch", "Banpara Sub Branch"],
+                        ].map(([k, v], i) => (
+                          <div
+                            key={k}
+                            className="animate-detail-row rounded-md px-1 transition-colors hover:bg-primary/5"
+                            style={{ animationDelay: `${200 + i * 80}ms` }}
+                          >
+                            <span className="text-muted-foreground">{k}:</span> {v}
+                          </div>
+                        ))}
                       </div>
                       <div className="mt-5 h-px bg-border/60" />
                     </div>
@@ -440,8 +454,12 @@ function CheckoutPage() {
                         ]
                       : provider.steps
                     ).map((s, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
+                      <li
+                        key={i}
+                        className="animate-detail-row flex items-start gap-3"
+                        style={{ animationDelay: `${(method === "bank" ? 540 : 220) + i * 90}ms` }}
+                      >
+                        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]">{i + 1}</span>
                         <span className="text-sm text-foreground/90">{s}</span>
                       </li>
                     ))}
@@ -449,7 +467,7 @@ function CheckoutPage() {
                 </div>
 
                 {/* Confirm */}
-                <div className="rounded-2xl border border-border bg-background/60 p-6">
+                <div className="animate-detail-card rounded-2xl border border-border bg-background/60 p-6" style={{ animationDelay: "240ms" }}>
                   <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
                     <Shield className="h-3.5 w-3.5" /> Confirm Your Payment
                   </div>
