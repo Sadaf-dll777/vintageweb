@@ -248,6 +248,7 @@ export function Header() {
     </header>
 
     {/* Search row — not sticky, scrolls away with the page */}
+    {path === "/" && (
     <div ref={wrapRef} className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="container-wide py-3">
           <div className="mx-auto max-w-2xl">
@@ -334,6 +335,7 @@ export function Header() {
           </div>
         </div>
       </div>
+    )}
     </>
   );
 }
