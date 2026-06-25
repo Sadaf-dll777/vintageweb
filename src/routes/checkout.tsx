@@ -564,11 +564,28 @@ function CheckoutPage() {
 
           <button
             onClick={() => {
-              if (stage !== "pay" || !provider) return alert("Choose a payment provider");
+              const next: Record<string, boolean> = {};
+              if (!fullName.trim()) next.fullName = true;
+              if (!phone.trim()) next.phone = true;
+              if (!epicEmail.trim()) next.epicEmail = true;
+              if (!epicPass.trim()) next.epicPass = true;
+              if (stage !== "pay" || !provider) {
+                setErrors(next);
+                return alert("Choose a payment provider");
+              }
               if (method === "bank") {
-                if (!bankName || !txn) return alert("Enter your bank name and reference");
+                if (!bankName.trim()) next.bankName = true;
+                if (!txn.trim()) next.txn = true;
               } else {
-                if (!txn || !sender) return alert("Enter Transaction ID and Sender details");
+                if (!txn.trim()) next.txn = true;
+                if (!sender.trim()) next.sender = true;
+              }
+              setErrors(next);
+              if (Object.keys(next).length > 0) {
+                const first = document.querySelector<HTMLElement>('[aria-invalid="true"]');
+                first?.scrollIntoView({ behavior: "smooth", block: "center" });
+                first?.focus({ preventScroll: true });
+                return;
               }
               clear();
               setDone(true);
