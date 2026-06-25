@@ -692,11 +692,44 @@ function MethodTile({
   );
 }
 
-function Field({ label, ...rest }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+function Field({
+  label,
+  invalid,
+  required,
+  ...rest
+}: { label: string; invalid?: boolean } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
-      <input {...rest} className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
+      <span className="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+        {required && (
+          <span
+            className={cn(
+              "text-primary transition-transform",
+              invalid && "animate-step-pulse",
+            )}
+            aria-hidden
+          >
+            *
+          </span>
+        )}
+      </span>
+      <input
+        {...rest}
+        required={required}
+        aria-invalid={invalid || undefined}
+        className={cn(
+          "w-full rounded-lg border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary",
+          invalid
+            ? "border-destructive/70 bg-destructive/5 focus:border-destructive"
+            : "border-border",
+        )}
+      />
+      {invalid && (
+        <span className="mt-1 block text-[11px] font-semibold text-destructive">
+          This field is required
+        </span>
+      )}
     </label>
   );
 }
