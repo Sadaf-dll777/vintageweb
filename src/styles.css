@@ -185,3 +185,18 @@
 @utility chip-pop {
   animation: chip-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes dash-fade-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes dash-row-in {
+  0% { opacity: 0; transform: translateY(10px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@utility dash-fade-in {
+  animation: dash-fade-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility dash-row-in {
+  animation: dash-row-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
