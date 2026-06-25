@@ -84,7 +84,7 @@ export function ThemeToggle() {
       )}
     >
       <span key={theme} className="theme-icon-in inline-flex">
-        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
       </span>
     </button>
   );
