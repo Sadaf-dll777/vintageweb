@@ -329,7 +329,8 @@ const mockApi = {
     const o: ApiOrder = {
       ...data,
       id: uid(),
-      status: "pending",
+      status: "review",
+      notes_thread: data.notes_thread ?? [],
       created_at: new Date().toISOString(),
     };
     db.orders.unshift(o);
@@ -342,6 +343,29 @@ const mockApi = {
     const idx = db.orders.findIndex((o) => o.id === id);
     if (idx === -1) throw new Error("Not found");
     db.orders[idx].status = status;
+    saveDB(db);
+    return db.orders[idx];
+  },
+  async updateOrderDelivery(
+    id: string,
+    patch: Partial<Pick<ApiOrder, "delivered_key" | "key_instructions" | "key_redeem_label">>,
+  ) {
+    await delay();
+    const db = loadDB();
+    const idx = db.orders.findIndex((o) => o.id === id);
+    if (idx === -1) throw new Error("Not found");
+    db.orders[idx] = { ...db.orders[idx], ...patch };
+    saveDB(db);
+    return db.orders[idx];
+  },
+  async appendOrderNote(id: string, note: { from: "support" | "customer"; text: string }) {
+    await delay();
+    const db = loadDB();
+    const idx = db.orders.findIndex((o) => o.id === id);
+    if (idx === -1) throw new Error("Not found");
+    const thread = db.orders[idx].notes_thread ?? [];
+    thread.push({ ...note, at: new Date().toISOString() });
+    db.orders[idx].notes_thread = thread;
     saveDB(db);
     return db.orders[idx];
   },
@@ -416,6 +440,19 @@ const realApi = {
     }),
   updateOrderStatus: (id: string, status: ApiOrder["status"]) =>
     request<ApiOrder>(`/api/orders/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
+  updateOrderDelivery: (
+    id: string,
+    patch: Partial<Pick<ApiOrder, "delivered_key" | "key_instructions" | "key_redeem_label">>,
+  ) =>
+    request<ApiOrder>(`/api/orders/${id}/delivery`, {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    }),
+  appendOrderNote: (id: string, note: { from: "support" | "customer"; text: string }) =>
+    request<ApiOrder>(`/api/orders/${id}/notes`, {
+      method: "POST",
+      body: JSON.stringify(note),
+    }),
   deleteOrder: (id: string) =>
     request<{ ok: true }>(`/api/orders/${id}`, { method: "DELETE" }),
 
