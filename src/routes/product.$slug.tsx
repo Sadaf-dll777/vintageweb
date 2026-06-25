@@ -1,5 +1,5 @@
 import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import {
   Star,
   Flame,
@@ -76,14 +76,41 @@ function ProductPage() {
     () => products.filter((p) => p.id !== product.id).slice(0, 10),
     [product.id],
   );
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [speed, setSpeed] = useState<"slow" | "normal" | "fast">("normal");
-  const scrollBy = (dir: 1 | -1) => {
-    const el = carouselRef.current;
+  const [paused, setPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const offsetRef = useRef(0);
+  const halfRef = useRef(0);
+  const speedPxPerSec = speed === "slow" ? 30 : speed === "normal" ? 70 : 140;
+
+  useEffect(() => {
+    const el = trackRef.current;
     if (!el) return;
-    const step = el.clientWidth * 0.6;
-    el.scrollBy({ left: dir * step, behavior: speed === "fast" ? "auto" : "smooth" });
-  };
+    let raf = 0;
+    let last = performance.now();
+    const measure = () => {
+      halfRef.current = el.scrollWidth / 2;
+    };
+    measure();
+    const onResize = () => measure();
+    window.addEventListener("resize", onResize);
+    const step = (now: number) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      if (!paused && halfRef.current > 0) {
+        offsetRef.current = (offsetRef.current + speedPxPerSec * dt) % halfRef.current;
+        el.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+        setProgress((offsetRef.current / halfRef.current) * 100);
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [paused, speedPxPerSec]);
 
   const description =
     product.description ??
@@ -345,16 +372,16 @@ function ProductPage() {
               ))}
             </div>
             <button
-              onClick={() => scrollBy(-1)}
+              onClick={() => setPaused((v) => !v)}
               className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:border-primary"
-              aria-label="Previous"
+              aria-label={paused ? "Play" : "Pause"}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
-              onClick={() => scrollBy(1)}
+              onClick={() => setPaused((v) => !v)}
               className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:border-primary"
-              aria-label="Next"
+              aria-label={paused ? "Play" : "Pause"}
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -362,14 +389,27 @@ function ProductPage() {
         </div>
 
         <div
-          ref={carouselRef}
-          className="mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-6 overflow-hidden"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
         >
-          {recs.map((p) => (
-            <div key={p.id} className="w-[260px] shrink-0 snap-start">
-              <ProductCard product={p} />
-            </div>
-          ))}
+          <div
+            ref={trackRef}
+            className="flex gap-5 will-change-transform"
+            style={{ width: "max-content" }}
+          >
+            {[...recs, ...recs].map((p, i) => (
+              <div key={`${p.id}-${i}`} className="w-[260px] shrink-0">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mt-4 h-1 w-full overflow-hidden rounded-full bg-card">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-gold via-primary to-gold transition-[width] duration-150 ease-linear"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </section>
     </div>
