@@ -38,7 +38,7 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
-        <h3 className="font-display text-lg uppercase leading-tight tracking-wide transition-colors duration-300 group-hover:text-primary">
+        <h3 className="font-display text-lg leading-tight tracking-wide transition-colors duration-300 group-hover:text-primary">
           {product.name}
         </h3>
         <div className="mt-auto space-y-2">
