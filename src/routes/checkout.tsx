@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
-  Copy, Smartphone, Building2, Sparkles,
+  Copy, Smartphone, Building2, Sparkles, User, MapPin, ChevronDown, Gamepad2,
 } from "lucide-react";
-import { useShop, USD_TO_BDT } from "@/lib/store";
+import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/checkout")({
@@ -89,7 +89,7 @@ const bankProvider: Provider = {
 };
 
 function CheckoutPage() {
-  const { items, currency, setQty, remove, clear } = useShop();
+  const { items, currency, setCurrency, setQty, remove, clear } = useShop();
   const subtotalUSD = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   const subtotalBDT = Math.round(subtotalUSD * USD_TO_BDT);
   const [tip, setTip] = useState(0);
@@ -101,6 +101,23 @@ function CheckoutPage() {
   const [txn, setTxn] = useState("");
   const [sender, setSender] = useState("");
   const [done, setDone] = useState(false);
+
+  // Customer info
+  const [fullName, setFullName] = useState("");
+  const [addressesOpen, setAddressesOpen] = useState(false);
+  const addrRef = useRef<HTMLDivElement>(null);
+  const savedAddresses = [
+    { name: "MD FARUQ HOSSAIN", phone: "" },
+    { name: "Saif Al Sadaf", phone: "+880 1737-784088" },
+  ];
+  useEffect(() => {
+    if (!addressesOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (addrRef.current && !addrRef.current.contains(e.target as Node)) setAddressesOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [addressesOpen]);
 
   const provider: Provider | null =
     providerId === "bank" ? bankProvider : mobileProviders.find((p) => p.id === providerId) ?? null;
@@ -124,34 +141,77 @@ function CheckoutPage() {
 
   return (
     <div className="container-wide py-10">
-      <div className="mx-auto mb-10 flex max-w-xl items-center justify-center gap-2 text-xs font-bold uppercase">
-        <Step n={<Check className="h-3 w-3" />} label="Cart" done />
-        <Bar />
-        <Step n="2" label="Checkout" active />
-        <Bar />
-        <Step n="3" label="Complete" />
+      <div className="flex items-end justify-between gap-4">
+        <h1 className="font-display text-5xl uppercase tracking-wide">Checkout</h1>
+        <MiniCurrencyToggle currency={currency} onChange={setCurrency} />
       </div>
 
-      <h1 className="font-display text-5xl uppercase">Checkout</h1>
-
-      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1.5fr_1fr]">
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1.5fr_1fr]">
         <div className="space-y-6">
           {/* Customer Information */}
-          <section className="rounded-2xl border border-border bg-card p-6">
+          <section className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl">
             <div className="mb-5 flex items-center gap-3">
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">1</span>
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground glow-red">1</span>
               <h2 className="font-display text-2xl">Customer Information</h2>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="Full Name *" placeholder="John Doe" />
+              {/* Full name with saved-address dropdown */}
+              <div ref={addrRef} className="relative">
+                <label className="block">
+                  <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Full Name *</span>
+                  <input
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    onFocus={() => setAddressesOpen(true)}
+                    placeholder="Your full name"
+                    className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm outline-none transition-all focus:border-primary/60 focus:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]"
+                  />
+                </label>
+                {addressesOpen && (
+                  <div className="ck-pop absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-border/70 bg-card/95 p-1 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+                    {savedAddresses.map((a) => (
+                      <button
+                        key={a.name}
+                        type="button"
+                        onClick={() => { setFullName(a.name); setAddressesOpen(false); }}
+                        className="flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left hover:bg-secondary/60"
+                      >
+                        <User className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-semibold">{a.name}</div>
+                          {a.phone && <div className="text-xs text-muted-foreground">{a.phone}</div>}
+                        </div>
+                      </button>
+                    ))}
+                    <div className="my-1 h-px bg-border/60" />
+                    <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-secondary/60 hover:text-foreground">
+                      <MapPin className="h-4 w-4" /> Manage addresses…
+                    </button>
+                  </div>
+                )}
+              </div>
               <Field label="Email" placeholder="you@email.com" type="email" />
               <Field label="Phone *" placeholder="01XXXXXXXXX" />
               <Field label="Notes (optional)" placeholder="Add any extra instructions" />
             </div>
           </section>
 
+          {/* Game / Account Details */}
+          <section className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl" style={{ animationDelay: "80ms" }}>
+            <div className="mb-5 flex items-center gap-3">
+              <span className="grid h-7 w-7 place-items-center rounded-xl bg-primary/15 text-primary">
+                <Gamepad2 className="h-4 w-4" />
+              </span>
+              <h2 className="font-display text-2xl">Game / Account Details</h2>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label="Epic Games Email ID *" placeholder="enter email id" />
+              <Field label="Epic Games Password *" placeholder="enter password" type="password" />
+            </div>
+          </section>
+
           {/* Payment Stepper */}
-          <section className="rounded-2xl border border-border bg-card p-6">
+          <section className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl" style={{ animationDelay: "160ms" }}>
             <StageHeader stage={stage} />
 
             {/* STAGE: choose method */}
@@ -302,9 +362,9 @@ function CheckoutPage() {
                 </div>
 
                 {/* Confirm */}
-                <div className="rounded-2xl border border-border bg-background p-6">
+                <div className="rounded-2xl border border-border bg-background/60 p-6">
                   <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
-                    <Shield className="h-3.5 w-3.5" /> Confirm Your Provider
+                    <Shield className="h-3.5 w-3.5" /> Confirm Your Payment
                   </div>
                   <div className="space-y-4">
                     <Field
@@ -495,4 +555,22 @@ function Step({ n, label, active, done }: { n: React.ReactNode; label: string; a
 
 function Bar() {
   return <span className="h-px w-12 bg-border" />;
+}
+
+function MiniCurrencyToggle({ currency, onChange }: { currency: Currency; onChange: (c: Currency) => void }) {
+  return (
+    <div className="relative flex items-center rounded-full border border-border bg-card p-0.5 text-[11px] font-bold">
+      <span
+        aria-hidden
+        className={cn(
+          "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          currency === "BDT"
+            ? "left-0.5 bg-primary shadow-[0_6px_20px_-6px_oklch(0.62_0.22_25_/_0.7)]"
+            : "left-[calc(50%+0px)] bg-foreground shadow-[0_4px_18px_-6px_rgba(255,255,255,0.35)]",
+        )}
+      />
+      <button onClick={() => onChange("BDT")} className={cn("relative z-10 rounded-full px-3 py-1 transition-colors", currency === "BDT" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>BDT</button>
+      <button onClick={() => onChange("USD")} className={cn("relative z-10 rounded-full px-3 py-1 transition-colors", currency === "USD" ? "text-background" : "text-muted-foreground hover:text-foreground")}>USD</button>
+    </div>
+  );
 }
