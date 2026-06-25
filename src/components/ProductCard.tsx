@@ -110,7 +110,7 @@ export function ProductCard({ product }: { product: Product }) {
               e.stopPropagation();
               useShop.getState().add(product);
             }}
-            className="group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_6px_20px_-8px_var(--color-primary)] transition-all duration-300 ease-out hover:scale-[1.03] hover:brightness-110 hover:shadow-[0_10px_28px_-8px_var(--color-primary)] active:scale-[0.98]"
+            className="group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 ease-out hover:scale-[1.03] hover:brightness-110 active:scale-[0.98]"
           >
             <Zap className="h-3 w-3 fill-current transition-transform duration-300 group-hover/btn:-rotate-12" strokeWidth={0} /> Buy Now
           </button>
