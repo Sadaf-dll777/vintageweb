@@ -36,7 +36,7 @@ function Index() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border/60">
+      <section className="relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-30 transition-all duration-1000"
           style={{
