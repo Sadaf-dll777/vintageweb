@@ -12,6 +12,8 @@ import nagadLogo from "@/assets/nagad.png.asset.json";
 import rocketLogo from "@/assets/rocket.png.asset.json";
 import upayLogo from "@/assets/upay.png.asset.json";
 import bracBankLogo from "@/assets/brac-bank.png.asset.json";
+import binanceLogo from "@/assets/binance.png.asset.json";
+import bybitLogo from "@/assets/bybit.png.asset.json";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — VintageStore" }] }),
