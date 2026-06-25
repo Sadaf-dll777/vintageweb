@@ -128,9 +128,9 @@ function Index() {
             { Icon: ShieldCheck, t: "Secure Payments", d: "bKash, Nagad & more" },
             { Icon: Tag, t: "Best Prices in Worldwide", d: "Guaranteed Full Support" },
           ].map((f) => (
-            <div key={f.t} className="flex items-center gap-3">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-primary/40 bg-primary/10 text-primary">
-                <f.Icon className="h-3.5 w-3.5" fill={f.Icon === Zap ? "currentColor" : "none"} strokeWidth={f.Icon === Zap ? 0 : 2} />
+            <div key={f.t} className="group flex items-center gap-3">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-primary/40 bg-primary/10 text-primary transition-transform duration-300 ease-out group-hover:scale-125 group-hover:shadow-[0_0_20px_-2px_var(--color-primary)]">
+                <f.Icon className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:rotate-6" fill={f.Icon === Zap ? "currentColor" : "none"} strokeWidth={f.Icon === Zap ? 0 : 2} />
               </span>
               <div className="min-w-0">
                 <div className="text-sm font-bold leading-tight">{f.t}</div>
