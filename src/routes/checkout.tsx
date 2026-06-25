@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
   Copy, Smartphone, Building2, Sparkles, User, MapPin, ChevronDown, Gamepad2,
-  ChevronRight, Landmark, Upload,
+  ChevronRight, Landmark, Upload, Bitcoin,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 type Stage = "method" | "provider" | "pay";
-type MethodId = "mobile" | "bank";
+type MethodId = "mobile" | "bank" | "crypto";
 
 interface Provider {
   id: string;
@@ -100,12 +100,38 @@ const bankProvider: Provider = {
   ],
 };
 
+const cryptoProviders: Provider[] = [
+  {
+    id: "binance", name: "Binance", number: "851074382", color: "#F0B90B",
+    steps: [
+      "Send via Binance Pay Option.",
+      "Binance ID: 851074382",
+      "Enter the Transaction ID below.",
+    ],
+  },
+  {
+    id: "bybit", name: "Bybit", number: "561054132", color: "#F7A600",
+    steps: [
+      "Send via Bybit Pay",
+      "Bybit Pay UID: 561054132",
+      "Enter the Transaction ID below",
+    ],
+  },
+];
+
 function CheckoutPage() {
   const { items, currency, setCurrency, setQty, remove, clear } = useShop();
   const subtotalUSD = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   const subtotalBDT = Math.round(subtotalUSD * USD_TO_BDT);
   const [tip, setTip] = useState(0);
   const totalBDT = subtotalBDT + tip;
+  const tipUSD = currency === "USD" ? tip : 0;
+  const totalUSD = subtotalUSD + tipUSD;
+  const fmt = (usd: number) =>
+    currency === "USD" ? `$${usd.toFixed(2)} USD` : `${Math.round(usd * USD_TO_BDT)} BDT`;
+  const totalAmount = currency === "USD" ? totalUSD : totalBDT;
+  const totalDisplay = currency === "USD" ? `$${totalUSD.toFixed(2)} USD` : `${totalBDT} BDT`;
+  const tipOptions = currency === "USD" ? [0, 1, 5, 10, 50] : [0, 10, 20, 50, 100];
 
   const [stage, setStage] = useState<Stage>("method");
   const [method, setMethod] = useState<MethodId | null>(null);
@@ -138,7 +164,19 @@ function CheckoutPage() {
   }, [addressesOpen]);
 
   const provider: Provider | null =
-    providerId === "bank" ? bankProvider : mobileProviders.find((p) => p.id === providerId) ?? null;
+    providerId === "bank"
+      ? bankProvider
+      : cryptoProviders.find((p) => p.id === providerId)
+        ?? mobileProviders.find((p) => p.id === providerId)
+        ?? null;
+
+  // Reset payment flow + tip when currency changes (USD = crypto only; BDT = mobile/bank only)
+  useEffect(() => {
+    setStage("method");
+    setMethod(null);
+    setProviderId(null);
+    setTip(0);
+  }, [currency]);
 
   const bankDetailsText =
     "Bank: Brac Bank\nAccount Name: MD FARUQ HOSSAIN\nAccount Number: 1076776160001\nBranch: Banpara Sub Branch";
@@ -278,49 +316,65 @@ function CheckoutPage() {
                   Choose how you'd like to pay
                 </p>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <MethodTile
-                    icon={<Smartphone className="h-6 w-6" />}
-                    title="Mobile Banking"
-                    subtitle="bKash, Nagad, Rocket, Upay"
-                    count={`${mobileProviders.length} options`}
-                    logos={mobileProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
-                    selected={method === "mobile"}
-                    tint="from-primary/25 via-primary/10 to-transparent"
-                    ringColor="oklch(0.62 0.22 25 / 0.45)"
-                    onClick={() => { setMethod("mobile"); setStage("provider"); }}
-                  />
-                  <MethodTile
-                    icon={<Building2 className="h-6 w-6" />}
-                    title="Bank Transfer"
-                    subtitle="Brac Bank — Banpara Sub Branch"
-                    count="1 option"
-                    logos={[{ src: bracBankLogo.url, alt: "Brac Bank" }]}
-                    selected={method === "bank"}
-                    tint="from-sky-500/25 via-sky-500/10 to-transparent"
-                    ringColor="rgba(59,130,246,0.45)"
-                    onClick={() => {
-                      setMethod("bank");
-                      setProviderId("bank");
-                      setStage("pay");
-                    }}
-                  />
+                  {currency === "USD" ? (
+                    <MethodTile
+                      icon={<Bitcoin className="h-6 w-6" />}
+                      title="Crypto / Exchange"
+                      subtitle="Binance, Bybit, USDT…"
+                      count={`${cryptoProviders.length} options`}
+                      swatches={cryptoProviders.map((p) => p.color)}
+                      selected={method === "crypto"}
+                      tint="from-amber-500/25 via-amber-500/10 to-transparent"
+                      ringColor="rgba(240,185,11,0.45)"
+                      onClick={() => { setMethod("crypto"); setStage("provider"); }}
+                    />
+                  ) : (
+                    <>
+                      <MethodTile
+                        icon={<Smartphone className="h-6 w-6" />}
+                        title="Mobile Banking"
+                        subtitle="bKash, Nagad, Rocket, Upay"
+                        count={`${mobileProviders.length} options`}
+                        logos={mobileProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
+                        selected={method === "mobile"}
+                        tint="from-primary/25 via-primary/10 to-transparent"
+                        ringColor="oklch(0.62 0.22 25 / 0.45)"
+                        onClick={() => { setMethod("mobile"); setStage("provider"); }}
+                      />
+                      <MethodTile
+                        icon={<Building2 className="h-6 w-6" />}
+                        title="Bank Transfer"
+                        subtitle="Brac Bank — Banpara Sub Branch"
+                        count="1 option"
+                        logos={[{ src: bracBankLogo.url, alt: "Brac Bank" }]}
+                        selected={method === "bank"}
+                        tint="from-sky-500/25 via-sky-500/10 to-transparent"
+                        ringColor="rgba(59,130,246,0.45)"
+                        onClick={() => {
+                          setMethod("bank");
+                          setProviderId("bank");
+                          setStage("pay");
+                        }}
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             )}
 
             {/* STAGE: choose provider */}
-            {stage === "provider" && method === "mobile" && (
+            {stage === "provider" && (method === "mobile" || method === "crypto") && (
               <div className="mt-6 animate-fade-in">
                 <div className="mb-4 flex items-center justify-between">
                   <button onClick={() => setStage("method")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-4 w-4" /> Back
                   </button>
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Mobile Banking
+                    {method === "crypto" ? "Crypto / Exchange" : "Mobile Banking"}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {mobileProviders.map((p) => {
+                  {(method === "crypto" ? cryptoProviders : mobileProviders).map((p) => {
                     const sel = providerId === p.id;
                     return (
                       <button
@@ -342,7 +396,9 @@ function CheckoutPage() {
                           {p.logo ? (
                             <img src={p.logo} alt={p.name} className="h-full w-full object-contain" />
                           ) : (
-                            <span className="font-display text-lg" style={{ color: p.color }}>{p.name[0]}</span>
+                            <span className="grid h-full w-full place-items-center rounded-md font-display text-lg" style={{ color: p.color }}>
+                              {p.id === "binance" ? "◆" : p.id === "bybit" ? "B" : p.name[0]}
+                            </span>
                           )}
                         </span>
                         <span className="font-display tracking-wider">{p.name.toUpperCase()}</span>
@@ -356,12 +412,17 @@ function CheckoutPage() {
             {/* STAGE: pay */}
             {stage === "pay" && provider && (
               <div className="mt-6 space-y-6 animate-fade-in">
-                <button
-                  onClick={() => setStage(method === "mobile" ? "provider" : "method")}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="h-4 w-4" /> Change provider
-                </button>
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => setStage(method === "mobile" || method === "crypto" ? "provider" : "method")}
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    <ArrowLeft className="h-4 w-4" /> Change provider
+                  </button>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Pay {totalDisplay}
+                  </span>
+                </div>
 
                 {/* Pay card */}
                 <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-background p-6">
@@ -376,7 +437,9 @@ function CheckoutPage() {
                       {provider.logo ? (
                         <img src={provider.logo} alt={provider.name} className="h-full w-full object-contain" />
                       ) : (
-                        <span className="text-2xl font-display" style={{ color: provider.color }}>{provider.name[0]}</span>
+                        <span className="text-2xl font-display" style={{ color: provider.color }}>
+                          {provider.id === "binance" ? "◆" : provider.id === "bybit" ? "B" : provider.name[0]}
+                        </span>
                       )}
                     </span>
                     <div className="min-w-0 flex-1 space-y-3">
@@ -394,18 +457,20 @@ function CheckoutPage() {
                       <div>
                         <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Exact Amount</div>
                         <div className="flex items-center gap-2">
-                          <span className="font-display text-3xl">{totalBDT} BDT</span>
-                          <CopyButton value={String(totalBDT)} />
+                          <span className="font-display text-3xl">{totalDisplay}</span>
+                          <CopyButton value={String(totalAmount)} />
                         </div>
                       </div>
                     </div>
-                    <div className="hidden h-28 w-28 shrink-0 rounded-xl bg-white p-2 sm:block">
-                      <img
-                        alt="QR"
-                        className="h-full w-full"
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(provider.number)}`}
-                      />
-                    </div>
+                    {method !== "crypto" && (
+                      <div className="hidden h-28 w-28 shrink-0 rounded-xl bg-white p-2 sm:block">
+                        <img
+                          alt="QR"
+                          className="h-full w-full"
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(provider.number)}`}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -463,7 +528,33 @@ function CheckoutPage() {
                   <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
                     <Shield className="h-3.5 w-3.5" /> Confirm Your Payment
                   </div>
-                  {method === "bank" ? (
+                  {method === "crypto" ? (
+                    <div className="space-y-4">
+                      <Field
+                        label={provider.id === "binance" ? "Order ID" : "Transaction ID"}
+                        required
+                        invalid={errors.txn}
+                        placeholder={provider.id === "binance" ? "Enter Binance Order ID" : "Enter Bybit Transaction ID"}
+                        value={txn}
+                        onChange={(e) => setTxn(e.target.value)}
+                      />
+                      <div>
+                        <span className="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                          Proof Of Payment <span className="text-primary" aria-hidden>*</span>
+                        </span>
+                        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground">
+                          <Upload className="h-4 w-4" />
+                          <span className="truncate">{receiptName ?? "Provide Screenshot Of Payment"}</span>
+                          <input
+                            type="file"
+                            accept="image/*,application/pdf"
+                            className="hidden"
+                            onChange={(e) => setReceiptName(e.target.files?.[0]?.name ?? null)}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  ) : method === "bank" ? (
                     <div className="space-y-4">
                       <Field
                         label="Your Bank Name"
@@ -533,7 +624,7 @@ function CheckoutPage() {
                 <button onClick={() => remove(i.product.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
                 <span className="w-6 text-center text-sm font-bold">{i.qty}</span>
                 <button onClick={() => setQty(i.product.id, i.qty + 1)} className="text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
-                <span className="shrink-0 text-sm font-bold">{Math.round(i.product.price * i.qty * USD_TO_BDT)} BDT</span>
+                <span className="shrink-0 text-sm font-bold">{fmt(i.product.price * i.qty)}</span>
               </li>
             ))}
           </ul>
@@ -548,7 +639,7 @@ function CheckoutPage() {
               <Heart className="h-4 w-4" /> Support Us (Optional Tip)
             </div>
             <div className="flex flex-wrap gap-2">
-              {[0, 10, 20, 50, 100].map((t) => (
+              {tipOptions.map((t) => (
                 <button
                   key={t}
                   onClick={() => setTip(t)}
@@ -557,7 +648,7 @@ function CheckoutPage() {
                     tip === t ? "border-primary text-primary" : "border-border text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {t === 0 ? "No tip" : `${t} BDT`}
+                  {t === 0 ? "No tip" : currency === "USD" ? `$${t} USD` : `${t} BDT`}
                 </button>
               ))}
             </div>
@@ -565,11 +656,11 @@ function CheckoutPage() {
 
           <div className="mt-5 flex justify-between border-t border-border pt-4 text-sm">
             <span className="text-muted-foreground">Subtotal</span>
-            <span>{subtotalBDT} BDT</span>
+            <span>{fmt(subtotalUSD)}</span>
           </div>
           <div className="mt-3 flex items-center justify-between border-t border-border pt-4">
             <span>Total</span>
-            <span className="font-display text-3xl text-primary">{totalBDT} BDT</span>
+            <span className="font-display text-3xl text-primary">{totalDisplay}</span>
           </div>
 
           <button
@@ -585,6 +676,8 @@ function CheckoutPage() {
               }
               if (method === "bank") {
                 if (!bankName.trim()) next.bankName = true;
+                if (!txn.trim()) next.txn = true;
+              } else if (method === "crypto") {
                 if (!txn.trim()) next.txn = true;
               } else {
                 if (!txn.trim()) next.txn = true;
