@@ -53,7 +53,6 @@ export function ProductCard({ product }: { product: Product }) {
             "radial-gradient(600px circle at var(--mx,50%) var(--my,50%), oklch(1 0 0 / 0.06), transparent 45%)",
         }}
       />
-      />
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
           <span className="relative flex h-1.5 w-1.5">
