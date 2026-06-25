@@ -352,18 +352,14 @@ function CheckoutPage() {
                         <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Send To</div>
                         <div className="flex items-center gap-2">
                           <span className="font-display text-2xl text-primary tracking-wider break-all">{provider.number}</span>
-                          <button onClick={() => navigator.clipboard.writeText(provider.number)} className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:border-primary">
-                            <Copy className="h-3 w-3" />
-                          </button>
+                          <CopyButton value={provider.number} tone="primary" />
                         </div>
                       </div>
                       <div>
                         <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Exact Amount</div>
                         <div className="flex items-center gap-2">
                           <span className="font-display text-3xl">{totalBDT} BDT</span>
-                          <button onClick={() => navigator.clipboard.writeText(String(totalBDT))} className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:border-primary">
-                            <Copy className="h-3 w-3" />
-                          </button>
+                          <CopyButton value={String(totalBDT)} />
                         </div>
                       </div>
                     </div>
@@ -385,12 +381,7 @@ function CheckoutPage() {
                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                           <Landmark className="h-3.5 w-3.5" /> Bank Details
                         </div>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(bankDetailsText)}
-                          className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-                        >
-                          <Copy className="h-3 w-3" /> Copy all
-                        </button>
+                        <CopyButton value={bankDetailsText} label="Copy all" />
                       </div>
                       <div className="space-y-1.5 text-sm">
                         <div><span className="text-muted-foreground">Bank:</span> Brac Bank</div>
