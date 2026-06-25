@@ -114,6 +114,10 @@ function CheckoutPage() {
   const [sender, setSender] = useState("");
   const [bankName, setBankName] = useState("");
   const [receiptName, setReceiptName] = useState<string | null>(null);
+  const [phone, setPhone] = useState("");
+  const [epicEmail, setEpicEmail] = useState("");
+  const [epicPass, setEpicPass] = useState("");
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
 
   // Customer info
@@ -179,14 +183,24 @@ function CheckoutPage() {
               {/* Full name with saved-address dropdown */}
               <div ref={addrRef} className="relative">
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Full Name *</span>
+                  <span className="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Full Name
+                    <span className={cn("text-primary", errors.fullName && "animate-step-pulse")} aria-hidden>*</span>
+                  </span>
                   <input
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     onFocus={() => setAddressesOpen(true)}
                     placeholder="Your full name"
-                    className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm outline-none transition-all focus:border-primary/60 focus:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]"
+                    aria-invalid={errors.fullName || undefined}
+                    className={cn(
+                      "w-full rounded-lg border bg-background/60 px-4 py-3 text-sm outline-none transition-all focus:border-primary/60 focus:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]",
+                      errors.fullName ? "border-destructive/70 bg-destructive/5" : "border-border",
+                    )}
                   />
+                  {errors.fullName && (
+                    <span className="mt-1 block text-[11px] font-semibold text-destructive">This field is required</span>
+                  )}
                 </label>
                 {addressesOpen && (
                   <div className="ck-pop absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-border/70 bg-card/95 p-1 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl">
@@ -212,7 +226,14 @@ function CheckoutPage() {
                 )}
               </div>
               <Field label="Email" placeholder="you@email.com" type="email" />
-              <Field label="Phone *" placeholder="01XXXXXXXXX" />
+              <Field
+                label="Phone"
+                required
+                placeholder="01XXXXXXXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                invalid={errors.phone}
+              />
               <Field label="Notes (optional)" placeholder="Add any extra instructions" />
             </div>
           </section>
@@ -226,8 +247,23 @@ function CheckoutPage() {
               <h2 className="font-display text-2xl">Game / Account Details</h2>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="Epic Games Email ID *" placeholder="enter email id" />
-              <Field label="Epic Games Password *" placeholder="enter password" type="password" />
+              <Field
+                label="Epic Games Email ID"
+                required
+                placeholder="enter email id"
+                value={epicEmail}
+                onChange={(e) => setEpicEmail(e.target.value)}
+                invalid={errors.epicEmail}
+              />
+              <Field
+                label="Epic Games Password"
+                required
+                placeholder="enter password"
+                type="password"
+                value={epicPass}
+                onChange={(e) => setEpicPass(e.target.value)}
+                invalid={errors.epicPass}
+              />
             </div>
           </section>
 
@@ -420,13 +456,17 @@ function CheckoutPage() {
                   {method === "bank" ? (
                     <div className="space-y-4">
                       <Field
-                        label="Your Bank Name *"
+                        label="Your Bank Name"
+                        required
+                        invalid={errors.bankName}
                         placeholder="e.g. DBBL, Brac Bank, City Bank"
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
                       />
                       <Field
-                        label="Reference / Transaction ID *"
+                        label="Reference / Transaction ID"
+                        required
+                        invalid={errors.txn}
                         placeholder="Enter bank transfer reference"
                         value={txn}
                         onChange={(e) => setTxn(e.target.value)}
@@ -448,13 +488,17 @@ function CheckoutPage() {
                   ) : (
                     <div className="space-y-4">
                       <Field
-                        label="Transaction ID *"
+                        label="Transaction ID"
+                        required
+                        invalid={errors.txn}
                         placeholder="Enter Transaction ID"
                         value={txn}
                         onChange={(e) => setTxn(e.target.value)}
                       />
                       <Field
-                        label="Sender Number *"
+                        label="Sender Number"
+                        required
+                        invalid={errors.sender}
                         placeholder="Enter your mobile number"
                         value={sender}
                         onChange={(e) => setSender(e.target.value)}
@@ -520,11 +564,28 @@ function CheckoutPage() {
 
           <button
             onClick={() => {
-              if (stage !== "pay" || !provider) return alert("Choose a payment provider");
+              const next: Record<string, boolean> = {};
+              if (!fullName.trim()) next.fullName = true;
+              if (!phone.trim()) next.phone = true;
+              if (!epicEmail.trim()) next.epicEmail = true;
+              if (!epicPass.trim()) next.epicPass = true;
+              if (stage !== "pay" || !provider) {
+                setErrors(next);
+                return alert("Choose a payment provider");
+              }
               if (method === "bank") {
-                if (!bankName || !txn) return alert("Enter your bank name and reference");
+                if (!bankName.trim()) next.bankName = true;
+                if (!txn.trim()) next.txn = true;
               } else {
-                if (!txn || !sender) return alert("Enter Transaction ID and Sender details");
+                if (!txn.trim()) next.txn = true;
+                if (!sender.trim()) next.sender = true;
+              }
+              setErrors(next);
+              if (Object.keys(next).length > 0) {
+                const first = document.querySelector<HTMLElement>('[aria-invalid="true"]');
+                first?.scrollIntoView({ behavior: "smooth", block: "center" });
+                first?.focus({ preventScroll: true });
+                return;
               }
               clear();
               setDone(true);
@@ -666,11 +727,44 @@ function MethodTile({
   );
 }
 
-function Field({ label, ...rest }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+function Field({
+  label,
+  invalid,
+  required,
+  ...rest
+}: { label: string; invalid?: boolean } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
-      <input {...rest} className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
+      <span className="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+        {required && (
+          <span
+            className={cn(
+              "text-primary transition-transform",
+              invalid && "animate-step-pulse",
+            )}
+            aria-hidden
+          >
+            *
+          </span>
+        )}
+      </span>
+      <input
+        {...rest}
+        required={required}
+        aria-invalid={invalid || undefined}
+        className={cn(
+          "w-full rounded-lg border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary",
+          invalid
+            ? "border-destructive/70 bg-destructive/5 focus:border-destructive"
+            : "border-border",
+        )}
+      />
+      {invalid && (
+        <span className="mt-1 block text-[11px] font-semibold text-destructive">
+          This field is required
+        </span>
+      )}
     </label>
   );
 }
