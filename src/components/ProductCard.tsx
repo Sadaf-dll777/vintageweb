@@ -93,11 +93,13 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="absolute top-1/2 left-1/2 h-[260%] w-[40%] -translate-x-[260%] -translate-y-1/2 rotate-45 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-all duration-[1600ms] ease-out group-hover:translate-x-[160%] group-hover:opacity-100" />
         </div>
       </div>
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <h3 className="font-display text-lg leading-tight tracking-wide transition-colors duration-300 group-hover:text-primary">
+      <div className="border-t border-border" />
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="font-display text-base leading-tight tracking-wide text-foreground transition-colors duration-300 group-hover:text-primary">
           {product.name}
         </h3>
-        <div className="mt-auto space-y-2">
+        <div className="my-4 border-t border-border" />
+        <div className="mt-auto flex items-end justify-between gap-3">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
             <div className="font-display text-xl text-primary">{formatPrice(product.price, currency)}</div>
@@ -108,9 +110,9 @@ export function ProductCard({ product }: { product: Product }) {
               e.stopPropagation();
               useShop.getState().add(product);
             }}
-            className="group/btn inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110"
+            className="group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110"
           >
-            <Zap className="h-3 w-3 fill-current transition-transform duration-300 group-hover:scale-110 group-hover/btn:-rotate-12" strokeWidth={0} /> Buy Now
+            <Zap className="h-3 w-3 fill-current transition-transform duration-300 group-hover/btn:-rotate-12" strokeWidth={0} /> Buy Now
           </button>
         </div>
       </div>
