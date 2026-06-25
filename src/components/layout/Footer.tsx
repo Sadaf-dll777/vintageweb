@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="border-t border-border/60 bg-card/30 mt-24">
       {/* Trust bar */}
       <div className="border-b border-border/60">
-        <div className="container-wide grid grid-cols-1 items-center gap-6 py-6 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="container-wide grid grid-cols-1 items-center gap-4 py-3 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-primary" /> Secure payments
@@ -23,7 +23,7 @@ export function Footer() {
           </div>
           <a
             href="mailto:vintagestoresofficial@gmail.com"
-            className="inline-flex items-center justify-center gap-2 justify-self-start rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground glow-red transition hover:brightness-110 md:justify-self-end"
+            className="inline-flex items-center justify-center gap-2 justify-self-start rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground glow-red transition hover:brightness-110 md:justify-self-end"
           >
             Contact Support <ArrowRight className="h-4 w-4" />
           </a>
