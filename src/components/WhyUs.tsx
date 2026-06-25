@@ -1,13 +1,8 @@
 import { Zap, ShieldCheck, CreditCard, Headphones, Clock, Award } from "lucide-react";
+import { whyUs } from "@/config/site";
 
-const ITEMS = [
-  { Icon: Zap, title: "Instant Delivery", desc: "Get your codes, keys & accounts within seconds of payment — no waiting, no delays." },
-  { Icon: ShieldCheck, title: "100% Secure", desc: "Every transaction is encrypted and verified. Your payment data never touches our servers." },
-  { Icon: CreditCard, title: "Easy Payments", desc: "Pay with bKash, Nagad, Rocket, Upay or card — whatever works for you." },
-  { Icon: Headphones, title: "24/7 Support", desc: "Our support team is always online via live chat. Got an issue? We'll fix it fast." },
-  { Icon: Clock, title: "Always Available", desc: "Shop anytime — our store runs 24/7 with automated delivery around the clock." },
-  { Icon: Award, title: "Best Prices", desc: "We guarantee the lowest prices for digital products. Find cheaper? We'll match it." },
-];
+const ICONS = { Zap, ShieldCheck, CreditCard, Headphones, Clock, Award };
+const ITEMS = whyUs.map((i) => ({ Icon: ICONS[i.icon], title: i.title, desc: i.desc }));
 
 export function WhyUs() {
   return (
