@@ -419,11 +419,21 @@ function CheckoutPage() {
                         </div>
                         <CopyButton value={bankDetailsText} label="Copy all" />
                       </div>
-                      <div className="space-y-1.5 text-sm">
-                        <div><span className="text-muted-foreground">Bank:</span> Brac Bank</div>
-                        <div><span className="text-muted-foreground">Account Name:</span> MD FARUQ HOSSAIN</div>
-                        <div><span className="text-muted-foreground">Account Number:</span> 1076776160001</div>
-                        <div><span className="text-muted-foreground">Branch:</span> Banpara Sub Branch</div>
+                      <div className="space-y-2 text-sm">
+                        {[
+                          { label: "Bank", value: "Brac Bank" },
+                          { label: "Account Name", value: "MD FARUQ HOSSAIN" },
+                          { label: "Account Number", value: "1076776160001" },
+                          { label: "Branch", value: "Banpara Sub Branch" },
+                        ].map((row) => (
+                          <div
+                            key={row.label}
+                            className="detail-row flex items-center justify-between gap-3 rounded-lg bg-card/60 px-3 py-2"
+                          >
+                            <span className="text-xs uppercase tracking-wider text-muted-foreground">{row.label}</span>
+                            <span className="font-medium text-foreground">{row.value}</span>
+                          </div>
+                        ))}
                       </div>
                       <div className="mt-5 h-px bg-border/60" />
                     </div>
