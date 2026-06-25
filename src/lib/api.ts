@@ -71,16 +71,30 @@ export interface ApiProduct {
 
 export interface ApiOrder {
   id: string;
+  user_email: string;
   customer_name: string;
   contact: string;
-  items: Array<{ product_id?: string; name: string; qty: number; price_usd: number }>;
+  items: Array<{
+    product_id?: string;
+    name: string;
+    variant?: string;
+    qty: number;
+    price_usd: number;
+    price_bdt?: number;
+    image_url?: string;
+  }>;
   total_usd: number | string;
   total_bdt: number | string;
   payment_method: string;
   payment_proof_url: string;
   transaction_id: string;
+  sender_number?: string;
   notes: string;
-  status: "pending" | "paid" | "delivered" | "cancelled";
+  status: "review" | "verified" | "processing" | "completed" | "cancelled";
+  delivered_key?: string;
+  key_instructions?: string;
+  key_redeem_label?: string;
+  notes_thread?: Array<{ from: "support" | "customer"; text: string; at: string }>;
   created_at: string;
 }
 
