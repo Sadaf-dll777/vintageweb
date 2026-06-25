@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { api, type ApiProduct } from "@/lib/api";
+import { Pencil, Trash2, Plus, ImagePlus, Package } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: ProductsAdmin,
@@ -64,45 +65,85 @@ function ProductsAdmin() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
-      <div className="rounded-lg border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border p-4">
-          <h2 className="font-semibold">Products ({products.data?.length ?? 0})</h2>
+    <div className="space-y-6">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h2 className="font-display text-3xl font-black uppercase tracking-wide">Products</h2>
+          <p className="text-sm text-muted-foreground">
+            {products.data?.length ?? 0} item{(products.data?.length ?? 0) === 1 ? "" : "s"} in catalog.
+          </p>
         </div>
+        {form._editingId && (
+          <button onClick={() => setForm(EMPTY)} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide hover:border-primary/40">
+            <Plus className="h-3.5 w-3.5" /> New product
+          </button>
+        )}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
         {products.isLoading ? (
-          <p className="p-4 text-sm text-muted-foreground">Loading…</p>
+          <p className="p-10 text-center text-sm text-muted-foreground">Loading…</p>
+        ) : !products.data?.length ? (
+          <div className="px-5 py-16 text-center">
+            <Package className="mx-auto h-8 w-8 text-muted-foreground/40" />
+            <p className="mt-3 text-sm text-muted-foreground">No products yet. Use the form to add your first.</p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
+              <thead className="bg-muted/30 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
                 <tr>
+                  <th className="p-3"></th>
                   <th className="p-3">Name</th>
-                  <th className="p-3">Slug</th>
-                  <th className="p-3">Price</th>
-                  <th className="p-3">Stock</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3 text-right">Price</th>
+                  <th className="p-3 text-center">Stock</th>
                   <th className="p-3"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border">
                 {products.data?.map((p) => (
-                  <tr key={p.id} className="border-t border-border">
-                    <td className="p-3">{p.name}</td>
-                    <td className="p-3 font-mono text-xs">{p.slug}</td>
-                    <td className="p-3">${Number(p.price_usd).toFixed(2)}</td>
-                    <td className="p-3">{p.in_stock ? "✓" : "—"}</td>
-                    <td className="p-3 text-right">
-                      <button
-                        onClick={() => setForm({ ...p, _editingId: p.id })}
-                        className="rounded border border-input px-2 py-1 text-xs hover:bg-accent"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => confirm(`Delete ${p.name}?`) && del.mutate(p.id)}
-                        className="ml-2 rounded border border-destructive/50 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
-                      >
-                        Delete
-                      </button>
+                  <tr key={p.id} className={`transition hover:bg-accent/20 ${form._editingId === p.id ? "bg-primary/5" : ""}`}>
+                    <td className="p-3">
+                      {p.image_url ? (
+                        <img src={p.image_url} alt="" className="h-10 w-10 rounded object-cover" />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded bg-muted">
+                          <Package className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      <div className="font-semibold">{p.name}</div>
+                      <div className="font-mono text-[10px] text-muted-foreground">{p.slug}</div>
+                    </td>
+                    <td className="p-3 text-xs text-muted-foreground">{p.category_name || "—"}</td>
+                    <td className="p-3 text-right font-display font-black">${Number(p.price_usd).toFixed(2)}</td>
+                    <td className="p-3 text-center">
+                      {p.in_stock ? (
+                        <span className="inline-flex rounded border border-success/40 bg-success/10 px-1.5 py-0.5 text-[10px] font-bold uppercase text-success">In</span>
+                      ) : (
+                        <span className="inline-flex rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase text-muted-foreground">Out</span>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      <div className="flex justify-end gap-1">
+                        <button
+                          onClick={() => setForm({ ...p, _editingId: p.id })}
+                          title="Edit"
+                          className="rounded p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => confirm(`Delete ${p.name}?`) && del.mutate(p.id)}
+                          title="Delete"
+                          className="rounded p-1.5 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -110,16 +151,20 @@ function ProductsAdmin() {
             </table>
           </div>
         )}
-      </div>
+        </div>
 
-      <form
+        <form
         onSubmit={(e) => {
           e.preventDefault();
           save.mutate(form);
         }}
-        className="space-y-3 rounded-lg border border-border bg-card p-4"
+        className="space-y-4 self-start rounded-xl border border-border bg-card p-5 lg:sticky lg:top-6"
       >
-        <h2 className="font-semibold">{form._editingId ? "Edit product" : "New product"}</h2>
+        <div className="-mx-5 -mt-5 border-b border-border bg-gradient-to-r from-primary/15 to-transparent px-5 py-3">
+          <h3 className="font-display text-base font-black uppercase tracking-wide">
+            {form._editingId ? "Edit product" : "New product"}
+          </h3>
+        </div>
 
         <Field label="Name">
           <input required value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" />
@@ -143,22 +188,28 @@ function ProductsAdmin() {
           <input type="number" step="0.01" value={form.price_usd ?? 0} onChange={(e) => setForm({ ...form, price_usd: Number(e.target.value) })} className="input" />
         </Field>
         <Field label="Image">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
-            className="text-xs"
-          />
+          <div className="flex items-start gap-3">
+            <label className="group flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-border bg-background transition hover:border-primary/60">
+              {form.image_url ? (
+                <img src={form.image_url} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <ImagePlus className="h-5 w-5 text-muted-foreground transition group-hover:text-primary" />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
+                className="hidden"
+              />
+            </label>
+            <input
+              placeholder="or paste image URL"
+              value={form.image_url ?? ""}
+              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+              className="input"
+            />
+          </div>
           {uploading && <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>}
-          <input
-            placeholder="or paste image URL"
-            value={form.image_url ?? ""}
-            onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-            className="input mt-2"
-          />
-          {form.image_url && (
-            <img src={form.image_url} alt="" className="mt-2 h-24 w-24 rounded object-cover" />
-          )}
         </Field>
         <Field label="Badge (e.g. FEATURED)">
           <input value={form.badge ?? ""} onChange={(e) => setForm({ ...form, badge: e.target.value })} className="input" />
@@ -172,24 +223,42 @@ function ProductsAdmin() {
         <Field label="Description">
           <textarea value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input min-h-[80px]" />
         </Field>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={form.in_stock ?? true} onChange={(e) => setForm({ ...form, in_stock: e.target.checked })} />
-          In stock
+        <label className="flex cursor-pointer items-center justify-between rounded-md border border-border bg-background px-3 py-2 text-sm">
+          <span className="font-medium">In stock</span>
+          <input
+            type="checkbox"
+            checked={form.in_stock ?? true}
+            onChange={(e) => setForm({ ...form, in_stock: e.target.checked })}
+            className="h-4 w-4 accent-primary"
+          />
         </label>
 
-        {save.error && <p className="text-xs text-destructive">{(save.error as Error).message}</p>}
+        {save.error && (
+          <p className="rounded border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {(save.error as Error).message}
+          </p>
+        )}
 
         <div className="flex gap-2 pt-2">
-          <button type="submit" disabled={save.isPending} className="flex-1 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+          <button
+            type="submit"
+            disabled={save.isPending}
+            className="flex-1 rounded-md bg-primary px-3 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-md shadow-primary/30 transition hover:bg-primary/90 disabled:opacity-60"
+          >
             {save.isPending ? "Saving…" : form._editingId ? "Update" : "Create"}
           </button>
           {form._editingId && (
-            <button type="button" onClick={() => setForm(EMPTY)} className="rounded-md border border-input px-3 py-2 text-sm hover:bg-accent">
+            <button
+              type="button"
+              onClick={() => setForm(EMPTY)}
+              className="rounded-md border border-border px-3 py-2.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground hover:border-primary/40 hover:text-foreground"
+            >
               Cancel
             </button>
           )}
         </div>
       </form>
+      </div>
     </div>
   );
 }
@@ -197,8 +266,8 @@ function ProductsAdmin() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <div className="mt-1">{children}</div>
+      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{label}</span>
+      <div className="mt-1.5">{children}</div>
     </label>
   );
 }

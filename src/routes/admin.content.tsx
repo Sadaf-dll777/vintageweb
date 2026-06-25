@@ -33,30 +33,58 @@ function ContentAdmin() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-lg border border-border bg-card p-4">
-        <h2 className="font-semibold">Site content (raw JSON)</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Edit the JSON blob that drives hero, reviews, why-us, partners, and payment methods.
-          Keep the shape compatible with <code className="rounded bg-muted px-1">src/config/site.ts</code> —
-          when fields don't exist here, the storefront falls back to the config file.
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className="font-display text-3xl font-black uppercase tracking-wide">Site Content</h2>
+          <p className="text-sm text-muted-foreground">
+            Raw JSON that drives hero, reviews, why-us, partners, and payment methods.
+          </p>
+        </div>
+        <button
+          onClick={onSave}
+          disabled={save.isPending}
+          className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-md shadow-primary/30 hover:bg-primary/90 disabled:opacity-60"
+        >
+          {save.isPending ? "Saving…" : "Save changes"}
+        </button>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-4">
+        <p className="text-xs text-muted-foreground">
+          Keep the shape compatible with{" "}
+          <code className="rounded bg-background px-1.5 py-0.5 font-mono">src/config/site.ts</code>.
+          When fields are missing here, the storefront falls back to the config file.
         </p>
       </div>
 
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        className="h-[500px] w-full rounded-lg border border-border bg-card p-3 font-mono text-xs"
-        spellCheck={false}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">site.json</span>
+        </div>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="h-[560px] w-full resize-none bg-background p-4 font-mono text-xs leading-relaxed focus:outline-none"
+          spellCheck={false}
+        />
+      </div>
 
-      {err && <p className="text-sm text-destructive">{err}</p>}
-      {save.error && <p className="text-sm text-destructive">{(save.error as Error).message}</p>}
-      {save.isSuccess && <p className="text-sm text-green-600">Saved.</p>}
-
-      <button onClick={onSave} disabled={save.isPending} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
-        {save.isPending ? "Saving…" : "Save"}
-      </button>
+      {err && (
+        <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {err}
+        </p>
+      )}
+      {save.error && (
+        <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {(save.error as Error).message}
+        </p>
+      )}
+      {save.isSuccess && (
+        <p className="rounded-md border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
+          ✓ Saved.
+        </p>
+      )}
     </div>
   );
 }
