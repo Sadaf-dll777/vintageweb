@@ -26,7 +26,7 @@ export function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
           loading="lazy"
         />
-        <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full" />
+        <div className="pointer-events-none absolute -inset-x-1/2 -inset-y-full -translate-x-1/2 rotate-45 bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-[1400ms] ease-out group-hover:translate-x-1/2" />
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
         <h3 className="font-display text-lg leading-tight tracking-wide transition-colors duration-300 group-hover:text-primary">
