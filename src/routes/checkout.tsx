@@ -528,7 +528,33 @@ function CheckoutPage() {
                   <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
                     <Shield className="h-3.5 w-3.5" /> Confirm Your Payment
                   </div>
-                  {method === "bank" ? (
+                  {method === "crypto" ? (
+                    <div className="space-y-4">
+                      <Field
+                        label={provider.id === "binance" ? "Order ID" : "Transaction ID"}
+                        required
+                        invalid={errors.txn}
+                        placeholder={provider.id === "binance" ? "Enter Binance Order ID" : "Enter Bybit Transaction ID"}
+                        value={txn}
+                        onChange={(e) => setTxn(e.target.value)}
+                      />
+                      <div>
+                        <span className="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                          Proof Of Payment <span className="text-primary" aria-hidden>*</span>
+                        </span>
+                        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground">
+                          <Upload className="h-4 w-4" />
+                          <span className="truncate">{receiptName ?? "Provide Screenshot Of Payment"}</span>
+                          <input
+                            type="file"
+                            accept="image/*,application/pdf"
+                            className="hidden"
+                            onChange={(e) => setReceiptName(e.target.files?.[0]?.name ?? null)}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  ) : method === "bank" ? (
                     <div className="space-y-4">
                       <Field
                         label="Your Bank Name"
