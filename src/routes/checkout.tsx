@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
   Copy, Smartphone, Building2, Sparkles, User, MapPin, ChevronDown, Gamepad2,
+  ChevronRight,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -241,6 +242,8 @@ function CheckoutPage() {
                     count={`${mobileProviders.length} options`}
                     logos={mobileProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
                     selected={method === "mobile"}
+                    tint="from-primary/25 via-primary/10 to-transparent"
+                    ringColor="oklch(0.62 0.22 25 / 0.45)"
                     onClick={() => { setMethod("mobile"); setStage("provider"); }}
                   />
                   <MethodTile
@@ -251,6 +254,8 @@ function CheckoutPage() {
                     logos={[]}
                     swatches={[bankProvider.color]}
                     selected={method === "bank"}
+                    tint="from-sky-500/25 via-sky-500/10 to-transparent"
+                    ringColor="rgba(59,130,246,0.45)"
                     onClick={() => {
                       setMethod("bank");
                       setProviderId("bank");
