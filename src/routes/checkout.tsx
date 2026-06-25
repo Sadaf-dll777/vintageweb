@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Check, Heart, Shield, Zap, MessageCircle, Trash2, Plus, ArrowLeft,
   Copy, Smartphone, Building2, Sparkles, User, MapPin, ChevronDown, Gamepad2,
-  ChevronRight,
+  ChevronRight, Landmark, Upload,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -112,6 +112,8 @@ function CheckoutPage() {
   const [providerId, setProviderId] = useState<string | null>(null);
   const [txn, setTxn] = useState("");
   const [sender, setSender] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [receiptName, setReceiptName] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
   // Customer info
@@ -133,6 +135,9 @@ function CheckoutPage() {
 
   const provider: Provider | null =
     providerId === "bank" ? bankProvider : mobileProviders.find((p) => p.id === providerId) ?? null;
+
+  const bankDetailsText =
+    "Bank: Brac Bank\nAccount Name: MD FARUQ HOSSAIN\nAccount Number: 1076776160001\nBranch: Banpara Sub Branch";
 
   if (done) {
     return (
@@ -374,11 +379,40 @@ function CheckoutPage() {
 
                 {/* Steps */}
                 <div className="rounded-2xl border border-border bg-background p-6">
+                  {method === "bank" && (
+                    <div className="-mt-1 mb-5">
+                      <div className="mb-3 flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                          <Landmark className="h-3.5 w-3.5" /> Bank Details
+                        </div>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(bankDetailsText)}
+                          className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                        >
+                          <Copy className="h-3 w-3" /> Copy all
+                        </button>
+                      </div>
+                      <div className="space-y-1.5 text-sm">
+                        <div><span className="text-muted-foreground">Bank:</span> Brac Bank</div>
+                        <div><span className="text-muted-foreground">Account Name:</span> MD FARUQ HOSSAIN</div>
+                        <div><span className="text-muted-foreground">Account Number:</span> 1076776160001</div>
+                        <div><span className="text-muted-foreground">Branch:</span> Banpara Sub Branch</div>
+                      </div>
+                      <div className="mt-5 h-px bg-border/60" />
+                    </div>
+                  )}
                   <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
                     <Sparkles className="h-3.5 w-3.5" /> Step-by-step
                   </div>
                   <ol className="space-y-3">
-                    {provider.steps.map((s, i) => (
+                    {(method === "bank"
+                      ? [
+                          "Transfer the exact amount to our bank account",
+                          "Take a screenshot or save the receipt PDF",
+                          "Fill in the details below",
+                        ]
+                      : provider.steps
+                    ).map((s, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
                         <span className="text-sm text-foreground/90">{s}</span>
@@ -392,20 +426,50 @@ function CheckoutPage() {
                   <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary">
                     <Shield className="h-3.5 w-3.5" /> Confirm Your Payment
                   </div>
-                  <div className="space-y-4">
-                    <Field
-                      label="Transaction ID *"
-                      placeholder="Enter Transaction ID"
-                      value={txn}
-                      onChange={(e) => setTxn(e.target.value)}
-                    />
-                    <Field
-                      label={method === "mobile" ? "Sender Number *" : "Sender Account *"}
-                      placeholder={method === "mobile" ? "Enter your mobile number" : "Enter account number"}
-                      value={sender}
-                      onChange={(e) => setSender(e.target.value)}
-                    />
-                  </div>
+                  {method === "bank" ? (
+                    <div className="space-y-4">
+                      <Field
+                        label="Your Bank Name *"
+                        placeholder="e.g. DBBL, Brac Bank, City Bank"
+                        value={bankName}
+                        onChange={(e) => setBankName(e.target.value)}
+                      />
+                      <Field
+                        label="Reference / Transaction ID *"
+                        placeholder="Enter bank transfer reference"
+                        value={txn}
+                        onChange={(e) => setTxn(e.target.value)}
+                      />
+                      <div>
+                        <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Transfer Receipt</span>
+                        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border bg-background px-4 py-3 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground">
+                          <Upload className="h-4 w-4" />
+                          <span className="truncate">{receiptName ?? "Upload receipt screenshot or PDF"}</span>
+                          <input
+                            type="file"
+                            accept="image/*,application/pdf"
+                            className="hidden"
+                            onChange={(e) => setReceiptName(e.target.files?.[0]?.name ?? null)}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <Field
+                        label="Transaction ID *"
+                        placeholder="Enter Transaction ID"
+                        value={txn}
+                        onChange={(e) => setTxn(e.target.value)}
+                      />
+                      <Field
+                        label="Sender Number *"
+                        placeholder="Enter your mobile number"
+                        value={sender}
+                        onChange={(e) => setSender(e.target.value)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -413,7 +477,7 @@ function CheckoutPage() {
         </div>
 
         {/* Order summary */}
-        <aside className="h-fit rounded-2xl border border-border bg-card p-6">
+        <aside className="h-fit self-start rounded-2xl border border-border bg-card p-6 lg:sticky lg:top-24">
           <h2 className="font-display text-2xl">Order Summary</h2>
 
           <ul className="mt-5 space-y-3">
@@ -466,7 +530,11 @@ function CheckoutPage() {
           <button
             onClick={() => {
               if (stage !== "pay" || !provider) return alert("Choose a payment provider");
-              if (!txn || !sender) return alert("Enter Transaction ID and Sender details");
+              if (method === "bank") {
+                if (!bankName || !txn) return alert("Enter your bank name and reference");
+              } else {
+                if (!txn || !sender) return alert("Enter Transaction ID and Sender details");
+              }
               clear();
               setDone(true);
             }}
