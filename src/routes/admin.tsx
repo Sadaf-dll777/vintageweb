@@ -1,17 +1,18 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { adminToken, apiEnabled } from "@/lib/api";
+import { adminToken, apiEnabled, resetMockDB, usingMock } from "@/lib/api";
+import { LayoutDashboard, Package, FolderTree, ShoppingBag, FileText, LogOut, RotateCcw, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
 const NAV = [
-  { to: "/admin", label: "Dashboard", exact: true },
-  { to: "/admin/products", label: "Products" },
-  { to: "/admin/categories", label: "Categories" },
-  { to: "/admin/orders", label: "Orders" },
-  { to: "/admin/content", label: "Site Content" },
+  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/admin/products", label: "Products", icon: Package },
+  { to: "/admin/categories", label: "Categories", icon: FolderTree },
+  { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { to: "/admin/content", label: "Site Content", icon: FileText },
 ];
 
 function AdminLayout() {
@@ -53,41 +54,74 @@ function AdminLayout() {
   if (pathname === "/admin/login") return <Outlet />;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="flex items-center justify-between border-b border-border pb-4">
-        <div>
-          <h1 className="text-2xl font-bold">VintageStore Admin</h1>
-          <p className="text-sm text-muted-foreground">Manage products, orders & content</p>
-        </div>
-        <button
-          onClick={() => {
-            adminToken.clear();
-            navigate({ to: "/admin/login" });
-          }}
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm hover:bg-accent"
-        >
-          Sign out
-        </button>
-      </div>
-      <nav className="mt-4 flex flex-wrap gap-2 border-b border-border pb-4">
-        {NAV.map((item) => {
-          const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`rounded-md px-3 py-1.5 text-sm transition ${
-                active
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent"
-              }`}
+    <div className="relative min-h-screen bg-background">
+      {/* Top stripe */}
+      <div className="border-b border-border bg-gradient-to-b from-card to-background">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/30">
+              <Zap className="h-5 w-5" strokeWidth={3} />
+            </div>
+            <div>
+              <h1 className="font-display text-2xl font-black uppercase leading-none tracking-wide">
+                Vintage<span className="text-primary">Store</span> Admin
+              </h1>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                {usingMock ? "Preview mode · local mock data" : "Live · connected to API"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {usingMock && (
+              <button
+                onClick={() => {
+                  if (confirm("Wipe all local mock data and reseed from defaults?")) {
+                    resetMockDB();
+                    window.location.reload();
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset data
+              </button>
+            )}
+            <button
+              onClick={() => {
+                adminToken.clear();
+                navigate({ to: "/admin/login" });
+              }}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
             >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-      <div className="mt-6">
+              <LogOut className="h-3.5 w-3.5" />
+              Sign out
+            </button>
+          </div>
+        </div>
+        <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4">
+          {NAV.map((item) => {
+            const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`group relative flex items-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-semibold uppercase tracking-wide transition ${
+                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {item.label}
+                {active && (
+                  <span className="absolute inset-x-2 -bottom-px h-0.5 bg-primary" />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 py-8">
         <Outlet />
       </div>
     </div>
