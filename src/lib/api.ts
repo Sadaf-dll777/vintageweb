@@ -57,10 +57,12 @@ export interface ApiProduct {
   category_slug?: string | null;
   category_name?: string | null;
   description: string;
-  price_usd: number | string;
+  price_bdt: number | string;
+  price_usd?: number | string;
   image_url: string;
   badge: string;
-  in_stock: boolean;
+  stock: number;
+  in_stock?: boolean;
   sort_order: number;
   delivery: string;
   tagline: string;
