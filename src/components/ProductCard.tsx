@@ -47,35 +47,8 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-plus-lighter"
-        style={{
-          background:
-            "radial-gradient(260px circle at var(--mx,50%) var(--my,50%), oklch(0.62 0.22 25 / 0.55), oklch(0.62 0.22 25 / 0.18) 28%, transparent 60%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-30 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          padding: "1px",
-          background:
-            "radial-gradient(220px circle at var(--mx,50%) var(--my,50%), oklch(0.85 0.18 30 / 0.95), oklch(0.62 0.22 25 / 0.35) 35%, transparent 70%)",
-          WebkitMask:
-            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute z-30 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          left: "var(--mx,50%)",
-          top: "var(--my,50%)",
-          background:
-            "radial-gradient(circle, oklch(0.85 0.2 30 / 0.7), transparent 70%)",
-        }}
+        className="pointer-events-none absolute z-30 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={{ left: "var(--mx,50%)", top: "var(--my,50%)" }}
       />
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
