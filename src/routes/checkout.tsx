@@ -574,11 +574,6 @@ function MethodTile({
           tint ?? "from-primary/15 via-transparent to-transparent",
         )}
       />
-      {/* sheen on hover */}
-      <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <span className="absolute top-0 -left-1/2 h-full w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-tile-sheen" />
-      </span>
-
       <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-border/60 bg-background/80 text-foreground shadow-inner transition-transform duration-300 group-hover:scale-105">
         {icon}
       </span>
