@@ -556,3 +556,21 @@ function Step({ n, label, active, done }: { n: React.ReactNode; label: string; a
 function Bar() {
   return <span className="h-px w-12 bg-border" />;
 }
+
+function MiniCurrencyToggle({ currency, onChange }: { currency: Currency; onChange: (c: Currency) => void }) {
+  return (
+    <div className="relative flex items-center rounded-full border border-border bg-card p-0.5 text-[11px] font-bold">
+      <span
+        aria-hidden
+        className={cn(
+          "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          currency === "BDT"
+            ? "left-0.5 bg-primary shadow-[0_6px_20px_-6px_oklch(0.62_0.22_25_/_0.7)]"
+            : "left-[calc(50%+0px)] bg-foreground shadow-[0_4px_18px_-6px_rgba(255,255,255,0.35)]",
+        )}
+      />
+      <button onClick={() => onChange("BDT")} className={cn("relative z-10 rounded-full px-3 py-1 transition-colors", currency === "BDT" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>BDT</button>
+      <button onClick={() => onChange("USD")} className={cn("relative z-10 rounded-full px-3 py-1 transition-colors", currency === "USD" ? "text-background" : "text-muted-foreground hover:text-foreground")}>USD</button>
+    </div>
+  );
+}
