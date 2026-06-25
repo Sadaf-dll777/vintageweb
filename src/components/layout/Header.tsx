@@ -114,13 +114,23 @@ export function Header() {
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
           <div className="relative hidden items-center rounded-full border border-border/80 bg-card/80 p-0.5 text-xs font-bold backdrop-blur sm:flex shadow-[inset_0_1px_0_oklch(1_0_0_/_0.04)]">
+            {/* Soft glow that crossfades color with the active currency */}
             <span
               aria-hidden
               className={cn(
-                "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+                "pointer-events-none absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full blur-md opacity-70 transition-all duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
                 currency === "BDT"
-                  ? "left-0.5 bg-[linear-gradient(135deg,oklch(0.78_0.18_150),oklch(0.62_0.20_160))] shadow-[0_6px_20px_-6px_oklch(0.7_0.18_150_/_0.7)]"
-                  : "left-[calc(50%+0px)] bg-[linear-gradient(135deg,oklch(0.85_0.16_85),oklch(0.7_0.18_60))] shadow-[0_6px_20px_-6px_oklch(0.82_0.16_85_/_0.75)]",
+                  ? "left-0.5 bg-[oklch(0.78_0.18_150_/_0.55)]"
+                  : "left-[calc(50%+0px)] bg-[oklch(0.85_0.16_85_/_0.55)]",
+              )}
+            />
+            <span
+              aria-hidden
+              className={cn(
+                "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                currency === "BDT"
+                  ? "left-0.5 bg-[linear-gradient(135deg,oklch(0.78_0.18_150),oklch(0.62_0.20_160))] shadow-[0_6px_22px_-6px_oklch(0.7_0.18_150_/_0.7)]"
+                  : "left-[calc(50%+0px)] bg-[linear-gradient(135deg,oklch(0.85_0.16_85),oklch(0.7_0.18_60))] shadow-[0_6px_22px_-6px_oklch(0.82_0.16_85_/_0.75)]",
               )}
             />
             <button
