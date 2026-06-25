@@ -530,7 +530,11 @@ function CheckoutPage() {
           <button
             onClick={() => {
               if (stage !== "pay" || !provider) return alert("Choose a payment provider");
-              if (!txn || !sender) return alert("Enter Transaction ID and Sender details");
+              if (method === "bank") {
+                if (!bankName || !txn) return alert("Enter your bank name and reference");
+              } else {
+                if (!txn || !sender) return alert("Enter Transaction ID and Sender details");
+              }
               clear();
               setDone(true);
             }}
