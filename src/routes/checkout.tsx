@@ -326,7 +326,7 @@ function CheckoutPage() {
                       title="Crypto / Exchange"
                       subtitle="Binance, Bybit, USDT…"
                       count={`${cryptoProviders.length} options`}
-                      swatches={cryptoProviders.map((p) => p.color)}
+                      logos={cryptoProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
                       selected={method === "crypto"}
                       tint="from-amber-500/25 via-amber-500/10 to-transparent"
                       ringColor="rgba(240,185,11,0.45)"
