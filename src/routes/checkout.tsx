@@ -141,10 +141,14 @@ function CheckoutPage() {
 
   return (
     <div className="container-wide py-10">
-      <div className="flex items-end justify-between gap-4">
-        <h1 className="font-display text-5xl uppercase tracking-wide">Checkout</h1>
-        <MiniCurrencyToggle currency={currency} onChange={setCurrency} />
+      {/* Top progress stepper */}
+      <div className="relative flex items-center justify-center">
+        <CheckoutStepper current={done ? 3 : 2} />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2">
+          <MiniCurrencyToggle currency={currency} onChange={setCurrency} />
+        </div>
       </div>
+      <h1 className="mt-6 font-display text-5xl uppercase tracking-wide">Checkout</h1>
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1.5fr_1fr]">
         <div className="space-y-6">
