@@ -365,7 +365,7 @@ function ProductPage() {
                   key={s}
                   onClick={() => setSpeed(s)}
                   className={cn(
-                    "rounded-full px-3 py-1.5 transition",
+                    "rounded-full px-3 py-1.5 uppercase transition",
                     speed === s
                       ? "bg-primary text-primary-foreground glow-red"
                       : "text-muted-foreground hover:text-foreground",
