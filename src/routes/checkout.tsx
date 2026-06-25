@@ -103,6 +103,7 @@ const bankProvider: Provider = {
 const cryptoProviders: Provider[] = [
   {
     id: "binance", name: "Binance", number: "851074382", color: "#F0B90B",
+    logo: binanceLogo.url,
     steps: [
       "Send via Binance Pay Option.",
       "Binance ID: 851074382",
@@ -111,6 +112,7 @@ const cryptoProviders: Provider[] = [
   },
   {
     id: "bybit", name: "Bybit", number: "561054132", color: "#F7A600",
+    logo: bybitLogo.url,
     steps: [
       "Send via Bybit Pay",
       "Bybit Pay UID: 561054132",
