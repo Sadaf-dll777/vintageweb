@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Zap, ShoppingBag, Gamepad2, Tv, Gift, User, Joystick, Globe, ShieldCheck, Tag, Package, Users, Award } from "lucide-react";
 import { products } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
@@ -254,21 +254,46 @@ function StatCard({
   fill?: boolean;
 }) {
   const [val, setVal] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const startedRef = useRef(false);
   useEffect(() => {
-    let raf = 0;
-    const start = performance.now();
-    const dur = 1200;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / dur);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setVal(Math.round(n * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
+    const el = ref.current;
+    if (!el) return;
+    const run = () => {
+      if (startedRef.current) return;
+      startedRef.current = true;
+      const start = performance.now();
+      const dur = 1600;
+      let raf = 0;
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        setVal(Math.round(n * eased));
+        if (p < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(raf);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            run();
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
   }, [n]);
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/70 hover:shadow-[0_15px_50px_-15px_var(--color-primary)]">
+    <div
+      ref={ref}
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/70 hover:shadow-[0_15px_50px_-15px_var(--color-primary)]"
+    >
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/0 to-primary/0 transition-all duration-500 group-hover:from-primary/10 group-hover:to-primary/0"
