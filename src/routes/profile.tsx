@@ -492,3 +492,192 @@ function DashField({ label, children }: { label: string; children: React.ReactNo
     </div>
   );
 }
+
+// ---------- Order Detail screen (matches screenshots) ----------
+function OrderDetail({ order, onBack }: { order: ApiOrder; onBack: () => void }) {
+  const qc = useQueryClient();
+  const [note, setNote] = useState("");
+  const sendNote = useMutation({
+    mutationFn: (text: string) => api.appendOrderNote(order.id, { from: "customer", text }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["my-orders"] }),
+  });
+  const step = activeStep(order.status);
+  const completed = order.status === "completed";
+
+  return (
+    <div className="space-y-5">
+      <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> Back to Orders
+      </button>
+
+      {/* Hero status banner */}
+      <div className={cn(
+        "rounded-2xl border p-8 text-center backdrop-blur-xl",
+        completed
+          ? "border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 to-transparent shadow-[0_0_60px_-20px_rgba(16,185,129,0.5)]"
+          : "border-border/60 bg-card/40",
+      )}>
+        <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-300">
+          <CheckCircle2 className="h-3 w-3" /> {statusLabel(order.status)}
+        </div>
+        <div className="mx-auto mt-5 grid h-20 w-20 place-items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-300">
+          {completed ? <CheckCircle2 className="h-10 w-10" /> : <ClockIcon className="h-10 w-10" />}
+        </div>
+        <h2 className="mt-5 font-display text-3xl tracking-wide">
+          {completed ? "Your order has been delivered" :
+           order.status === "processing" ? "We're preparing your delivery" :
+           order.status === "verified" ? "Payment verified — processing soon" :
+           order.status === "cancelled" ? "Order cancelled" :
+           "Payment is being reviewed"}
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {completed ? "All items have been delivered. Enjoy!" :
+           order.status === "cancelled" ? "If this is a mistake, message us in the order notes below." :
+           "We'll update this screen the moment the next step completes."}
+        </p>
+      </div>
+
+      {/* Stepper */}
+      <Panel>
+        <div className="flex items-center justify-between gap-2">
+          {STEP_LABELS.map((lbl, i) => {
+            const done = completed || i < step || (i === step && order.status !== "review");
+            const active = i === step && !completed;
+            return (
+              <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                <div className="relative flex w-full items-center">
+                  {i > 0 && (
+                    <span className={cn("absolute right-1/2 top-1/2 h-0.5 w-full -translate-y-1/2", (done || i <= step) ? "bg-primary" : "bg-border")} />
+                  )}
+                  {i < STEP_LABELS.length - 1 && (
+                    <span className={cn("absolute left-1/2 top-1/2 h-0.5 w-full -translate-y-1/2", (completed || i < step) ? "bg-primary" : "bg-border")} />
+                  )}
+                  <div className={cn(
+                    "relative z-10 mx-auto grid h-10 w-10 place-items-center rounded-full text-xs font-bold",
+                    done ? "bg-primary text-primary-foreground shadow-[0_0_20px_-4px_var(--color-primary)]" :
+                    active ? "border-2 border-primary bg-primary/20 text-primary" :
+                    "bg-muted text-muted-foreground",
+                  )}>
+                    {done ? <Check className="h-5 w-5" /> : i + 1}
+                  </div>
+                </div>
+                <div className="text-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{lbl}</div>
+              </div>
+            );
+          })}
+        </div>
+        {completed && (
+          <div className="mt-5 rounded-lg bg-emerald-500/10 px-3 py-2 text-center text-xs font-medium text-emerald-300">
+            ✅ Order complete — all steps finished!
+          </div>
+        )}
+      </Panel>
+
+      {/* Items + Sidebar */}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <Panel>
+          <div className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ordered Items</div>
+          <ul className="space-y-3">
+            {order.items.map((it, i) => (
+              <li key={i} className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/40 p-3">
+                {it.image_url && <img src={it.image_url} className="h-14 w-14 rounded-lg object-cover" alt="" />}
+                <div className="flex-1">
+                  <div className="text-sm font-semibold">{it.name}{it.variant ? ` — ${it.variant}` : ""}</div>
+                  <div className="text-xs text-muted-foreground">Quantity: {it.qty}</div>
+                </div>
+                <div className="font-display text-lg">৳{Number(it.price_bdt ?? (Number(it.price_usd) || 0) * 120).toFixed(0)} BDT</div>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+
+        <Panel className="space-y-4 text-sm">
+          <SidebarRow icon={<Hash className="h-4 w-4" />} label="Order ID" value={order.id.slice(0, 8).toUpperCase()} mono />
+          <SidebarRow icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />} label="Status">
+            <StatusBadge status={order.status} />
+          </SidebarRow>
+          <SidebarRow icon={<Calendar className="h-4 w-4" />} label="Order Date" value={fmtDate(order.created_at)} />
+          <SidebarRow icon={<CreditCard className="h-4 w-4" />} label="Payment" value={order.payment_method} />
+          {order.transaction_id && (
+            <SidebarRow icon={<FileText className="h-4 w-4" />} label="Transaction ID" value={order.transaction_id} mono />
+          )}
+          {order.sender_number && (
+            <SidebarRow icon={<Phone className="h-4 w-4" />} label="Sender Number" value={order.sender_number} />
+          )}
+          <div className="my-2 h-px bg-border/60" />
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>Subtotal</span>
+            <span className="font-display text-foreground">৳{Number(order.total_bdt).toFixed(0)} BDT</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-bold">Total Paid</span>
+            <span className="font-display text-2xl text-primary">৳{Number(order.total_bdt).toFixed(0)} BDT</span>
+          </div>
+        </Panel>
+      </div>
+
+      {/* Order notes thread */}
+      <Panel>
+        <div className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <MessageSquare className="h-4 w-4" /> Order Notes
+        </div>
+        <div className="space-y-2">
+          {(order.notes_thread ?? []).length === 0 && (
+            <p className="rounded-md border border-dashed border-border/60 px-3 py-6 text-center text-xs text-muted-foreground">
+              No messages yet. Reach out to support here for anything about this order.
+            </p>
+          )}
+          {(order.notes_thread ?? []).map((n, i) => (
+            <div key={i} className={cn(
+              "rounded-xl border p-3 text-sm",
+              n.from === "support" ? "border-primary/30 bg-primary/5" : "border-border bg-background/40",
+            )}>
+              <div className="mb-1 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <span>{n.from === "support" ? "Support" : "You"}</span>
+                <span>{new Date(n.at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+              </div>
+              <div className="whitespace-pre-wrap">{n.text}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 flex gap-2">
+          <input
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && note.trim()) {
+                sendNote.mutate(note.trim());
+                setNote("");
+              }
+            }}
+            placeholder="Type a reply..."
+            className="flex-1 rounded-xl border border-border bg-background/60 px-4 py-3 text-sm outline-none focus:border-primary"
+          />
+          <button
+            disabled={!note.trim()}
+            onClick={() => { if (note.trim()) { sendNote.mutate(note.trim()); setNote(""); } }}
+            className="grid h-12 w-12 place-items-center rounded-xl bg-primary text-primary-foreground glow-red disabled:opacity-40"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+function SidebarRow({ icon, label, value, children, mono }: { icon: React.ReactNode; label: string; value?: string; children?: React.ReactNode; mono?: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-border/60 bg-background/40 text-muted-foreground">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</div>
+        {value !== undefined ? (
+          <div className={cn("mt-0.5 truncate text-sm font-semibold", mono && "font-mono")}>{value}</div>
+        ) : (
+          <div className="mt-1">{children}</div>
+        )}
+      </div>
+    </div>
+  );
+}
