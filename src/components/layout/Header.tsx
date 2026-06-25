@@ -126,25 +126,23 @@ export function Header() {
             <button
               onClick={() => setCurrency("BDT")}
               className={cn(
-                "relative z-10 inline-flex items-center gap-1 rounded-full px-3 py-1 transition-all duration-300",
+                "relative z-10 rounded-full px-2.5 py-1 font-black tracking-wide transition-all duration-300",
                 currency === "BDT"
                   ? "text-background scale-105"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <span className={cn("text-[10px] font-black transition-opacity", currency === "BDT" ? "opacity-100" : "opacity-60")}>৳</span>
               BDT
             </button>
             <button
               onClick={() => setCurrency("USD")}
               className={cn(
-                "relative z-10 inline-flex items-center gap-1 rounded-full px-3 py-1 transition-all duration-300",
+                "relative z-10 rounded-full px-2.5 py-1 font-black tracking-wide transition-all duration-300",
                 currency === "USD"
                   ? "text-background scale-105"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <span className={cn("text-[10px] font-black transition-opacity", currency === "USD" ? "opacity-100" : "opacity-60")}>$</span>
               USD
             </button>
           </div>
