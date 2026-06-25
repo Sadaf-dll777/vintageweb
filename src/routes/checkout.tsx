@@ -6,6 +6,8 @@ import {
   ChevronRight, Landmark, Upload, Bitcoin,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
+import { useAuth } from "@/lib/store";
+import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import bracBankLogo from "@/assets/brac-bank.png.asset.json";
 import {
@@ -26,6 +28,7 @@ type MethodId = "mobile" | "bank" | "crypto";
 
 function CheckoutPage() {
   const { items, currency, setCurrency, setQty, remove, clear } = useShop();
+  const user = useAuth((s) => s.user);
   const subtotalUSD = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   const subtotalBDT = Math.round(subtotalUSD * USD_TO_BDT);
   const [tip, setTip] = useState(0);
@@ -50,6 +53,9 @@ function CheckoutPage() {
   const [epicPass, setEpicPass] = useState("");
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [notes, setNotes] = useState("");
+  useEffect(() => { if (user?.email && !email) setEmail(user.email); }, [user, email]);
 
   // Customer info
   const [fullName, setFullName] = useState("");
@@ -165,7 +171,7 @@ function CheckoutPage() {
                   </div>
                 )}
               </div>
-              <Field label="Email" placeholder="you@email.com" type="email" />
+              <Field label="Email" placeholder="you@email.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               <Field
                 label="Phone"
                 required
@@ -174,7 +180,7 @@ function CheckoutPage() {
                 onChange={(e) => setPhone(e.target.value)}
                 invalid={errors.phone}
               />
-              <Field label="Notes (optional)" placeholder="Add any extra instructions" />
+              <Field label="Notes (optional)" placeholder="Add any extra instructions" value={notes} onChange={(e) => setNotes(e.target.value)} />
             </div>
           </section>
 
@@ -592,8 +598,30 @@ function CheckoutPage() {
                 first?.focus({ preventScroll: true });
                 return;
               }
-              clear();
-              setDone(true);
+              const paymentMethod = method === "bank" ? "Bank" : method === "crypto" ? (provider?.name ?? "Crypto") : (provider?.name ?? "Mobile");
+              api.placeOrder({
+                user_email: (email || user?.email || "").toLowerCase(),
+                customer_name: fullName.trim(),
+                contact: phone.trim(),
+                items: items.map((i) => ({
+                  product_id: i.product.id,
+                  name: i.product.name,
+                  qty: i.qty,
+                  price_usd: i.product.price,
+                  price_bdt: Math.round(i.product.price * USD_TO_BDT) * i.qty,
+                  image_url: i.product.image,
+                })),
+                total_usd: totalUSD,
+                total_bdt: totalBDT,
+                payment_method: paymentMethod,
+                payment_proof_url: "",
+                transaction_id: txn.trim(),
+                sender_number: sender.trim(),
+                notes: notes.trim(),
+              }).then(() => {
+                clear();
+                setDone(true);
+              }).catch((err) => alert(String(err?.message ?? err)));
             }}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-display text-base uppercase tracking-wider text-primary-foreground glow-red hover:brightness-110"
           >

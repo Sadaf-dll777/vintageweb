@@ -13,14 +13,14 @@ function Dashboard() {
   const orders = useQuery({ queryKey: ["admin-orders"], queryFn: api.listOrders });
 
   const revenue = orders.data
-    ?.filter((o) => o.status === "paid" || o.status === "delivered")
+    ?.filter((o) => o.status === "verified" || o.status === "processing" || o.status === "completed")
     .reduce((sum, o) => sum + Number(o.total_usd), 0) ?? 0;
 
   const stats = [
     { label: "Products", value: products.data?.length ?? "—", icon: Package, accent: "text-primary" },
     { label: "Categories", value: categories.data?.length ?? "—", icon: FolderTree, accent: "text-gold" },
     { label: "Total orders", value: orders.data?.length ?? "—", icon: ShoppingBag, accent: "text-success" },
-    { label: "Pending", value: orders.data?.filter((o) => o.status === "pending").length ?? "—", icon: Clock, accent: "text-primary" },
+    { label: "Awaiting review", value: orders.data?.filter((o) => o.status === "review").length ?? "—", icon: Clock, accent: "text-primary" },
   ];
 
   return (
@@ -33,7 +33,7 @@ function Dashboard() {
         </div>
         <div className="rounded-lg border border-border bg-card px-4 py-3">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <TrendingUp className="h-3 w-3 text-success" /> Revenue (paid + delivered)
+            <TrendingUp className="h-3 w-3 text-success" /> Revenue (verified)
           </div>
           <div className="mt-1 font-display text-2xl font-black">${revenue.toFixed(2)}</div>
         </div>
@@ -106,9 +106,10 @@ function Dashboard() {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    pending: "bg-gold/15 text-gold border-gold/30",
-    paid: "bg-success/15 text-success border-success/30",
-    delivered: "bg-success/15 text-success border-success/30",
+    review: "bg-gold/15 text-gold border-gold/30",
+    verified: "bg-sky-500/15 text-sky-400 border-sky-500/30",
+    processing: "bg-primary/15 text-primary border-primary/30",
+    completed: "bg-success/15 text-success border-success/30",
     cancelled: "bg-destructive/15 text-destructive border-destructive/30",
   };
   return (

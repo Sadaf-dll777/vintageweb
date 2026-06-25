@@ -71,16 +71,30 @@ export interface ApiProduct {
 
 export interface ApiOrder {
   id: string;
+  user_email: string;
   customer_name: string;
   contact: string;
-  items: Array<{ product_id?: string; name: string; qty: number; price_usd: number }>;
+  items: Array<{
+    product_id?: string;
+    name: string;
+    variant?: string;
+    qty: number;
+    price_usd: number;
+    price_bdt?: number;
+    image_url?: string;
+  }>;
   total_usd: number | string;
   total_bdt: number | string;
   payment_method: string;
   payment_proof_url: string;
   transaction_id: string;
+  sender_number?: string;
   notes: string;
-  status: "pending" | "paid" | "delivered" | "cancelled";
+  status: "review" | "verified" | "processing" | "completed" | "cancelled";
+  delivered_key?: string;
+  key_instructions?: string;
+  key_redeem_label?: string;
+  notes_thread?: Array<{ from: "support" | "customer"; text: string; at: string }>;
   created_at: string;
 }
 
@@ -110,7 +124,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 // ============ Mock backend (localStorage) ============
 
-const MOCK_KEY = "vintage_mock_db_v2";
+const MOCK_KEY = "vintage_mock_db_v3";
 
 interface MockDB {
   admins: { email: string; password: string }[];
@@ -315,7 +329,8 @@ const mockApi = {
     const o: ApiOrder = {
       ...data,
       id: uid(),
-      status: "pending",
+      status: "review",
+      notes_thread: data.notes_thread ?? [],
       created_at: new Date().toISOString(),
     };
     db.orders.unshift(o);
@@ -328,6 +343,29 @@ const mockApi = {
     const idx = db.orders.findIndex((o) => o.id === id);
     if (idx === -1) throw new Error("Not found");
     db.orders[idx].status = status;
+    saveDB(db);
+    return db.orders[idx];
+  },
+  async updateOrderDelivery(
+    id: string,
+    patch: Partial<Pick<ApiOrder, "delivered_key" | "key_instructions" | "key_redeem_label">>,
+  ) {
+    await delay();
+    const db = loadDB();
+    const idx = db.orders.findIndex((o) => o.id === id);
+    if (idx === -1) throw new Error("Not found");
+    db.orders[idx] = { ...db.orders[idx], ...patch };
+    saveDB(db);
+    return db.orders[idx];
+  },
+  async appendOrderNote(id: string, note: { from: "support" | "customer"; text: string }) {
+    await delay();
+    const db = loadDB();
+    const idx = db.orders.findIndex((o) => o.id === id);
+    if (idx === -1) throw new Error("Not found");
+    const thread = db.orders[idx].notes_thread ?? [];
+    thread.push({ ...note, at: new Date().toISOString() });
+    db.orders[idx].notes_thread = thread;
     saveDB(db);
     return db.orders[idx];
   },
@@ -402,6 +440,19 @@ const realApi = {
     }),
   updateOrderStatus: (id: string, status: ApiOrder["status"]) =>
     request<ApiOrder>(`/api/orders/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
+  updateOrderDelivery: (
+    id: string,
+    patch: Partial<Pick<ApiOrder, "delivered_key" | "key_instructions" | "key_redeem_label">>,
+  ) =>
+    request<ApiOrder>(`/api/orders/${id}/delivery`, {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    }),
+  appendOrderNote: (id: string, note: { from: "support" | "customer"; text: string }) =>
+    request<ApiOrder>(`/api/orders/${id}/notes`, {
+      method: "POST",
+      body: JSON.stringify(note),
+    }),
   deleteOrder: (id: string) =>
     request<{ ok: true }>(`/api/orders/${id}`, { method: "DELETE" }),
 
