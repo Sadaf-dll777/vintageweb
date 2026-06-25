@@ -309,7 +309,4 @@
 @keyframes detail-border-spin {
   to { transform: rotate(360deg); }
 }
-.detail-row {
-  position: relative;
-  border: 1px solid oklch(0.62 0.22 25 / 0.45);
-}
+.detail-row { position: relative; }
