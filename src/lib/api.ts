@@ -124,7 +124,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 // ============ Mock backend (localStorage) ============
 
-const MOCK_KEY = "vintage_mock_db_v2";
+const MOCK_KEY = "vintage_mock_db_v3";
 
 interface MockDB {
   admins: { email: string; password: string }[];
