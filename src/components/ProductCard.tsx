@@ -47,8 +47,11 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute z-30 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-        style={{ left: "var(--mx,50%)", top: "var(--my,50%)" }}
+        className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(600px circle at var(--mx,50%) var(--my,50%), oklch(1 0 0 / 0.06), transparent 45%)",
+        }}
       />
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
