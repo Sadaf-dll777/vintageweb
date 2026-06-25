@@ -624,7 +624,7 @@ function CheckoutPage() {
                 <button onClick={() => remove(i.product.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
                 <span className="w-6 text-center text-sm font-bold">{i.qty}</span>
                 <button onClick={() => setQty(i.product.id, i.qty + 1)} className="text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
-                <span className="shrink-0 text-sm font-bold">{Math.round(i.product.price * i.qty * USD_TO_BDT)} BDT</span>
+                <span className="shrink-0 text-sm font-bold">{fmt(i.product.price * i.qty)}</span>
               </li>
             ))}
           </ul>
@@ -639,7 +639,7 @@ function CheckoutPage() {
               <Heart className="h-4 w-4" /> Support Us (Optional Tip)
             </div>
             <div className="flex flex-wrap gap-2">
-              {[0, 10, 20, 50, 100].map((t) => (
+              {tipOptions.map((t) => (
                 <button
                   key={t}
                   onClick={() => setTip(t)}
@@ -648,7 +648,7 @@ function CheckoutPage() {
                     tip === t ? "border-primary text-primary" : "border-border text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {t === 0 ? "No tip" : `${t} BDT`}
+                  {t === 0 ? "No tip" : currency === "USD" ? `$${t} USD` : `${t} BDT`}
                 </button>
               ))}
             </div>
@@ -656,11 +656,11 @@ function CheckoutPage() {
 
           <div className="mt-5 flex justify-between border-t border-border pt-4 text-sm">
             <span className="text-muted-foreground">Subtotal</span>
-            <span>{subtotalBDT} BDT</span>
+            <span>{fmt(subtotalUSD)}</span>
           </div>
           <div className="mt-3 flex items-center justify-between border-t border-border pt-4">
             <span>Total</span>
-            <span className="font-display text-3xl text-primary">{totalBDT} BDT</span>
+            <span className="font-display text-3xl text-primary">{totalDisplay}</span>
           </div>
 
           <button
@@ -676,6 +676,8 @@ function CheckoutPage() {
               }
               if (method === "bank") {
                 if (!bankName.trim()) next.bankName = true;
+                if (!txn.trim()) next.txn = true;
+              } else if (method === "crypto") {
                 if (!txn.trim()) next.txn = true;
               } else {
                 if (!txn.trim()) next.txn = true;
