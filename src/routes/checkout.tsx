@@ -561,6 +561,18 @@ function Bar() {
   return <span className="h-px w-12 bg-border" />;
 }
 
+function CheckoutStepper({ current }: { current: 1 | 2 | 3 }) {
+  return (
+    <div className="flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-4 py-2 text-xs font-bold uppercase tracking-wider backdrop-blur-xl">
+      <Step n={current > 1 ? <Check className="h-3 w-3" /> : 1} label="Cart" done={current > 1} active={current === 1} />
+      <Bar />
+      <Step n={current > 2 ? <Check className="h-3 w-3" /> : 2} label="Checkout" done={current > 2} active={current === 2} />
+      <Bar />
+      <Step n={3} label="Complete" active={current === 3} />
+    </div>
+  );
+}
+
 function MiniCurrencyToggle({ currency, onChange }: { currency: Currency; onChange: (c: Currency) => void }) {
   return (
     <div className="relative flex items-center rounded-full border border-border bg-card p-0.5 text-[11px] font-bold">
