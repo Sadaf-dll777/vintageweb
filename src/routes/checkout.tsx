@@ -316,32 +316,48 @@ function CheckoutPage() {
                   Choose how you'd like to pay
                 </p>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <MethodTile
-                    icon={<Smartphone className="h-6 w-6" />}
-                    title="Mobile Banking"
-                    subtitle="bKash, Nagad, Rocket, Upay"
-                    count={`${mobileProviders.length} options`}
-                    logos={mobileProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
-                    selected={method === "mobile"}
-                    tint="from-primary/25 via-primary/10 to-transparent"
-                    ringColor="oklch(0.62 0.22 25 / 0.45)"
-                    onClick={() => { setMethod("mobile"); setStage("provider"); }}
-                  />
-                  <MethodTile
-                    icon={<Building2 className="h-6 w-6" />}
-                    title="Bank Transfer"
-                    subtitle="Brac Bank — Banpara Sub Branch"
-                    count="1 option"
-                    logos={[{ src: bracBankLogo.url, alt: "Brac Bank" }]}
-                    selected={method === "bank"}
-                    tint="from-sky-500/25 via-sky-500/10 to-transparent"
-                    ringColor="rgba(59,130,246,0.45)"
-                    onClick={() => {
-                      setMethod("bank");
-                      setProviderId("bank");
-                      setStage("pay");
-                    }}
-                  />
+                  {currency === "USD" ? (
+                    <MethodTile
+                      icon={<Bitcoin className="h-6 w-6" />}
+                      title="Crypto / Exchange"
+                      subtitle="Binance, Bybit, USDT…"
+                      count={`${cryptoProviders.length} options`}
+                      swatches={cryptoProviders.map((p) => p.color)}
+                      selected={method === "crypto"}
+                      tint="from-amber-500/25 via-amber-500/10 to-transparent"
+                      ringColor="rgba(240,185,11,0.45)"
+                      onClick={() => { setMethod("crypto"); setStage("provider"); }}
+                    />
+                  ) : (
+                    <>
+                      <MethodTile
+                        icon={<Smartphone className="h-6 w-6" />}
+                        title="Mobile Banking"
+                        subtitle="bKash, Nagad, Rocket, Upay"
+                        count={`${mobileProviders.length} options`}
+                        logos={mobileProviders.map((p) => ({ src: p.logo!, alt: p.name }))}
+                        selected={method === "mobile"}
+                        tint="from-primary/25 via-primary/10 to-transparent"
+                        ringColor="oklch(0.62 0.22 25 / 0.45)"
+                        onClick={() => { setMethod("mobile"); setStage("provider"); }}
+                      />
+                      <MethodTile
+                        icon={<Building2 className="h-6 w-6" />}
+                        title="Bank Transfer"
+                        subtitle="Brac Bank — Banpara Sub Branch"
+                        count="1 option"
+                        logos={[{ src: bracBankLogo.url, alt: "Brac Bank" }]}
+                        selected={method === "bank"}
+                        tint="from-sky-500/25 via-sky-500/10 to-transparent"
+                        ringColor="rgba(59,130,246,0.45)"
+                        onClick={() => {
+                          setMethod("bank");
+                          setProviderId("bank");
+                          setStage("pay");
+                        }}
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             )}
