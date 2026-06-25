@@ -1,4 +1,4 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import {
   Star,
@@ -56,6 +56,7 @@ function ProductPage() {
   const { product } = Route.useLoaderData();
   const currency = useShop((s) => s.currency);
   const add = useShop((s) => s.add);
+  const navigate = useNavigate();
 
   const options = useMemo(() => defaultOptions(product), [product]);
   const firstAvailable = options.findIndex((o) => !o.outOfStock);
@@ -65,6 +66,7 @@ function ProductPage() {
   const [readMore, setReadMore] = useState(false);
 
   const opt = options[selected];
+  const totalPrice = opt.price * qty;
   const stock = product.stock ?? 30;
   const sold = product.sold ?? 7;
   const rating = product.rating ?? 5.0;
@@ -160,9 +162,20 @@ function ProductPage() {
           {/* Price */}
           <div className="mt-6 rounded-2xl border border-border bg-card/50 p-6">
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
-            <div className="mt-1 font-display text-5xl text-foreground">
-              {formatPrice(opt.price, currency)}
+            <div
+              key={`${selected}-${qty}`}
+              className="mt-1 font-display text-5xl text-foreground animate-fade-in"
+            >
+              {formatPrice(totalPrice, currency)}
             </div>
+            {qty > 1 && (
+              <div
+                key={`sub-${selected}-${qty}`}
+                className="mt-1 text-xs text-muted-foreground animate-fade-in"
+              >
+                {formatPrice(opt.price, currency)} per unit × {qty}
+              </div>
+            )}
           </div>
 
           {/* Options */}
@@ -177,15 +190,15 @@ function ProductPage() {
                     onClick={() => !o.outOfStock && setSelected(i)}
                     disabled={o.outOfStock}
                     className={cn(
-                      "relative rounded-2xl border bg-card px-4 py-4 text-center transition",
+                      "relative rounded-2xl border bg-card px-4 py-4 text-center transition-all duration-300 ease-out",
                       active
-                        ? "border-primary glow-red"
-                        : "border-border hover:border-primary/60",
+                        ? "border-primary glow-red scale-[1.02]"
+                        : "border-border hover:-translate-y-0.5 hover:border-primary/60",
                       o.outOfStock && "cursor-not-allowed opacity-60",
                     )}
                   >
                     {active && !o.outOfStock && (
-                      <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-primary" />
+                      <span className="absolute right-3 top-3 h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_10px_var(--color-primary)]" />
                     )}
                     <div
                       className={cn(
@@ -243,6 +256,7 @@ function ProductPage() {
             <button
               onClick={() => {
                 for (let i = 0; i < qty; i++) add(product);
+                navigate({ to: "/checkout" });
               }}
               className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 font-display text-lg uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
             >
