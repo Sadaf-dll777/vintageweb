@@ -363,18 +363,18 @@ function CheckoutPage() {
             )}
 
             {/* STAGE: choose provider */}
-            {stage === "provider" && method === "mobile" && (
+            {stage === "provider" && (method === "mobile" || method === "crypto") && (
               <div className="mt-6 animate-fade-in">
                 <div className="mb-4 flex items-center justify-between">
                   <button onClick={() => setStage("method")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-4 w-4" /> Back
                   </button>
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Mobile Banking
+                    {method === "crypto" ? "Crypto / Exchange" : "Mobile Banking"}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {mobileProviders.map((p) => {
+                  {(method === "crypto" ? cryptoProviders : mobileProviders).map((p) => {
                     const sel = providerId === p.id;
                     return (
                       <button
@@ -396,7 +396,9 @@ function CheckoutPage() {
                           {p.logo ? (
                             <img src={p.logo} alt={p.name} className="h-full w-full object-contain" />
                           ) : (
-                            <span className="font-display text-lg" style={{ color: p.color }}>{p.name[0]}</span>
+                            <span className="grid h-full w-full place-items-center rounded-md font-display text-lg" style={{ color: p.color }}>
+                              {p.id === "binance" ? "◆" : p.id === "bybit" ? "B" : p.name[0]}
+                            </span>
                           )}
                         </span>
                         <span className="font-display tracking-wider">{p.name.toUpperCase()}</span>
@@ -410,12 +412,17 @@ function CheckoutPage() {
             {/* STAGE: pay */}
             {stage === "pay" && provider && (
               <div className="mt-6 space-y-6 animate-fade-in">
-                <button
-                  onClick={() => setStage(method === "mobile" ? "provider" : "method")}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="h-4 w-4" /> Change provider
-                </button>
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => setStage(method === "mobile" || method === "crypto" ? "provider" : "method")}
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    <ArrowLeft className="h-4 w-4" /> Change provider
+                  </button>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Pay {totalDisplay}
+                  </span>
+                </div>
 
                 {/* Pay card */}
                 <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-background p-6">
@@ -430,7 +437,9 @@ function CheckoutPage() {
                       {provider.logo ? (
                         <img src={provider.logo} alt={provider.name} className="h-full w-full object-contain" />
                       ) : (
-                        <span className="text-2xl font-display" style={{ color: provider.color }}>{provider.name[0]}</span>
+                        <span className="text-2xl font-display" style={{ color: provider.color }}>
+                          {provider.id === "binance" ? "◆" : provider.id === "bybit" ? "B" : provider.name[0]}
+                        </span>
                       )}
                     </span>
                     <div className="min-w-0 flex-1 space-y-3">
@@ -448,18 +457,20 @@ function CheckoutPage() {
                       <div>
                         <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Exact Amount</div>
                         <div className="flex items-center gap-2">
-                          <span className="font-display text-3xl">{totalBDT} BDT</span>
-                          <CopyButton value={String(totalBDT)} />
+                          <span className="font-display text-3xl">{totalDisplay}</span>
+                          <CopyButton value={String(totalAmount)} />
                         </div>
                       </div>
                     </div>
-                    <div className="hidden h-28 w-28 shrink-0 rounded-xl bg-white p-2 sm:block">
-                      <img
-                        alt="QR"
-                        className="h-full w-full"
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(provider.number)}`}
-                      />
-                    </div>
+                    {method !== "crypto" && (
+                      <div className="hidden h-28 w-28 shrink-0 rounded-xl bg-white p-2 sm:block">
+                        <img
+                          alt="QR"
+                          className="h-full w-full"
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(provider.number)}`}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
