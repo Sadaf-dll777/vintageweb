@@ -675,6 +675,79 @@ function Field({ label, ...rest }: { label: string } & React.InputHTMLAttributes
   );
 }
 
+function CopyButton({
+  value,
+  label,
+  tone = "default",
+}: {
+  value: string;
+  label?: string;
+  tone?: "default" | "primary";
+}) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      /* ignore */
+    }
+    setCopied(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 1400);
+  };
+
+  const ring = tone === "primary"
+    ? "border-primary/40 text-primary hover:border-primary"
+    : "border-border text-muted-foreground hover:border-primary hover:text-primary";
+
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      aria-label={copied ? "Copied" : "Copy"}
+      className={cn(
+        "group/copy relative inline-flex items-center gap-1.5 overflow-hidden rounded-lg border bg-background/40 px-2 py-1 text-[11px] font-bold uppercase tracking-wider backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-10px_oklch(0.62_0.22_25_/_0.55)] active:scale-95",
+        copied ? "border-success/60 text-success" : ring,
+        !label && "h-7 w-7 justify-center px-0 py-0",
+      )}
+    >
+      {/* hover sheen */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-foreground/10 to-transparent transition-transform duration-700 group-hover/copy:translate-x-full"
+      />
+      {/* ripple on click */}
+      {copied && (
+        <span
+          aria-hidden
+          key={String(copied)}
+          className="pointer-events-none absolute inset-0 animate-step-ring rounded-lg bg-success/30"
+        />
+      )}
+      <span className="relative grid h-3.5 w-3.5 place-items-center">
+        <Copy
+          className={cn(
+            "absolute h-3.5 w-3.5 transition-all duration-300",
+            copied ? "scale-50 opacity-0" : "scale-100 opacity-100",
+          )}
+        />
+        <Check
+          className={cn(
+            "absolute h-3.5 w-3.5 transition-all duration-300",
+            copied ? "scale-100 opacity-100" : "scale-50 opacity-0",
+          )}
+        />
+      </span>
+      {label && (
+        <span className="relative">{copied ? "Copied!" : label}</span>
+      )}
+    </button>
+  );
+}
+
 function Step({ n, label, active, done }: { n: React.ReactNode; label: string; active?: boolean; done?: boolean }) {
   return (
     <div className="flex items-center gap-2">
