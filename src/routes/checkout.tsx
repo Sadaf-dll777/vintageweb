@@ -114,6 +114,10 @@ function CheckoutPage() {
   const [sender, setSender] = useState("");
   const [bankName, setBankName] = useState("");
   const [receiptName, setReceiptName] = useState<string | null>(null);
+  const [phone, setPhone] = useState("");
+  const [epicEmail, setEpicEmail] = useState("");
+  const [epicPass, setEpicPass] = useState("");
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
 
   // Customer info
@@ -212,7 +216,14 @@ function CheckoutPage() {
                 )}
               </div>
               <Field label="Email" placeholder="you@email.com" type="email" />
-              <Field label="Phone *" placeholder="01XXXXXXXXX" />
+              <Field
+                label="Phone"
+                required
+                placeholder="01XXXXXXXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                invalid={errors.phone}
+              />
               <Field label="Notes (optional)" placeholder="Add any extra instructions" />
             </div>
           </section>
@@ -226,8 +237,23 @@ function CheckoutPage() {
               <h2 className="font-display text-2xl">Game / Account Details</h2>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="Epic Games Email ID *" placeholder="enter email id" />
-              <Field label="Epic Games Password *" placeholder="enter password" type="password" />
+              <Field
+                label="Epic Games Email ID"
+                required
+                placeholder="enter email id"
+                value={epicEmail}
+                onChange={(e) => setEpicEmail(e.target.value)}
+                invalid={errors.epicEmail}
+              />
+              <Field
+                label="Epic Games Password"
+                required
+                placeholder="enter password"
+                type="password"
+                value={epicPass}
+                onChange={(e) => setEpicPass(e.target.value)}
+                invalid={errors.epicPass}
+              />
             </div>
           </section>
 
