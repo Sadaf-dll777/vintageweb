@@ -5,14 +5,11 @@ import { formatPrice, useShop } from "@/lib/store";
 
 export function ProductCard({ product }: { product: Product }) {
   const currency = useShop((s) => s.currency);
-  // Stagger the float animation so cards don't move in lockstep
-  const delay = `${(product.id.charCodeAt(0) % 12) * 0.25}s`;
   return (
     <Link
       to="/product/$slug"
       params={{ slug: product.id }}
-      style={{ animationDelay: delay }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] animate-card-float hover:[animation-play-state:paused] hover:border-primary hover:shadow-[0_18px_40px_-18px_var(--color-primary)]"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-primary hover:shadow-[0_10px_30px_-18px_var(--color-primary)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
