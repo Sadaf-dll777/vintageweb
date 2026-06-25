@@ -11,7 +11,8 @@ export function ProductCard({ product }: { product: Product }) {
       params={{ slug: product.id }}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-primary hover:shadow-[0_10px_30px_-18px_var(--color-primary)]"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
+      <div className="card-img-bg relative aspect-[4/3] overflow-hidden bg-secondary">
+        <div className="card-hover-glow pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inset-0 animate-ping rounded-full bg-primary/70" />
@@ -30,7 +31,7 @@ export function ProductCard({ product }: { product: Product }) {
         <img
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
+          className="relative h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-2 group-hover:scale-95 group-hover:drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)]"
           loading="lazy"
         />
         <div className="pointer-events-none absolute inset-0 overflow-hidden">

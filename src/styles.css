@@ -310,3 +310,18 @@
   to { transform: rotate(360deg); }
 }
 .detail-row { position: relative; }
+
+/* Product card colorful hover background */
+@keyframes card-hue-shift {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+.card-hover-glow {
+  background:
+    radial-gradient(circle at 20% 20%, oklch(0.72 0.22 30 / 0.85), transparent 55%),
+    radial-gradient(circle at 80% 25%, oklch(0.78 0.20 90 / 0.85), transparent 55%),
+    radial-gradient(circle at 25% 80%, oklch(0.70 0.22 260 / 0.85), transparent 55%),
+    radial-gradient(circle at 80% 80%, oklch(0.72 0.22 150 / 0.85), transparent 55%),
+    linear-gradient(135deg, oklch(0.55 0.20 300), oklch(0.6 0.22 25));
+  animation: card-hue-shift 8s linear infinite;
+}
