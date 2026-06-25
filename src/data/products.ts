@@ -22,6 +22,8 @@ export interface Product {
   sold?: number;
   stock?: number;
   options?: ProductOption[];
+  brand?: string;
+  tags?: string[];
 }
 
 const img = (q: string, seed: number) =>
