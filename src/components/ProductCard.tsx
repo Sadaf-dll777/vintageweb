@@ -9,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
     <Link
       to="/product/$slug"
       params={{ slug: product.id }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-primary hover:shadow-[0_10px_30px_-18px_var(--color-primary)]"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-primary hover:shadow-[0_0_30px_-6px_var(--color-primary),0_0_60px_-20px_var(--color-primary)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-gold/40 bg-background/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gold backdrop-blur">
@@ -23,12 +23,9 @@ export function ProductCard({ product }: { product: Product }) {
         <img
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
+          className="h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 h-[260%] w-[40%] -translate-x-[260%] -translate-y-1/2 rotate-[70deg] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-all duration-[1600ms] ease-out group-hover:translate-x-[160%] group-hover:opacity-100" />
-        </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
         <h3 className="font-display text-lg leading-tight tracking-wide transition-colors duration-300 group-hover:text-primary">
