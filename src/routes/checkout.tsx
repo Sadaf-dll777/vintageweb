@@ -6,6 +6,8 @@ import {
   ChevronRight, Landmark, Upload, Bitcoin,
 } from "lucide-react";
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
+import { useAuth } from "@/lib/store";
+import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import bracBankLogo from "@/assets/brac-bank.png.asset.json";
 import {
@@ -26,6 +28,7 @@ type MethodId = "mobile" | "bank" | "crypto";
 
 function CheckoutPage() {
   const { items, currency, setCurrency, setQty, remove, clear } = useShop();
+  const user = useAuth((s) => s.user);
   const subtotalUSD = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   const subtotalBDT = Math.round(subtotalUSD * USD_TO_BDT);
   const [tip, setTip] = useState(0);
@@ -50,6 +53,9 @@ function CheckoutPage() {
   const [epicPass, setEpicPass] = useState("");
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [notes, setNotes] = useState("");
+  useEffect(() => { if (user?.email && !email) setEmail(user.email); }, [user, email]);
 
   // Customer info
   const [fullName, setFullName] = useState("");
