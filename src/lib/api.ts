@@ -57,10 +57,12 @@ export interface ApiProduct {
   category_slug?: string | null;
   category_name?: string | null;
   description: string;
-  price_usd: number | string;
+  price_bdt: number | string;
+  price_usd?: number | string;
   image_url: string;
   badge: string;
-  in_stock: boolean;
+  stock: number;
+  in_stock?: boolean;
   sort_order: number;
   delivery: string;
   tagline: string;
@@ -108,7 +110,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 // ============ Mock backend (localStorage) ============
 
-const MOCK_KEY = "vintage_mock_db_v1";
+const MOCK_KEY = "vintage_mock_db_v2";
 
 interface MockDB {
   admins: { email: string; password: string }[];
@@ -139,10 +141,10 @@ function seedDB(): MockDB {
     category_slug: p.category,
     category_name: categories.find((c) => c.slug === p.category)?.name ?? null,
     description: p.description ?? "",
-    price_usd: p.price,
+    price_bdt: Math.round(p.price * 120),
     image_url: p.image,
     badge: p.badge ?? "",
-    in_stock: true,
+    stock: 10,
     sort_order: i,
     delivery: p.delivery ?? "",
     tagline: p.tagline ?? "",
@@ -229,10 +231,10 @@ const mockApi = {
       category_slug: cat?.slug ?? null,
       category_name: cat?.name ?? null,
       description: data.description ?? "",
-      price_usd: Number(data.price_usd ?? 0),
+      price_bdt: Number(data.price_bdt ?? 0),
       image_url: data.image_url ?? "",
       badge: data.badge ?? "",
-      in_stock: data.in_stock ?? true,
+      stock: Number(data.stock ?? 0),
       sort_order: Number(data.sort_order ?? 0),
       delivery: data.delivery ?? "",
       tagline: data.tagline ?? "",
@@ -251,7 +253,8 @@ const mockApi = {
     db.products[idx] = {
       ...db.products[idx],
       ...data,
-      price_usd: data.price_usd !== undefined ? Number(data.price_usd) : db.products[idx].price_usd,
+      price_bdt: data.price_bdt !== undefined ? Number(data.price_bdt) : db.products[idx].price_bdt,
+      stock: data.stock !== undefined ? Number(data.stock) : db.products[idx].stock,
       sort_order: data.sort_order !== undefined ? Number(data.sort_order) : db.products[idx].sort_order,
       category_slug: cat?.slug ?? db.products[idx].category_slug ?? null,
       category_name: cat?.name ?? db.products[idx].category_name ?? null,

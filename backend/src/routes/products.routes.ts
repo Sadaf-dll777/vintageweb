@@ -34,9 +34,11 @@ const productSchema = z.object({
   name: z.string().min(1),
   category_id: z.string().uuid().nullable().optional(),
   description: z.string().optional().default(""),
-  price_usd: z.number().nonnegative(),
+  price_bdt: z.number().nonnegative(),
+  price_usd: z.number().nonnegative().optional().default(0),
   image_url: z.string().url().or(z.literal("")).optional().default(""),
   badge: z.string().optional().default(""),
+  stock: z.number().int().nonnegative().optional().default(0),
   in_stock: z.boolean().optional().default(true),
   sort_order: z.number().int().optional().default(0),
   delivery: z.string().optional().default(""),
@@ -49,10 +51,10 @@ router.post("/", requireAdmin, async (req, res) => {
   const d = parsed.data;
   const row = await one(
     `INSERT INTO products
-      (slug, name, category_id, description, price_usd, image_url, badge, in_stock, sort_order, delivery, tagline)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+      (slug, name, category_id, description, price_bdt, price_usd, image_url, badge, stock, in_stock, sort_order, delivery, tagline)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
      RETURNING *`,
-    [d.slug, d.name, d.category_id ?? null, d.description, d.price_usd, d.image_url, d.badge, d.in_stock, d.sort_order, d.delivery, d.tagline],
+    [d.slug, d.name, d.category_id ?? null, d.description, d.price_bdt, d.price_usd, d.image_url, d.badge, d.stock, d.stock > 0, d.sort_order, d.delivery, d.tagline],
   );
   res.status(201).json(row);
 });

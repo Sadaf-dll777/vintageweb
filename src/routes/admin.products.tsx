@@ -15,10 +15,10 @@ const EMPTY: FormState = {
   name: "",
   category_id: null,
   description: "",
-  price_usd: 0,
+  price_bdt: 0,
   image_url: "",
   badge: "",
-  in_stock: true,
+  stock: 0,
   sort_order: 0,
   delivery: "",
   tagline: "",
@@ -36,7 +36,8 @@ function ProductsAdmin() {
       const { _editingId, ...payload } = f;
       const data: Partial<ApiProduct> = {
         ...payload,
-        price_usd: Number(payload.price_usd ?? 0),
+        price_bdt: Number(payload.price_bdt ?? 0),
+        stock: Number(payload.stock ?? 0),
         sort_order: Number(payload.sort_order ?? 0),
       };
       return _editingId ? api.updateProduct(_editingId, data) : api.createProduct(data);
@@ -119,10 +120,10 @@ function ProductsAdmin() {
                       <div className="font-mono text-[10px] text-muted-foreground">{p.slug}</div>
                     </td>
                     <td className="p-3 text-xs text-muted-foreground">{p.category_name || "—"}</td>
-                    <td className="p-3 text-right font-display font-black">${Number(p.price_usd).toFixed(2)}</td>
+                    <td className="p-3 text-right font-display font-black">৳{Number(p.price_bdt ?? 0).toLocaleString()}</td>
                     <td className="p-3 text-center">
-                      {p.in_stock ? (
-                        <span className="inline-flex rounded border border-success/40 bg-success/10 px-1.5 py-0.5 text-[10px] font-bold uppercase text-success">In</span>
+                      {Number(p.stock ?? 0) > 0 ? (
+                        <span className="inline-flex rounded border border-success/40 bg-success/10 px-1.5 py-0.5 text-[10px] font-bold uppercase text-success">{p.stock}</span>
                       ) : (
                         <span className="inline-flex rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase text-muted-foreground">Out</span>
                       )}
@@ -184,8 +185,11 @@ function ProductsAdmin() {
             ))}
           </select>
         </Field>
-        <Field label="Price (USD)">
-          <input type="number" step="0.01" value={form.price_usd ?? 0} onChange={(e) => setForm({ ...form, price_usd: Number(e.target.value) })} className="input" />
+        <Field label="Price (BDT ৳)">
+          <input type="number" step="1" value={form.price_bdt ?? 0} onChange={(e) => setForm({ ...form, price_bdt: Number(e.target.value) })} className="input" />
+        </Field>
+        <Field label="Stock quantity">
+          <input type="number" step="1" min="0" value={form.stock ?? 0} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} className="input" />
         </Field>
         <Field label="Image">
           <div className="flex items-start gap-3">
@@ -223,16 +227,6 @@ function ProductsAdmin() {
         <Field label="Description">
           <textarea value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input min-h-[80px]" />
         </Field>
-        <label className="flex cursor-pointer items-center justify-between rounded-md border border-border bg-background px-3 py-2 text-sm">
-          <span className="font-medium">In stock</span>
-          <input
-            type="checkbox"
-            checked={form.in_stock ?? true}
-            onChange={(e) => setForm({ ...form, in_stock: e.target.checked })}
-            className="h-4 w-4 accent-primary"
-          />
-        </label>
-
         {save.error && (
           <p className="rounded border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
             {(save.error as Error).message}
