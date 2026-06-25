@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useAuth } from "@/lib/store";
 import { LogIn, UserPlus, Mail, Lock, User, Eye, EyeOff, ShieldCheck, Zap, Sparkles, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,12 @@ function AuthPage() {
   const [mode, setMode] = useState<Mode>("signin");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const signIn = useAuth((s) => s.signIn);
+  const signUp = useAuth((s) => s.signUp);
   const navigate = useNavigate();
 
   const isSignIn = mode === "signin";
@@ -86,16 +93,24 @@ function AuthPage() {
             className="mt-6 space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
+              setError(null);
               setLoading(true);
               setTimeout(() => {
+                const res = isSignIn
+                  ? signIn(email, password)
+                  : signUp(email, password, name);
                 setLoading(false);
-                navigate({ to: "/" });
-              }, 600);
+                if (!res.ok) {
+                  setError(res.error || "Something went wrong");
+                  return;
+                }
+                navigate({ to: "/profile" });
+              }, 400);
             }}
           >
             {!isSignIn && (
               <Field label="Display Name" delay={260}>
-                <InputWithIcon icon={<User className="h-4 w-4" />} placeholder="Your name" />
+                <InputWithIcon icon={<User className="h-4 w-4" />} placeholder="Your name" value={name} onChange={setName} />
               </Field>
             )}
 
@@ -104,6 +119,8 @@ function AuthPage() {
                 icon={<Mail className="h-4 w-4" />}
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={setEmail}
               />
             </Field>
 
@@ -112,6 +129,8 @@ function AuthPage() {
                 icon={<Lock className="h-4 w-4" />}
                 type={showPw ? "text" : "password"}
                 placeholder="••••••••"
+                value={password}
+                onChange={setPassword}
                 trailing={
                   <button
                     type="button"
@@ -124,6 +143,12 @@ function AuthPage() {
                 }
               />
             </Field>
+
+            {error && (
+              <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary">
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"
@@ -204,11 +229,15 @@ function InputWithIcon({
   trailing,
   type = "text",
   placeholder,
+  value,
+  onChange,
 }: {
   icon: React.ReactNode;
   trailing?: React.ReactNode;
   type?: string;
   placeholder?: string;
+  value?: string;
+  onChange?: (v: string) => void;
 }) {
   return (
     <div className="group relative flex items-center rounded-xl border border-border bg-input/40 transition-all focus-within:border-primary/60 focus-within:bg-input/60 focus-within:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.12)]">
@@ -216,6 +245,8 @@ function InputWithIcon({
       <input
         type={type}
         placeholder={placeholder}
+        value={value ?? ""}
+        onChange={(e) => onChange?.(e.target.value)}
         className="w-full bg-transparent px-3 py-3 text-sm outline-none placeholder:text-muted-foreground/70"
       />
       {trailing && <span className="pr-3.5">{trailing}</span>}
