@@ -21,7 +21,6 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
-import { Route as AuthInitiateRouteImport } from './routes/auth.initiate'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -88,11 +87,6 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
   path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthInitiateRoute = AuthInitiateRouteImport.update({
-  id: '/initiate',
-  path: '/initiate',
-  getParentRoute: () => AuthRoute,
-} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -122,7 +116,7 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gift-cards': typeof GiftCardsRoute
@@ -135,13 +129,12 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
-  '/auth/initiate': typeof AuthInitiateRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gift-cards': typeof GiftCardsRoute
@@ -154,7 +147,6 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
-  '/auth/initiate': typeof AuthInitiateRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -162,7 +154,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gift-cards': typeof GiftCardsRoute
@@ -175,7 +167,6 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
-  '/auth/initiate': typeof AuthInitiateRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -197,7 +188,6 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
-    | '/auth/initiate'
     | '/product/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -216,7 +206,6 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
-    | '/auth/initiate'
     | '/product/$slug'
     | '/admin'
   id:
@@ -236,7 +225,6 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
-    | '/auth/initiate'
     | '/product/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -244,7 +232,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AuthRoute: typeof AuthRouteWithChildren
+  AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   GiftCardsRoute: typeof GiftCardsRoute
@@ -341,13 +329,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/initiate': {
-      id: '/auth/initiate'
-      path: '/initiate'
-      fullPath: '/auth/initiate'
-      preLoaderRoute: typeof AuthInitiateRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/admin/products': {
       id: '/admin/products'
       path: '/products'
@@ -406,20 +387,10 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface AuthRouteChildren {
-  AuthInitiateRoute: typeof AuthInitiateRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthInitiateRoute: AuthInitiateRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  AuthRoute: AuthRouteWithChildren,
+  AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   GiftCardsRoute: GiftCardsRoute,
