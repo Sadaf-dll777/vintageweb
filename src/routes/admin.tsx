@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { adminToken, apiEnabled, resetMockDB, usingMock } from "@/lib/api";
+import { apiEnabled, resetMockDB, usingMock } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, Package, FolderTree, ShoppingBag, FileText, LogOut, RotateCcw, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -19,18 +20,37 @@ function AdminLayout() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [ready, setReady] = useState(false);
+  const [denied, setDenied] = useState(false);
 
   useEffect(() => {
     if (!apiEnabled) {
       setReady(true);
       return;
     }
-    const token = adminToken.get();
-    if (!token && pathname !== "/admin/login") {
-      navigate({ to: "/admin/login" });
+    if (pathname === "/admin/login") {
+      setReady(true);
       return;
     }
-    setReady(true);
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate({ to: "/auth", search: { redirect: "/admin" } });
+        return;
+      }
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: user.id,
+        _role: "admin",
+      });
+      if (cancelled) return;
+      if (error || !data) {
+        setDenied(true);
+        setReady(true);
+        return;
+      }
+      setReady(true);
+    })();
+    return () => { cancelled = true; };
   }, [pathname, navigate]);
 
   if (!apiEnabled) {
@@ -52,6 +72,27 @@ function AdminLayout() {
   if (!ready) return null;
 
   if (pathname === "/admin/login") return <Outlet />;
+
+  if (denied) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16">
+        <h1 className="text-2xl font-bold">Access denied</h1>
+        <p className="mt-3 text-muted-foreground">
+          Your account does not have the <code className="rounded bg-muted px-1.5 py-0.5">admin</code> role.
+          Ask an administrator to grant access.
+        </p>
+        <button
+          onClick={async () => {
+            await supabase.auth.signOut();
+            navigate({ to: "/auth", search: { redirect: "/admin" } });
+          }}
+          className="mt-6 inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+        >
+          Sign out
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -88,8 +129,9 @@ function AdminLayout() {
             )}
             <button
               onClick={() => {
-                adminToken.clear();
-                navigate({ to: "/admin/login" });
+                supabase.auth.signOut().then(() => {
+                  navigate({ to: "/auth", search: { redirect: "/admin" } });
+                });
               }}
               className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
             >
