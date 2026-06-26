@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Zap, ShoppingBag, Gamepad2, Tv, Gift, User, Joystick, Globe, ShieldCheck, Tag, Package, Users, Award } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { products } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 import { ProductCard } from "@/components/ProductCard";
@@ -37,44 +38,79 @@ function Index() {
     <div>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-30 transition-all duration-1000"
-          style={{
-            backgroundImage: `url(${hero.image})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            filter: "blur(40px)",
-          }}
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`bg-${idx}`}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 0.3, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(${hero.image})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "blur(40px)",
+            }}
+          />
+        </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
         <div className="container-wide relative grid grid-cols-1 items-center gap-10 py-16 lg:grid-cols-[1.4fr_1fr] lg:py-24">
           {/* Left */}
-          <div key={`text-${idx}`} className="min-w-0">
-            <span className="hero-rise inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary" style={{ animationDelay: "0ms" }}>
-              <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> {hero.badge ?? "Featured"}
-            </span>
-            <h1 className="hero-rise mt-5 font-display text-5xl uppercase leading-[0.95] tracking-wide sm:text-6xl lg:text-7xl xl:text-8xl" style={{ animationDelay: "100ms" }}>
-              {hero.name}
-            </h1>
-            <p className="hero-rise mt-5 max-w-xl text-base text-muted-foreground" style={{ animationDelay: "220ms" }}>{hero.tagline}</p>
-            <div className="hero-rise mt-7 flex flex-wrap gap-3" style={{ animationDelay: "320ms" }}>
-              <button
-                onClick={() => add(hero)}
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-base uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
+          <div className="min-w-0">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`text-${idx}`}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.08 }}
               >
-                Buy Now <Zap className="h-4 w-4 fill-current" strokeWidth={0} />
-              </button>
-              <Link
-                to="/shop"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-7 py-3.5 font-display text-base uppercase tracking-wider transition hover:border-primary"
-              >
-                <ShoppingBag className="h-4 w-4" /> Game Top-Up
-              </Link>
-            </div>
-            <div className="hero-rise mt-7 flex items-center gap-4" style={{ animationDelay: "420ms" }}>
-              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Starting at</span>
-              <span className="font-display text-2xl text-gold">{formatPrice(hero.price, currency)}</span>
-            </div>
+                <motion.span
+                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.0 }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary"
+                >
+                  <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> {hero.badge ?? "Featured"}
+                </motion.span>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+                  className="mt-5 font-display text-5xl uppercase leading-[0.95] tracking-wide sm:text-6xl lg:text-7xl xl:text-8xl"
+                >
+                  {hero.name}
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}
+                  className="mt-5 max-w-xl text-base text-muted-foreground"
+                >
+                  {hero.tagline}
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}
+                  className="mt-7 flex flex-wrap gap-3"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+                    onClick={() => add(hero)}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-base uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
+                  >
+                    Buy Now <Zap className="h-4 w-4 fill-current" strokeWidth={0} />
+                  </motion.button>
+                  <Link
+                    to="/shop"
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-7 py-3.5 font-display text-base uppercase tracking-wider transition hover:border-primary"
+                  >
+                    <ShoppingBag className="h-4 w-4" /> Game Top-Up
+                  </Link>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}
+                  className="mt-7 flex items-center gap-4"
+                >
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Starting at</span>
+                  <span className="font-display text-2xl text-gold">{formatPrice(hero.price, currency)}</span>
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
 
             {/* dots */}
             <div className="mt-10 flex items-center gap-3">
@@ -101,21 +137,32 @@ function Index() {
           </div>
 
           {/* Right product card preview */}
-          <div key={`card-${idx}`} className="relative">
-            <div className="hero-slide-in overflow-hidden rounded-3xl border border-border bg-card glow-red">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img src={hero.image} alt={hero.name} className="h-full w-full object-cover" />
-              </div>
-              <div className="space-y-3 p-5">
-                <h3 className="font-display text-xl">{hero.name}</h3>
-                <div className="flex items-center justify-between">
-                  <span className="font-display text-2xl text-primary">{formatPrice(hero.price, currency)}</span>
-                  <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
-                    <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
-                  </span>
+          <div className="relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`card-${idx}`}
+                initial={{ opacity: 0, x: 60, rotateY: -8 }}
+                animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                exit={{ opacity: 0, x: -40, rotateY: 8 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="overflow-hidden rounded-3xl border border-border bg-card glow-red"
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img src={hero.image} alt={hero.name} className="h-full w-full object-cover" />
                 </div>
-              </div>
-            </div>
+                <div className="space-y-3 p-5">
+                  <h3 className="font-display text-xl">{hero.name}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="font-display text-2xl text-primary">{formatPrice(hero.price, currency)}</span>
+                    <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
+                      <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </section>
@@ -215,8 +262,16 @@ function Index() {
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {products.slice(0, 10).map((p) => (
-            <ProductCard key={p.id} product={p} />
+          {products.slice(0, 10).map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, delay: (i % 5) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <ProductCard product={p} />
+            </motion.div>
           ))}
         </div>
       </section>
