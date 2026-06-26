@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ThemeProvider } from "next-themes";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -122,6 +123,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem={false}
+        storageKey="vs-theme"
+        disableTransitionOnChange
+      >
       <div className="flex min-h-screen flex-col bg-background text-foreground">
         {!isAdmin && <Header />}
         <main className="flex-1">
@@ -139,6 +147,7 @@ function RootComponent() {
         </main>
         {!isAdmin && <Footer />}
       </div>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

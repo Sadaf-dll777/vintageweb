@@ -1,33 +1,14 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "vs-theme";
-
-function applyTheme(theme: "dark" | "light") {
-  const root = document.documentElement;
-  if (theme === "light") {
-    root.classList.add("light");
-    root.classList.remove("dark");
-  } else {
-    root.classList.add("dark");
-    root.classList.remove("light");
-  }
-}
-
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const saved = (typeof localStorage !== "undefined" && localStorage.getItem(STORAGE_KEY)) as
-      | "dark"
-      | "light"
-      | null;
-    const initial = saved ?? "dark";
-    setTheme(initial);
-    applyTheme(initial);
-  }, []);
+  useEffect(() => setMounted(true), []);
+  const theme = (resolvedTheme === "light" ? "light" : "dark") as "dark" | "light";
 
   const toggle = async () => {
     const next: "dark" | "light" = theme === "dark" ? "light" : "dark";
@@ -37,9 +18,7 @@ export function ThemeToggle() {
     };
 
     if (!btn || !doc.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      applyTheme(next);
       setTheme(next);
-      try { localStorage.setItem(STORAGE_KEY, next); } catch {}
       return;
     }
 
@@ -52,9 +31,7 @@ export function ThemeToggle() {
     );
 
     const transition = doc.startViewTransition(() => {
-      applyTheme(next);
       setTheme(next);
-      try { localStorage.setItem(STORAGE_KEY, next); } catch {}
     });
 
     await transition.ready;
@@ -79,12 +56,13 @@ export function ThemeToggle() {
       ref={btnRef}
       onClick={toggle}
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      suppressHydrationWarning
       className={cn(
         "relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:text-foreground",
       )}
     >
-      <span key={theme} className="theme-icon-in inline-flex">
-        {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+      <span key={mounted ? theme : "init"} className="theme-icon-in inline-flex" suppressHydrationWarning>
+        {!mounted ? <Moon className="h-4 w-4" /> : theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
       </span>
     </button>
   );
