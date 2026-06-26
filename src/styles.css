@@ -108,12 +108,6 @@
 ::view-transition-new(root) {
   z-index: 9999;
 }
-.dark::view-transition-old(root) {
-  z-index: 9999;
-}
-.dark::view-transition-new(root) {
-  z-index: 1;
-}
 
 @keyframes theme-icon-in {
   0% { opacity: 0; transform: rotate(-90deg) scale(0.6); }
