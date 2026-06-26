@@ -1,54 +1,47 @@
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { env } from "./env";
-import authRoutes from "./routes/auth.routes";
-import productsRoutes from "./routes/products.routes";
-import categoriesRoutes from "./routes/categories.routes";
-import ordersRoutes from "./routes/orders.routes";
-import siteRoutes from "./routes/site.routes";
-import uploadRoutes from "./routes/upload.routes";
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
+import cookie from '@fastify/cookie';
+import rateLimit from '@fastify/rate-limit';
+import multipart from '@fastify/multipart';
+import { env } from './env.js';
+import { attachSession } from './middleware/auth.js';
+import { authRoutes } from './modules/auth/routes.js';
+import { userRoutes } from './modules/users/routes.js';
+import { roleRoutes } from './modules/roles/routes.js';
+import { categoryRoutes } from './modules/categories/routes.js';
+import { productRoutes } from './modules/products/routes.js';
+import { stockRoutes } from './modules/stock/routes.js';
+import { orderRoutes } from './modules/orders/routes.js';
 
-const app = express();
-
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      if (!origin) return cb(null, true);
-      if (env.CORS_ORIGINS.includes(origin)) return cb(null, true);
-      cb(new Error(`CORS: ${origin} not allowed`));
-    },
-    credentials: true,
-  }),
-);
-app.use(express.json({ limit: "2mb" }));
-
-// Serve uploaded files
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-
-app.get("/api/health", (_req, res) => res.json({ ok: true }));
-
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productsRoutes);
-app.use("/api/categories", categoriesRoutes);
-app.use("/api/orders", ordersRoutes);
-app.use("/api/site", siteRoutes);
-app.use("/api/upload", uploadRoutes);
-
-// Error handler
-app.use(
-  (
-    err: Error,
-    _req: express.Request,
-    res: express.Response,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _next: express.NextFunction,
-  ) => {
-    console.error(err);
-    res.status(500).json({ error: err.message || "Server error" });
-  },
-);
-
-app.listen(env.PORT, () => {
-  console.log(`API listening on http://localhost:${env.PORT}`);
+const app = Fastify({
+  logger: env.NODE_ENV === 'development'
+    ? { transport: { target: 'pino-pretty', options: { colorize: true } } }
+    : true,
 });
+
+await app.register(helmet, { contentSecurityPolicy: false });
+await app.register(cors, { origin: env.APP_URL, credentials: true });
+await app.register(cookie);
+await app.register(rateLimit, { max: 200, timeWindow: '1 minute' });
+await app.register(multipart);
+
+app.addHook('preHandler', attachSession);
+
+app.get('/health', async () => ({ ok: true, env: env.NODE_ENV, time: new Date().toISOString() }));
+
+await app.register(authRoutes);
+await app.register(userRoutes);
+await app.register(roleRoutes);
+await app.register(categoryRoutes);
+await app.register(productRoutes);
+await app.register(stockRoutes);
+await app.register(orderRoutes);
+
+app.setErrorHandler((err, _req, reply) => {
+  app.log.error(err);
+  const status = (err as any).statusCode ?? 500;
+  reply.status(status).send({ error: err.message ?? 'internal_error' });
+});
+
+await app.listen({ port: env.PORT, host: '0.0.0.0' });
