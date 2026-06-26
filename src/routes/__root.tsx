@@ -120,7 +120,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const browserPathname = typeof window !== "undefined" ? window.location.pathname : pathname;
-  const isAdmin = browserPathname.startsWith("/admin") || browserPathname === "/auth";
+  const isAdmin = browserPathname.startsWith("/admin") || browserPathname.startsWith("/auth");
 
   return (
     <QueryClientProvider client={queryClient}>
