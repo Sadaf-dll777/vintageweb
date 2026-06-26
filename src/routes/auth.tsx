@@ -34,6 +34,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const redirectTo = (search.redirect && search.redirect.startsWith("/")) ? search.redirect : "/profile";
+  const isAdminLogin = redirectTo.startsWith("/admin");
 
   const isSignIn = mode === "signin";
 
@@ -95,7 +96,7 @@ function AuthPage() {
         }}
       />
 
-      <div className="container-wide flex min-h-[calc(100vh-4rem)] items-center justify-center py-16">
+      <div className="container-wide flex min-h-screen items-center justify-center py-16">
         <div
           key={mode}
           className="auth-card-in w-full max-w-md rounded-2xl border border-border/60 bg-card/60 p-8 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)] backdrop-blur-xl sm:p-10"
@@ -105,7 +106,7 @@ function AuthPage() {
             className="auth-row-in mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-primary/40 bg-primary/10 text-primary glow-red"
             style={{ animationDelay: "0ms" }}
           >
-            {isSignIn ? <LogIn className="h-6 w-6" /> : <UserPlus className="h-6 w-6" />}
+            {isAdminLogin ? <ShieldCheck className="h-6 w-6" /> : isSignIn ? <LogIn className="h-6 w-6" /> : <UserPlus className="h-6 w-6" />}
           </div>
 
           {/* Heading */}
@@ -113,13 +114,15 @@ function AuthPage() {
             className="auth-row-in mt-5 text-center font-display text-4xl tracking-wide"
             style={{ animationDelay: "80ms" }}
           >
-            {isSignIn ? "Welcome Back" : "Create Account"}
+            {isAdminLogin ? "Admin Sign In" : isSignIn ? "Welcome Back" : "Create Account"}
           </h1>
           <p
             className="auth-row-in mt-2 text-center text-sm text-muted-foreground"
             style={{ animationDelay: "140ms" }}
           >
-            {isSignIn
+            {isAdminLogin
+              ? "Sign in with your administrator account"
+              : isSignIn
               ? "Sign in to your VintageStore account"
               : "Join VintageStore for the best gaming deals"}
           </p>
@@ -166,7 +169,7 @@ function AuthPage() {
 
           {/* Form */}
           <form className="mt-2 space-y-4" onSubmit={handleSubmit}>
-            {!isSignIn && (
+            {!isSignIn && !isAdminLogin && (
               <Field label="Display Name" delay={260}>
                 <InputWithIcon icon={<User className="h-4 w-4" />} placeholder="Your name" value={name} onChange={setName} />
               </Field>
@@ -233,12 +236,12 @@ function AuthPage() {
             className="auth-row-in mt-5 space-y-2 text-center text-sm"
             style={{ animationDelay: `${!isSignIn ? 560 : 460}ms` }}
           >
-            {isSignIn && (
+            {isSignIn && !isAdminLogin && (
               <button type="button" className="text-muted-foreground hover:text-foreground">
                 Forgot password?
               </button>
             )}
-            <div className={cn(!isSignIn && "pt-1")}>
+            {!isAdminLogin && <div className={cn(!isSignIn && "pt-1")}>
               <span className="text-muted-foreground">
                 {isSignIn ? "Don't have an account? " : "Already have an account? "}
               </span>
@@ -249,14 +252,14 @@ function AuthPage() {
               >
                 {isSignIn ? "Sign up" : "Sign in"}
               </button>
-            </div>
+            </div>}
           </div>
 
-          <div className="mt-6 text-center">
+          {!isAdminLogin && <div className="mt-6 text-center">
             <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">
               ← Back to store
             </Link>
-          </div>
+          </div>}
         </div>
       </div>
     </div>
