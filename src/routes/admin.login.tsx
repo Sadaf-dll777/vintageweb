@@ -1,34 +1,24 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { adminToken, api, usingMock } from "@/lib/api";
-import { Zap, LogIn } from "lucide-react";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/admin/login")({
-  component: LoginPage,
+  component: LoginRedirect,
 });
 
-function LoginPage() {
+function LoginRedirect() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    navigate({ to: "/auth", search: { redirect: "/admin" } });
+  }, [navigate]);
+  return (
+    <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
+      Redirecting to sign in…
+    </div>
+  );
+}
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      const res = await api.login(email, password);
-      adminToken.set(res.token);
-      navigate({ to: "/admin" });
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
+// Unused — kept to avoid removing the JSX entirely; not referenced.
+function _LegacyForm() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-12">
       {/* Background glow */}
