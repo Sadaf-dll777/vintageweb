@@ -137,7 +137,7 @@ function Index() {
           </div>
 
           {/* Right product card preview */}
-          <div className="relative">
+          <div className="relative" style={{ perspective: 1000 }}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={`card-${idx}`}
@@ -145,22 +145,41 @@ function Index() {
                 animate={{ opacity: 1, x: 0, rotateY: 0 }}
                 exit={{ opacity: 0, x: -40, rotateY: 8 }}
                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -6, scale: 1.02 }}
-                className="overflow-hidden rounded-3xl border border-border bg-card glow-red"
+                className="relative"
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img src={hero.image} alt={hero.name} className="h-full w-full object-cover" />
-                </div>
-                <div className="space-y-3 p-5">
-                  <h3 className="font-display text-xl">{hero.name}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="font-display text-2xl text-primary">{formatPrice(hero.price, currency)}</span>
-                    <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
-                      <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
-                    </span>
+                {/* Ambient pulsing glow ring */}
+                <motion.div
+                  className="pointer-events-none absolute -inset-1.5 rounded-[1.4rem] bg-primary/20 blur-2xl"
+                  animate={{ opacity: [0.25, 0.55, 0.25], scale: [0.96, 1.04, 0.96] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                  whileHover={{ y: -14, scale: 1.03, rotateY: 5, rotateX: -2 }}
+                  className="relative overflow-hidden rounded-3xl border border-border bg-card glow-red"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <motion.img
+                      src={hero.image}
+                      alt={hero.name}
+                      className="h-full w-full object-cover"
+                      animate={{ scale: [1, 1.06, 1] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    />
                   </div>
-                </div>
+                  <div className="space-y-3 p-5">
+                    <h3 className="font-display text-xl">{hero.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <span className="font-display text-2xl text-primary">{formatPrice(hero.price, currency)}</span>
+                      <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
+                        <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
             </AnimatePresence>
           </div>
