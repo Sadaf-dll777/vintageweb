@@ -119,7 +119,8 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isAdmin = pathname.startsWith("/admin") || pathname === "/auth";
+  const browserPathname = typeof window !== "undefined" ? window.location.pathname : pathname;
+  const isAdmin = browserPathname.startsWith("/admin") || browserPathname === "/auth";
 
   return (
     <QueryClientProvider client={queryClient}>
