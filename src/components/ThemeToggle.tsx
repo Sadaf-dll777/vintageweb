@@ -36,17 +36,17 @@ export function ThemeToggle() {
 
     await transition.ready;
 
-    const goingDark = next === "dark";
     document.documentElement.animate(
       {
-        clipPath: goingDark
-          ? [`circle(${endRadius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
-          : [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`],
+        clipPath: [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${endRadius}px at ${x}px ${y}px)`,
+        ],
       },
       {
         duration: 520,
         easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-        pseudoElement: goingDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
+        pseudoElement: "::view-transition-new(root)",
       },
     );
   };
