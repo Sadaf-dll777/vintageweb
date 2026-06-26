@@ -118,15 +118,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const location = useRouterState({ select: (s) => s.location });
-  const pathname = location.pathname;
-  const redirect = typeof location.search.redirect === "string" ? location.search.redirect : "";
-  const isAdminAuth =
-    pathname === "/auth" &&
-    (redirect.startsWith("/admin") ||
-      location.href.includes("redirect=%2Fadmin") ||
-      location.href.includes("redirect=/admin"));
-  const isAdmin = pathname.startsWith("/admin") || isAdminAuth;
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAdmin = pathname.startsWith("/admin") || pathname === "/auth";
 
   return (
     <QueryClientProvider client={queryClient}>
