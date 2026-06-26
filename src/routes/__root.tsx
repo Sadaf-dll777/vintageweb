@@ -121,7 +121,12 @@ function RootComponent() {
   const location = useRouterState({ select: (s) => s.location });
   const pathname = location.pathname;
   const redirect = typeof location.search.redirect === "string" ? location.search.redirect : "";
-  const isAdmin = pathname.startsWith("/admin") || (pathname === "/auth" && redirect.startsWith("/admin"));
+  const isAdminAuth =
+    pathname === "/auth" &&
+    (redirect.startsWith("/admin") ||
+      location.href.includes("redirect=%2Fadmin") ||
+      location.href.includes("redirect=/admin"));
+  const isAdmin = pathname.startsWith("/admin") || isAdminAuth;
 
   return (
     <QueryClientProvider client={queryClient}>
