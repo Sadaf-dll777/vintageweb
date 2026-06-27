@@ -3,6 +3,7 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  useNavigate,
   useRouter,
   useRouterState,
   HeadContent,
@@ -16,6 +17,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "../components/layout/Header";
 import { Footer } from "../components/layout/Footer";
+import { useAuth } from "../lib/store";
 
 function NotFoundComponent() {
   return (
@@ -118,9 +120,19 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const browserPathname = typeof window !== "undefined" ? window.location.pathname : pathname;
   const isAdmin = browserPathname.startsWith("/admin") || browserPathname.startsWith("/auth");
+  const authUser = useAuth((s) => s.user);
+
+  useEffect(() => {
+    if (!authUser || typeof window === "undefined") return;
+    const redirect = window.sessionStorage.getItem("vs-auth-redirect");
+    if (!redirect?.startsWith("/")) return;
+    window.sessionStorage.removeItem("vs-auth-redirect");
+    navigate({ to: redirect });
+  }, [authUser, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/auth_/initiate")({
@@ -31,12 +31,11 @@ function AuthInitiatePage() {
           throw new Error("Unsupported sign-in provider");
         }
 
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo },
+        const result = await lovable.auth.signInWithOAuth("google", {
+          redirect_uri: redirectTo,
         });
 
-        if (error) throw error;
+        if (result.error) throw result.error;
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : "Google sign-in failed");
