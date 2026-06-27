@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo, useRef, useEffect } from "react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import {
   Search,
   SlidersHorizontal,
@@ -24,7 +26,13 @@ import { products, categories, type Category } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { cn } from "@/lib/utils";
 
+const CATEGORY_IDS = ["all", "top-up", "subscriptions", "gift-cards", "accounts", "games", "region-change"] as const;
+const shopSearchSchema = z.object({
+  cat: fallback(z.enum(CATEGORY_IDS), "all").default("all"),
+});
+
 export const Route = createFileRoute("/shop")({
+  validateSearch: zodValidator(shopSearchSchema),
   head: () => ({
     meta: [
       { title: "Shop — VintageStore" },
@@ -114,7 +122,9 @@ function tagsOf(name: string): string[] {
 }
 
 function ShopPage() {
-  const [cat, setCat] = useState<Category | "all">("all");
+  const { cat: catFromUrl } = Route.useSearch();
+  const [cat, setCat] = useState<Category | "all">(catFromUrl);
+  useEffect(() => { setCat(catFromUrl); }, [catFromUrl]);
   const [q, setQ] = useState("");
   const [brand, setBrand] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("popular");
