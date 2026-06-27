@@ -50,30 +50,8 @@ export function Reviews() {
                   y: isActive ? -8 : 0,
                 }}
                 transition={{ type: "spring", stiffness: 220, damping: 22 }}
-                className={`relative flex h-full flex-col gap-4 rounded-2xl border bg-card p-6 transition-colors duration-500 ${
-                  isActive
-                    ? "border-gold/60 shadow-[0_20px_60px_-15px_color-mix(in_oklab,var(--gold)_45%,transparent)]"
-                    : "border-border"
-                }`}
+                className="relative flex h-full flex-col gap-4 rounded-2xl border border-border bg-card p-6 transition-colors duration-300 hover:border-primary"
               >
-                {isActive && (
-                  <motion.span
-                    aria-hidden
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0.4, 0.8, 0.4] }}
-                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                    className="pointer-events-none absolute -inset-px rounded-2xl"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, color-mix(in oklab, var(--gold) 35%, transparent), transparent 40%, color-mix(in oklab, var(--color-primary) 30%, transparent))",
-                      WebkitMask:
-                        "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-                      WebkitMaskComposite: "xor",
-                      maskComposite: "exclude",
-                      padding: "1px",
-                    }}
-                  />
-                )}
                 <div className="relative flex gap-1 text-gold">
                   {Array.from({ length: r.stars }).map((_, j) => (
                     <Star key={j} className="h-4 w-4 fill-current" strokeWidth={0} />
