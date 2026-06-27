@@ -34,11 +34,13 @@ export function WhyUs() {
               <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
                 <span className="absolute left-1/2 top-1/2 h-[260%] w-[40%] -translate-x-[160%] -translate-y-1/2 rotate-45 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-all duration-[1600ms] ease-out group-hover:translate-x-[60%] group-hover:opacity-100" />
               </span>
-              <span className="relative grid h-11 w-11 place-items-center rounded-xl bg-primary/15 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/25 group-hover:shadow-[0_0_24px_-2px_var(--color-primary)]">
-                <it.Icon className="h-5 w-5" />
-              </span>
-              <h3 className="relative mt-4 font-display text-xl tracking-wide transition-colors duration-300 group-hover:text-primary">{it.title}</h3>
-              <p className="relative mt-2 text-sm text-muted-foreground">{it.desc}</p>
+              <div className="relative flex items-center gap-4">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/25 group-hover:shadow-[0_0_24px_-2px_var(--color-primary)]">
+                  <it.Icon className="h-5 w-5" />
+                </span>
+                <h3 className="font-display text-xl font-bold tracking-wide transition-colors duration-300 group-hover:text-primary">{it.title}</h3>
+              </div>
+              <p className="relative mt-3 text-sm text-muted-foreground">{it.desc}</p>
             </div>
           ))}
         </div>
