@@ -241,12 +241,12 @@ function Index() {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
-            { id: "top-up", label: "Top-Up", Icon: Gamepad2, color: "from-purple-500/30 to-purple-600/10", icon: "text-purple-400" },
-            { id: "subscriptions", label: "Subscriptions", Icon: Tv, color: "from-blue-500/30 to-blue-600/10", icon: "text-blue-400" },
-            { id: "gift-cards", label: "Gift Cards", Icon: Gift, color: "from-orange-500/30 to-orange-600/10", icon: "text-orange-400" },
-            { id: "accounts", label: "Accounts", Icon: User, color: "from-violet-500/30 to-violet-600/10", icon: "text-violet-300" },
-            { id: "games", label: "Games", Icon: Joystick, color: "from-pink-500/30 to-pink-600/10", icon: "text-pink-400" },
-            { id: "region-change", label: "Region Change", Icon: Globe, color: "from-cyan-500/30 to-cyan-600/10", icon: "text-cyan-400" },
+            { id: "top-up", label: "Top-Up", Icon: Gamepad2, color: "from-purple-500/60 to-purple-600/30", icon: "text-purple-300" },
+            { id: "subscriptions", label: "Subscriptions", Icon: Tv, color: "from-blue-500/60 to-blue-600/30", icon: "text-blue-300" },
+            { id: "gift-cards", label: "Gift Cards", Icon: Gift, color: "from-orange-500/60 to-orange-600/30", icon: "text-orange-300" },
+            { id: "accounts", label: "Accounts", Icon: User, color: "from-violet-500/60 to-violet-600/30", icon: "text-violet-200" },
+            { id: "games", label: "Games", Icon: Joystick, color: "from-pink-500/60 to-pink-600/30", icon: "text-pink-300" },
+            { id: "region-change", label: "Region Change", Icon: Globe, color: "from-cyan-500/60 to-cyan-600/30", icon: "text-cyan-300" },
           ].map((c) => (
             <Link
               key={c.id}
@@ -258,7 +258,7 @@ function Index() {
               <span className={`relative grid h-14 w-14 place-items-center rounded-xl bg-gradient-to-br ${c.color} transition-transform duration-300 group-hover:scale-110`}>
                 <c.Icon className={`h-7 w-7 ${c.icon} transition-colors duration-300 group-hover:text-primary`} strokeWidth={2} />
               </span>
-              <span className="relative font-display text-xs uppercase tracking-widest text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
+              <span className="relative font-display text-sm font-bold uppercase tracking-widest text-foreground transition-colors duration-300 group-hover:text-primary">
                 {c.label}
               </span>
             </Link>
