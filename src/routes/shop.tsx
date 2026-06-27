@@ -202,7 +202,14 @@ function ShopPage() {
   };
 
   return (
-    <div className="container-wide py-12">
+    <div
+      className="container-wide py-12 relative"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(196,0,64,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(196,0,64,0.08) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
+      }}
+    >
       <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-primary">
         ⚡ Digital Marketplace
       </span>
