@@ -241,12 +241,12 @@ function Index() {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
-            { id: "top-up", label: "Top-Up", Icon: Gamepad2, color: "from-purple-500/70 to-purple-600/30", icon: "text-purple-200" },
-            { id: "subscriptions", label: "Subscriptions", Icon: Tv, color: "from-blue-500/70 to-blue-600/30", icon: "text-blue-200" },
-            { id: "gift-cards", label: "Gift Cards", Icon: Gift, color: "from-orange-500/70 to-orange-600/30", icon: "text-orange-200" },
-            { id: "accounts", label: "Accounts", Icon: User, color: "from-violet-500/70 to-violet-600/30", icon: "text-violet-200" },
-            { id: "games", label: "Games", Icon: Joystick, color: "from-pink-500/70 to-pink-600/30", icon: "text-pink-200" },
-            { id: "region-change", label: "Region Change", Icon: Globe, color: "from-cyan-500/70 to-cyan-600/30", icon: "text-cyan-200" },
+            { id: "top-up", label: "Top-Up", Icon: Gamepad2, color: "from-purple-500/30 to-purple-600/10", icon: "text-purple-400" },
+            { id: "subscriptions", label: "Subscriptions", Icon: Tv, color: "from-blue-500/30 to-blue-600/10", icon: "text-blue-400" },
+            { id: "gift-cards", label: "Gift Cards", Icon: Gift, color: "from-orange-500/30 to-orange-600/10", icon: "text-orange-400" },
+            { id: "accounts", label: "Accounts", Icon: User, color: "from-violet-500/30 to-violet-600/10", icon: "text-violet-300" },
+            { id: "games", label: "Games", Icon: Joystick, color: "from-pink-500/30 to-pink-600/10", icon: "text-pink-400" },
+            { id: "region-change", label: "Region Change", Icon: Globe, color: "from-cyan-500/30 to-cyan-600/10", icon: "text-cyan-400" },
           ].map((c) => (
             <Link
               key={c.id}
