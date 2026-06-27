@@ -413,16 +413,32 @@ function ProductPage() {
               ))}
             </div>
             <button
-              onClick={() => setPaused((v) => !v)}
+              onClick={() => {
+                const half = halfRef.current;
+                if (!half) return;
+                offsetRef.current = (offsetRef.current - 280 + half) % half;
+                if (trackRef.current) {
+                  trackRef.current.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+                }
+                setProgress((offsetRef.current / half) * 100);
+              }}
               className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:border-primary"
-              aria-label={paused ? "Play" : "Pause"}
+              aria-label="Previous"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setPaused((v) => !v)}
+              onClick={() => {
+                const half = halfRef.current;
+                if (!half) return;
+                offsetRef.current = (offsetRef.current + 280) % half;
+                if (trackRef.current) {
+                  trackRef.current.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+                }
+                setProgress((offsetRef.current / half) * 100);
+              }}
               className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:border-primary"
-              aria-label={paused ? "Play" : "Pause"}
+              aria-label="Next"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
