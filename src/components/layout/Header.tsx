@@ -90,8 +90,10 @@ export function Header() {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  "group relative rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300",
-                  active ? "text-primary" : "text-muted-foreground hover:text-primary",
+                  "group relative rounded-full px-4 py-1.5 text-sm font-semibold transition-all duration-300 [text-shadow:0_0_18px_rgba(255,40,90,0.45)]",
+                  active
+                    ? "text-[#ff2c5f]"
+                    : "text-muted-foreground hover:text-[#ff2c5f]",
                 )}
               >
                 {/* glowing red pill — visible on active + hover */}
