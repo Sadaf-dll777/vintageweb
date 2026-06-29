@@ -215,8 +215,43 @@ function ProductsAdmin() {
           </div>
           {uploading && <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>}
         </Field>
-        <Field label="Badge (e.g. FEATURED)">
-          <input value={form.badge ?? ""} onChange={(e) => setForm({ ...form, badge: e.target.value })} className="input" />
+        <Field label="Badge — controls Hero & Flash Deals">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { v: "", label: "None" },
+              { v: "FEATURED", label: "Featured (Hero)" },
+              { v: "HOT", label: "Hot" },
+              { v: "NEW", label: "New" },
+              { v: "FLASH -25%", label: "Flash -25%" },
+              { v: "FLASH -50%", label: "Flash -50%" },
+              { v: "FLASH -75%", label: "Flash -75%" },
+            ].map((b) => {
+              const active = (form.badge ?? "") === b.v;
+              return (
+                <button
+                  type="button"
+                  key={b.label}
+                  onClick={() => setForm({ ...form, badge: b.v })}
+                  className={`rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
+                    active
+                      ? "border-primary bg-primary text-primary-foreground shadow-md shadow-primary/30"
+                      : "border-border bg-card text-muted-foreground hover:border-primary/60 hover:text-foreground"
+                  }`}
+                >
+                  {b.label}
+                </button>
+              );
+            })}
+          </div>
+          <input
+            value={form.badge ?? ""}
+            onChange={(e) => setForm({ ...form, badge: e.target.value })}
+            placeholder="Or type a custom badge"
+            className="input mt-2"
+          />
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            FEATURED = shown in Hero carousel · FLASH (with -NN%) = shown in Flash Deals
+          </p>
         </Field>
         <Field label="Tagline">
           <input value={form.tagline ?? ""} onChange={(e) => setForm({ ...form, tagline: e.target.value })} className="input" />
