@@ -96,7 +96,7 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="border-t border-border" />
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-display text-base leading-tight tracking-wide text-foreground transition-colors duration-300 group-hover:text-primary">
+        <h3 className="font-display text-base font-medium leading-tight tracking-wide text-foreground transition-colors duration-300 group-hover:text-primary">
           {product.name}
         </h3>
         <div className="my-4 border-t border-border" />
