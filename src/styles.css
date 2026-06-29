@@ -41,8 +41,8 @@
   --color-ring: var(--ring);
   --color-gold: var(--gold);
   --color-success: var(--success);
-  --font-display: "Saira Condensed", "Archivo Black", "Bebas Neue", sans-serif;
-  --font-sans: "Barlow", "Inter", sans-serif;
+  --font-display: "Exo 2", sans-serif;
+  --font-sans: "Exo 2", sans-serif;
 }
 
 :root {
