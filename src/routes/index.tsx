@@ -92,13 +92,13 @@ function Index() {
                   <motion.button
                     whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
                     onClick={() => add(hero)}
-                    className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-base uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-base font-medium uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
                   >
                     Buy Now <Zap className="h-4 w-4 fill-current" strokeWidth={0} />
                   </motion.button>
                   <Link
                     to="/shop"
-                    className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-7 py-3.5 font-display text-base uppercase tracking-wider transition hover:border-primary"
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-7 py-3.5 font-display text-base font-medium uppercase tracking-wider transition hover:border-primary"
                   >
                     <ShoppingBag className="h-4 w-4" /> Game Top-Up
                   </Link>
