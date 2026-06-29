@@ -255,7 +255,7 @@ function ProductsAdmin() {
             {[
               { v: "", label: "None" },
               { v: "FEATURED", label: "Featured (Hero)" },
-              { v: "HOT", label: "Hot" },
+              { v: "HOT", label: "Hot (Hero)" },
               { v: "NEW", label: "New" },
               { v: "__FLASH__", label: "⚡ Flash Deal" },
             ].map((b) => {
