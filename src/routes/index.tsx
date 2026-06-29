@@ -280,7 +280,7 @@ function Index() {
             { id: "gift-cards", label: "Gift Cards", Icon: Gift, color: "from-orange-500/30 to-orange-600/10", icon: "text-orange-400" },
             { id: "accounts", label: "Accounts", Icon: User, color: "from-violet-500/30 to-violet-600/10", icon: "text-violet-300" },
             { id: "games", label: "Games", Icon: Joystick, color: "from-pink-500/30 to-pink-600/10", icon: "text-pink-400" },
-            { id: "software", label: "Software", Icon: Globe, color: "from-cyan-500/30 to-cyan-600/10", icon: "text-cyan-400" },
+            { id: "software", label: "Software", Icon: Laptop, color: "from-cyan-500/30 to-cyan-600/10", icon: "text-cyan-400" },
           ].map((c) => (
             <Link
               key={c.id}
