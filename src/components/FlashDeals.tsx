@@ -179,7 +179,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
               {deal.originalPrice} {currency}
             </span>
             {discount > 0 && (
-              <span className="rounded-md bg-[oklch(0.62_0.22_25_/_0.18)] px-1.5 py-0.5 text-[10px] font-black tabular-nums text-primary">
+              <span className="rounded-md bg-[oklch(0.62_0.22_25_/_0.18)] px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-primary">
                 -{discount}%
               </span>
             )}
