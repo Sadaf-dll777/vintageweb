@@ -61,6 +61,30 @@ const DEFAULTS: Required<Pick<FlashDealsConfig, "title" | "subtitleSuffix">> & {
   ],
 };
 
+function productToDeal(p: ApiProduct, endsAt: string, i: number): FlashDeal {
+  const sale = Math.round(Number(p.price_bdt) || 0);
+  // Parse "-NN%" from badge like "FLASH -50%" to derive an original price.
+  const m = (p.badge || "").match(/-\s*(\d{1,2})\s*%/);
+  const discount = m ? Math.min(90, Math.max(1, Number(m[1]))) : 0;
+  const original =
+    discount > 0 && sale > 0
+      ? Math.round((sale * 100) / (100 - discount))
+      : Math.round(sale * 1.5);
+  const urgencies: FlashDeal["urgency"][] = ["rising", "moderate", "hot"];
+  return {
+    id: p.id,
+    name: p.name,
+    image: p.image_url,
+    originalPrice: original,
+    salePrice: sale,
+    currency: "BDT",
+    endsAt,
+    urgency: urgencies[i % urgencies.length],
+    soldPercent: Math.min(95, 15 + i * 12),
+    href: `/product/${p.slug}`,
+  };
+}
+
 function useCountdown(endsAt: string) {
   const target = useMemo(() => new Date(endsAt).getTime(), [endsAt]);
   const [now, setNow] = useState(() => Date.now());
