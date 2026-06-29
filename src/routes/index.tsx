@@ -172,7 +172,7 @@ function Index() {
                     />
                   </div>
                   <div className="space-y-3 p-5">
-                    <h3 className="font-display text-xl">{hero.name}</h3>
+                    <h3 className="font-display text-xl font-medium">{hero.name}</h3>
                     <div className="flex items-center justify-between">
                       <span className="font-display text-2xl text-primary">{formatPrice(hero.price, currency)}</span>
                       <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
