@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Zap, ShoppingBag, Gamepad2, Tv, Gift, User, Joystick, Globe, ShieldCheck, Tag, Package, Users, Award } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { products } from "@/data/products";
+import { useQuery } from "@tanstack/react-query";
+import { api, type ApiProduct } from "@/lib/api";
+import { products, type Product } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 import { ProductCard } from "@/components/ProductCard";
 import { NewArrivals } from "@/components/NewArrivals";
@@ -23,17 +25,43 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const featured = products.filter((p) => p.featured);
+  const productsQuery = useQuery({ queryKey: ["products"], queryFn: api.listProducts });
+  const all = productsQuery.data ?? [];
+  const featuredFromDb = all.filter((p) =>
+    (p.badge || "").toLowerCase().includes("featured"),
+  );
+  const featured: ApiProduct[] =
+    featuredFromDb.length > 0 ? featuredFromDb : all.slice(0, 3);
   const [idx, setIdx] = useState(0);
   const currency = useShop((s) => s.currency);
   const add = useShop((s) => s.add);
 
   useEffect(() => {
+    if (featured.length === 0) return;
     const t = setInterval(() => setIdx((i) => (i + 1) % featured.length), 6000);
     return () => clearInterval(t);
   }, [featured.length]);
 
-  const hero = featured[idx];
+  const hero = featured[idx % Math.max(1, featured.length)];
+
+  if (!hero) {
+    return (
+      <div className="container-wide py-32 text-center text-muted-foreground">
+        Loading featured products…
+      </div>
+    );
+  }
+
+  const heroAsProduct: Product = {
+    id: hero.id,
+    name: hero.name,
+    category: (hero.category_slug as Product["category"]) ?? "top-up",
+    price: hero.price_usd ?? 0,
+    image: hero.image_url,
+    badge: hero.badge || undefined,
+    tagline: hero.tagline || undefined,
+    delivery: hero.delivery || undefined,
+  };
 
   return (
     <div>
@@ -48,7 +76,7 @@ function Index() {
             transition={{ duration: 0.9, ease: "easeOut" }}
             className="absolute inset-0"
             style={{
-              backgroundImage: `url(${hero.image})`,
+              backgroundImage: `url(${hero.image_url})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               filter: "blur(40px)",
@@ -91,7 +119,7 @@ function Index() {
                 >
                   <motion.button
                     whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-                    onClick={() => add(hero)}
+                    onClick={() => add(heroAsProduct)}
                     className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-display text-base font-medium uppercase tracking-wider text-primary-foreground glow-red transition hover:brightness-110"
                   >
                     Buy Now <Zap className="h-4 w-4 fill-current" strokeWidth={0} />
@@ -108,7 +136,7 @@ function Index() {
                   className="mt-7 flex items-center gap-4"
                 >
                   <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Starting at</span>
-                  <span className="font-display text-2xl font-bold text-gold">{formatPrice(hero.price, currency)}</span>
+                  <span className="font-display text-2xl font-bold text-gold">{formatPrice(hero.price_usd ?? 0, currency)}</span>
                 </motion.div>
               </motion.div>
             </AnimatePresence>
@@ -164,7 +192,7 @@ function Index() {
                 >
                   <div className="aspect-[4/3] overflow-hidden">
                     <motion.img
-                      src={hero.image}
+                      src={hero.image_url}
                       alt={hero.name}
                       className="h-full w-full object-cover"
                       animate={{ scale: [1, 1.06, 1] }}
@@ -174,7 +202,7 @@ function Index() {
                   <div className="space-y-3 p-5">
                     <h3 className="font-display text-xl font-bold">{hero.name}</h3>
                     <div className="flex items-center justify-between">
-                      <span className="font-display text-2xl font-bold text-gold">{formatPrice(hero.price, currency)}</span>
+                      <span className="font-display text-2xl font-bold text-gold">{formatPrice(hero.price_usd ?? 0, currency)}</span>
                       <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
                         <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
                       </span>
