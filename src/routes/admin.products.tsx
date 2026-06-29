@@ -30,6 +30,41 @@ function ProductsAdmin() {
   const categories = useQuery({ queryKey: ["admin-categories"], queryFn: api.listCategories });
   const [form, setForm] = useState<FormState>(EMPTY);
   const [uploading, setUploading] = useState(false);
+  const [flashMode, setFlashMode] = useState<"percent" | "price">("percent");
+  const [flashPercent, setFlashPercent] = useState<number>(50);
+  const [flashOffer, setFlashOffer] = useState<number>(0);
+
+  const badge = form.badge ?? "";
+  const isFlash = /flash/i.test(badge);
+  const currentPercent = (() => {
+    const m = badge.match(/-\s*(\d{1,2})\s*%/);
+    return m ? Number(m[1]) : 0;
+  })();
+  const price = Number(form.price_bdt ?? 0);
+  // For "offer price" mode we treat current price_bdt as the SALE price and
+  // reconstruct the original from the badge percent (matches FlashDeals math).
+  const reconstructedOriginal =
+    currentPercent > 0 && price > 0
+      ? Math.round((price * 100) / (100 - currentPercent))
+      : price;
+
+  function applyFlashPercent(pct: number) {
+    const clamped = Math.max(1, Math.min(90, Math.round(pct)));
+    setFlashPercent(clamped);
+    setForm((f) => ({ ...f, badge: `FLASH -${clamped}%` }));
+  }
+
+  function applyFlashOffer(offer: number) {
+    setFlashOffer(offer);
+    const original = reconstructedOriginal || price;
+    if (!original || offer <= 0 || offer >= original) return;
+    const pct = Math.round(((original - offer) / original) * 100);
+    const clamped = Math.max(1, Math.min(90, pct));
+    setFlashPercent(clamped);
+    // Store the sale price as the product price; FlashDeals reconstructs the
+    // strikethrough original via the badge percent.
+    setForm((f) => ({ ...f, price_bdt: offer, badge: `FLASH -${clamped}%` }));
+  }
 
   const save = useMutation({
     mutationFn: async (f: FormState) => {
@@ -222,16 +257,22 @@ function ProductsAdmin() {
               { v: "FEATURED", label: "Featured (Hero)" },
               { v: "HOT", label: "Hot" },
               { v: "NEW", label: "New" },
-              { v: "FLASH -25%", label: "Flash -25%" },
-              { v: "FLASH -50%", label: "Flash -50%" },
-              { v: "FLASH -75%", label: "Flash -75%" },
+              { v: "__FLASH__", label: "⚡ Flash Deal" },
             ].map((b) => {
-              const active = (form.badge ?? "") === b.v;
+              const active =
+                b.v === "__FLASH__" ? isFlash : (form.badge ?? "") === b.v;
               return (
                 <button
                   type="button"
                   key={b.label}
-                  onClick={() => setForm({ ...form, badge: b.v })}
+                  onClick={() => {
+                    if (b.v === "__FLASH__") {
+                      const pct = currentPercent || 50;
+                      applyFlashPercent(pct);
+                    } else {
+                      setForm({ ...form, badge: b.v });
+                    }
+                  }}
                   className={`rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
                     active
                       ? "border-primary bg-primary text-primary-foreground shadow-md shadow-primary/30"
@@ -243,6 +284,75 @@ function ProductsAdmin() {
               );
             })}
           </div>
+          {isFlash && (
+            <div className="mt-3 space-y-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFlashMode("percent")}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                    flashMode === "percent"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  By Percent
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFlashMode("price")}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                    flashMode === "price"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  By Offer Price
+                </button>
+              </div>
+              {flashMode === "percent" ? (
+                <label className="block">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                    Discount %
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={90}
+                    value={currentPercent || flashPercent}
+                    onChange={(e) => applyFlashPercent(Number(e.target.value))}
+                    className="input mt-1.5"
+                  />
+                </label>
+              ) : (
+                <label className="block">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                    Offer price (BDT) — original ৳{reconstructedOriginal.toLocaleString()}
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={flashOffer || price}
+                    onChange={(e) => applyFlashOffer(Number(e.target.value))}
+                    className="input mt-1.5"
+                  />
+                </label>
+              )}
+              {currentPercent > 0 && price > 0 && (
+                <div className="rounded-md bg-background/60 px-3 py-2 text-xs">
+                  <span className="text-muted-foreground line-through">
+                    ৳{reconstructedOriginal.toLocaleString()}
+                  </span>{" "}
+                  <span className="font-display font-black text-primary">
+                    ৳{price.toLocaleString()}
+                  </span>{" "}
+                  <span className="rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                    -{currentPercent}%
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
           <input
             value={form.badge ?? ""}
             onChange={(e) => setForm({ ...form, badge: e.target.value })}
