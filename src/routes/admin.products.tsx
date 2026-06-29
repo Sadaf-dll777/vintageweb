@@ -48,10 +48,31 @@ function ProductsAdmin() {
       ? Math.round((price * 100) / (100 - currentPercent))
       : price;
 
+  function hasToken(token: string) {
+    return new RegExp(`\\b${token}\\b`, "i").test(badge);
+  }
+  function normalize(s: string) {
+    return s.replace(/\s+/g, " ").trim();
+  }
+  function toggleToken(token: string) {
+    if (hasToken(token)) {
+      const next = normalize(badge.replace(new RegExp(`\\b${token}\\b`, "ig"), ""));
+      setForm((f) => ({ ...f, badge: next }));
+    } else {
+      setForm((f) => ({ ...f, badge: normalize(`${badge} ${token}`) }));
+    }
+  }
+  function stripFlash(s: string) {
+    return normalize(s.replace(/\bFLASH\b\s*-?\s*\d{0,2}\s*%?/gi, ""));
+  }
+
   function applyFlashPercent(pct: number) {
     const clamped = Math.max(1, Math.min(90, Math.round(pct)));
     setFlashPercent(clamped);
-    setForm((f) => ({ ...f, badge: `FLASH -${clamped}%` }));
+    setForm((f) => ({
+      ...f,
+      badge: normalize(`${stripFlash(f.badge ?? "")} FLASH -${clamped}%`),
+    }));
   }
 
   function applyFlashOffer(offer: number) {
@@ -61,9 +82,19 @@ function ProductsAdmin() {
     const pct = Math.round(((original - offer) / original) * 100);
     const clamped = Math.max(1, Math.min(90, pct));
     setFlashPercent(clamped);
-    // Store the sale price as the product price; FlashDeals reconstructs the
-    // strikethrough original via the badge percent.
-    setForm((f) => ({ ...f, price_bdt: offer, badge: `FLASH -${clamped}%` }));
+    setForm((f) => ({
+      ...f,
+      price_bdt: offer,
+      badge: normalize(`${stripFlash(f.badge ?? "")} FLASH -${clamped}%`),
+    }));
+  }
+
+  function toggleFlash() {
+    if (isFlash) {
+      setForm((f) => ({ ...f, badge: stripFlash(f.badge ?? "") }));
+    } else {
+      applyFlashPercent(currentPercent || flashPercent || 50);
+    }
   }
 
   const save = useMutation({
@@ -253,24 +284,29 @@ function ProductsAdmin() {
         <Field label="Badge — controls Hero & Flash Deals">
           <div className="flex flex-wrap gap-2">
             {[
-              { v: "", label: "None" },
+              { v: "__NONE__", label: "None" },
               { v: "FEATURED", label: "Featured (Hero)" },
               { v: "HOT", label: "Hot (Hero)" },
               { v: "NEW", label: "New" },
               { v: "__FLASH__", label: "⚡ Flash Deal" },
             ].map((b) => {
               const active =
-                b.v === "__FLASH__" ? isFlash : (form.badge ?? "") === b.v;
+                b.v === "__FLASH__"
+                  ? isFlash
+                  : b.v === "__NONE__"
+                  ? !badge.trim()
+                  : hasToken(b.v);
               return (
                 <button
                   type="button"
                   key={b.label}
                   onClick={() => {
-                    if (b.v === "__FLASH__") {
-                      const pct = currentPercent || 50;
-                      applyFlashPercent(pct);
+                    if (b.v === "__NONE__") {
+                      setForm({ ...form, badge: "" });
+                    } else if (b.v === "__FLASH__") {
+                      toggleFlash();
                     } else {
-                      setForm({ ...form, badge: b.v });
+                      toggleToken(b.v);
                     }
                   }}
                   className={`rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
