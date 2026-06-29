@@ -115,7 +115,6 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
             exit={{ y: "100%", opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="font-display text-2xl font-medium leading-none tabular-nums text-primary"
-            style={{ textShadow: "0 0 14px oklch(0.62 0.22 25 / 0.7)" }}
           >
             {pad(value)}
           </motion.span>
