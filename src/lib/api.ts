@@ -461,6 +461,24 @@ export const api = {
       reviews,
       whyUs,
       partners,
+      flashDeals: {
+        enabled: true,
+        title: "Flash Deals",
+        subtitleSuffix: "deals active",
+        deals: [
+          {
+            name: "Change Steam Region To India",
+            image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=600&q=80",
+            originalPrice: 400,
+            salePrice: 199,
+            currency: "BDT",
+            endsAt: new Date(Date.now() + 11 * 3600_000).toISOString(),
+            urgency: "rising",
+            soldPercent: 27,
+            href: "#",
+          },
+        ],
+      },
       ...stored,
     };
   },
