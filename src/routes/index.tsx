@@ -108,7 +108,7 @@ function Index() {
                   className="mt-7 flex items-center gap-4"
                 >
                   <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Starting at</span>
-                  <span className="font-display text-2xl text-gold">{formatPrice(hero.price, currency)}</span>
+                  <span className="font-display text-2xl font-medium text-gold">{formatPrice(hero.price, currency)}</span>
                 </motion.div>
               </motion.div>
             </AnimatePresence>
@@ -174,7 +174,7 @@ function Index() {
                   <div className="space-y-3 p-5">
                     <h3 className="font-display text-xl font-medium">{hero.name}</h3>
                     <div className="flex items-center justify-between">
-                      <span className="font-display text-2xl text-primary">{formatPrice(hero.price, currency)}</span>
+                      <span className="font-display text-2xl font-medium text-primary">{formatPrice(hero.price, currency)}</span>
                       <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
                         <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
                       </span>
