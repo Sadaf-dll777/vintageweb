@@ -10,6 +10,7 @@ import { CategorySection } from "@/components/CategorySection";
 import { Reviews } from "@/components/Reviews";
 import { WhyUs } from "@/components/WhyUs";
 import { Partners } from "@/components/Partners";
+import { FlashDeals } from "@/components/FlashDeals";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -232,6 +233,7 @@ function Index() {
 
       {/* POPULAR */}
       {/* BROWSE BY CATEGORY */}
+      <FlashDeals />
       <section className="container-wide py-16">
         <div className="mb-10 text-center">
           <h2 className="font-display text-4xl uppercase sm:text-5xl">
