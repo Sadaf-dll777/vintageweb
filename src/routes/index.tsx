@@ -30,8 +30,12 @@ function Index() {
   const featuredFromDb = all.filter((p) =>
     (p.badge || "").toLowerCase().includes("featured"),
   );
+  const hotFromDb = all.filter((p) =>
+    (p.badge || "").toLowerCase().includes("hot"),
+  );
+  const heroFromDb = [...featuredFromDb, ...hotFromDb];
   const featured: ApiProduct[] =
-    featuredFromDb.length > 0 ? featuredFromDb : all.slice(0, 3);
+    heroFromDb.length > 0 ? heroFromDb : all.slice(0, 3);
   const [idx, setIdx] = useState(0);
   const currency = useShop((s) => s.currency);
   const add = useShop((s) => s.add);
