@@ -44,13 +44,16 @@ function AuthPage() {
     (async () => {
       let dest = redirectTo;
       if (dest === "/profile") {
-        const { data } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        if (data) dest = "/admin";
+        const { data: auth } = await supabase.auth.getUser();
+        if (auth.user) {
+          const { data } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", auth.user.id)
+            .eq("role", "admin")
+            .maybeSingle();
+          if (data) dest = "/admin";
+        }
       }
       navigate({ to: dest });
     })();
