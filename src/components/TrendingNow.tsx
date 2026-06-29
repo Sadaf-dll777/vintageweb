@@ -162,7 +162,7 @@ export function TrendingNow() {
                     {/* Body */}
                     <div className="flex flex-1 flex-col gap-3 p-4">
                       <h3
-                        className={`font-display text-base font-medium leading-tight tracking-wide transition-colors ${
+                        className={`font-display text-base font-medium leading-snug tracking-wide transition-colors ${
                           isActive ? "text-foreground" : "text-muted-foreground"
                         }`}
                       >
@@ -173,7 +173,7 @@ export function TrendingNow() {
                           <Flame className="h-3 w-3 fill-current" strokeWidth={0} /> {p.sold} sold recently
                         </div>
                       ) : null}
-                      <div className="mt-auto border-t border-border pt-2 flex items-end justify-between gap-3">
+                      <div className="mt-auto pt-3 border-t border-border flex items-end justify-between gap-3">
                         <div>
                           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
                           <div className="font-display text-xl font-medium text-primary">{formatPrice(p.price, currency)}</div>
