@@ -69,7 +69,7 @@ export function ProductCard({ product }: { product: Product }) {
         }}
       />
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
-        <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
+        <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-primary/40 bg-black/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur-xl backdrop-saturate-150">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inset-0 animate-ping rounded-full bg-primary/70" />
             <span className="relative h-1.5 w-1.5 rounded-full bg-primary" />
