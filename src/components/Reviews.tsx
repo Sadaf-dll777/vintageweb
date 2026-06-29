@@ -32,7 +32,7 @@ export function Reviews() {
         <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">
           ⚡ Reviews
         </span>
-        <h2 className="mt-3 font-display text-4xl uppercase sm:text-5xl">
+        <h2 className="mt-3 font-display text-4xl sm:text-5xl">
           What <span className="text-gold">Gamers</span> Say
         </h2>
       </div>

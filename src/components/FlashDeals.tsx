@@ -338,7 +338,7 @@ export function FlashDeals() {
     <section className="container-wide py-12">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="flex items-center gap-3 font-display text-4xl uppercase">
+          <h2 className="flex items-center gap-3 font-display text-4xl">
             <motion.span
               initial={{ opacity: 0, scale: 0.72, y: 8 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
