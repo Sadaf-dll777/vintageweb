@@ -153,6 +153,12 @@ export function TrendingNow() {
                       </div>
                     </div>
 
+                    {/* Colored divider under image */}
+                    <div
+                      aria-hidden
+                      className="h-px w-full bg-[linear-gradient(to_right,transparent,var(--color-primary),transparent)] opacity-80"
+                    />
+
                     {/* Body */}
                     <div className="flex flex-1 flex-col gap-3 p-4">
                       <h3
@@ -167,6 +173,7 @@ export function TrendingNow() {
                           <Flame className="h-3 w-3 fill-current" strokeWidth={0} /> {p.sold} sold recently
                         </div>
                       ) : null}
+                      <div aria-hidden className="border-t border-border" />
                       <div className="mt-auto flex items-end justify-between gap-3">
                         <div>
                           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
