@@ -83,13 +83,13 @@ export function TrendingNow() {
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
                   active
                     ? "bg-primary text-primary-foreground shadow-[0_8px_24px_-10px_var(--color-primary)]"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <t.Icon className={`h-3 w-3 ${active ? "fill-current" : ""}`} strokeWidth={active ? 0 : 2} />
+                <t.Icon className={`h-3.5 w-3.5 ${active ? "fill-current" : ""}`} strokeWidth={active ? 0 : 2} />
                 {t.label}
               </button>
             );
