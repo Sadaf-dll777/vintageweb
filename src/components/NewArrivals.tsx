@@ -35,7 +35,7 @@ export function NewArrivals({ products }: { products: Product[] }) {
           <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">
             <Sparkles className="h-3 w-3" /> Just Arrived
           </span>
-          <h2 className="mt-3 font-display text-4xl sm:text-5xl">
+          <h2 className="mt-3 font-display text-4xl">
             New <span className="text-gold">Arrivals</span>
           </h2>
         </div>

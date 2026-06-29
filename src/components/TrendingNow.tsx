@@ -70,7 +70,7 @@ export function TrendingNow() {
             </span>
             Live Market
           </span>
-          <h2 className="mt-3 font-display text-4xl tracking-wide sm:text-5xl lg:text-6xl">
+          <h2 className="mt-3 font-display text-4xl tracking-wide">
             Trending <span className="text-primary">Now</span>
           </h2>
         </div>
