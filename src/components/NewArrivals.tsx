@@ -67,7 +67,7 @@ export function NewArrivals({ products }: { products: Product[] }) {
                     }`}
                   >
                     <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
-                      <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-gold/40 bg-black/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gold backdrop-blur-xl backdrop-saturate-150">
+                      <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-gold/40 bg-black/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gold backdrop-blur-sm">
                         <Clock className="h-3 w-3" /> {p.delivery ?? "Instant"}
                       </div>
                       <img
