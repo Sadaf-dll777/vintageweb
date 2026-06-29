@@ -1,4 +1,4 @@
-export type Category = "top-up" | "subscriptions" | "gift-cards" | "accounts" | "games" | "region-change";
+export type Category = "top-up" | "subscriptions" | "gift-cards" | "accounts" | "games" | "software";
 
 export interface ProductOption {
   label: string;
@@ -72,7 +72,7 @@ export const products: Product[] = [
   {
     id: "steam-region-india",
     name: "Change Steam Region To India",
-    category: "region-change",
+    category: "software",
     price: 2.5,
     image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80",
     badge: "FLASH -50%",
@@ -167,5 +167,5 @@ export const categories: { id: Category | "all"; label: string; emoji: string }[
   { id: "gift-cards", label: "Gift Cards", emoji: "🎁" },
   { id: "accounts", label: "Accounts", emoji: "👤" },
   { id: "games", label: "Games", emoji: "🕹️" },
-  { id: "region-change", label: "Region Change", emoji: "🌍" },
+  { id: "software", label: "Software", emoji: "💻" },
 ];
