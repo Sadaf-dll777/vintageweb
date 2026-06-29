@@ -307,10 +307,8 @@ export function FlashDeals() {
         <div>
           <h2 className="flex items-center gap-3 font-display text-4xl uppercase">
             <motion.span
-              initial={{ opacity: 0, scale: 0.72, y: 8 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.7 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              animate={{ scale: [1, 1.06, 1], rotate: [0, -3, 3, 0] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
               className="relative grid h-12 w-12 place-items-center overflow-hidden rounded-2xl border border-primary/15 bg-[oklch(0.62_0.22_25_/_0.14)] text-primary"
               style={{ boxShadow: "inset 0 0 18px oklch(0.62 0.22 25 / 0.12)" }}
             >
@@ -322,8 +320,8 @@ export function FlashDeals() {
               />
               <motion.span
                 aria-hidden
-                animate={{ opacity: [0.45, 1, 0.45], scale: [0.9, 1.08, 0.9] }}
-                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                animate={{ opacity: [0.55, 1, 0.55], scale: [0.92, 1.12, 0.92], rotate: [-4, 4, -4] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
                 className="relative grid place-items-center"
                 style={{ filter: "drop-shadow(0 0 10px oklch(0.62 0.22 25 / 0.72))" }}
               >
