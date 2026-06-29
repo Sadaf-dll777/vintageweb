@@ -114,7 +114,7 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
             animate={{ y: "0%", opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display text-2xl leading-none tabular-nums text-primary"
+            className="font-display text-2xl font-medium leading-none tabular-nums text-primary"
             style={{ textShadow: "0 0 14px oklch(0.62 0.22 25 / 0.7)" }}
           >
             {pad(value)}
@@ -133,7 +133,7 @@ function TimeDot() {
     <motion.span
       animate={{ opacity: [0.3, 1, 0.3] }}
       transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-      className="mb-4 font-display text-2xl leading-none text-primary"
+      className="mb-4 font-display text-2xl font-medium leading-none text-primary"
     >
       :
     </motion.span>
@@ -172,7 +172,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
         <div className="min-w-0 flex-1">
           <h4 className="line-clamp-2 text-sm font-bold leading-tight">{deal.name}</h4>
           <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="font-display text-xl text-primary">
+            <span className="font-display text-xl font-medium text-primary">
               {deal.salePrice} {currency}
             </span>
             <span className="text-xs text-muted-foreground line-through">
