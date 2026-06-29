@@ -315,3 +315,16 @@
   to { transform: rotate(360deg); }
 }
 .detail-row { position: relative; }
+
+@property --deal-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes deal-spin {
+  to { --deal-angle: 360deg; }
+}
+@keyframes deal-cta-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
