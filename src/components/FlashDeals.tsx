@@ -151,23 +151,74 @@ function DealCard({ deal }: { deal: FlashDeal }) {
 
   return (
     <motion.div
-      whileHover={{ y: -6 }}
-      transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-card/70 p-4 transition-[border-color,box-shadow] duration-500 hover:border-primary/60 hover:shadow-[0_25px_60px_-15px_oklch(0.62_0.22_25_/_0.55),0_0_0_1px_oklch(0.62_0.22_25_/_0.35)]"
+      whileHover={{ y: -8, rotateX: 2, rotateY: -2 }}
+      transition={{ type: "spring", stiffness: 220, damping: 20 }}
+      style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card/70 p-4 transition-[border-color,box-shadow] duration-500 hover:border-primary/60 hover:shadow-[0_30px_70px_-15px_oklch(0.62_0.22_25_/_0.6),0_0_0_1px_oklch(0.62_0.22_25_/_0.4)]"
     >
-      {/* ambient glow on hover */}
+      {/* animated conic gradient border */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "conic-gradient(from var(--deal-angle,0deg), transparent 0deg, oklch(0.62 0.22 25 / 0.55) 60deg, transparent 140deg, transparent 220deg, oklch(0.78 0.18 60 / 0.45) 280deg, transparent 360deg)",
+          WebkitMask:
+            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+          padding: 1,
+          animation: "deal-spin 4s linear infinite",
+        }}
+      />
+      {/* ambient radial glow on hover */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(120% 80% at 50% 0%, oklch(0.62 0.22 25 / 0.18) 0%, transparent 60%)",
+            "radial-gradient(120% 80% at 50% 0%, oklch(0.62 0.22 25 / 0.22) 0%, transparent 60%)",
         }}
       />
+      {/* shimmer sweep */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-[1400ms] ease-out group-hover:translate-x-full"
+      />
+      {/* floating sparkle particles */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+        {[0, 1, 2, 3].map((i) => (
+          <motion.span
+            key={i}
+            className="absolute h-1 w-1 rounded-full bg-primary opacity-0 group-hover:opacity-100"
+            style={{
+              left: `${15 + i * 22}%`,
+              top: `${70 - (i % 2) * 30}%`,
+              boxShadow: "0 0 8px oklch(0.62 0.22 25 / 0.9)",
+            }}
+            animate={{ y: [0, -40, 0], opacity: [0, 1, 0] }}
+            transition={{ duration: 2.4 + i * 0.3, repeat: Infinity, delay: i * 0.35, ease: "easeOut" }}
+          />
+        ))}
+      </div>
 
-      <div className="flex gap-4">
+      <div className="relative flex gap-4" style={{ transform: "translateZ(20px)" }}>
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-background">
-          <img src={deal.image} alt={deal.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          <motion.img
+            src={deal.image}
+            alt={deal.name}
+            className="h-full w-full object-cover"
+            whileHover={{ scale: 1.15, rotate: 1.5 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            style={{
+              background:
+                "linear-gradient(135deg, transparent 40%, oklch(1 0 0 / 0.25) 50%, transparent 60%)",
+            }}
+          />
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="line-clamp-2 text-sm font-bold leading-tight">{deal.name}</h4>
@@ -188,7 +239,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       </div>
 
       {/* countdown row */}
-      <div className="relative mt-4 flex items-center gap-1.5">
+      <div className="relative mt-4 flex items-center gap-1.5" style={{ transform: "translateZ(15px)" }}>
         <TimeUnit value={h} label="H" />
         <TimeDot />
         <TimeUnit value={m} label="M" />
@@ -213,20 +264,33 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       </div>
 
       {/* CTA */}
-      <a
+      <motion.a
         href={deal.href ?? "#"}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.97 }}
         className="group/btn relative mt-4 flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl font-display text-sm uppercase tracking-widest text-white"
         style={{
-          background: "linear-gradient(90deg, #ffb020 0%, #ff7a18 45%, #e2253a 100%)",
+          background:
+            "linear-gradient(90deg, #ffb020 0%, #ff7a18 45%, #e2253a 100%)",
+          backgroundSize: "200% 100%",
           boxShadow: "0 10px 30px -10px oklch(0.62 0.22 25 / 0.8)",
+          transform: "translateZ(25px)",
+          animation: "deal-cta-shift 4s ease-in-out infinite",
         }}
       >
         <span
           aria-hidden
-          className="absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 bg-white/30 opacity-0 transition-all duration-700 group-hover/btn:left-full group-hover/btn:opacity-100"
+          className="absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 bg-white/40 opacity-0 transition-all duration-700 group-hover/btn:left-full group-hover/btn:opacity-100"
         />
-        <Zap className="h-4 w-4 fill-current" strokeWidth={0} /> Grab Deal
-      </a>
+        <motion.span
+          animate={{ rotate: [0, -8, 8, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          className="inline-flex"
+        >
+          <Zap className="h-4 w-4 fill-current" strokeWidth={0} />
+        </motion.span>
+        Grab Deal
+      </motion.a>
     </motion.div>
   );
 }
