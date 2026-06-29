@@ -162,7 +162,7 @@ export function TrendingNow() {
                     {/* Body */}
                     <div className="flex flex-1 flex-col gap-3 p-4">
                       <h3
-                        className={`font-display text-base font-medium leading-snug tracking-wide transition-colors ${
+                        className={`font-display text-base font-medium leading-snug tracking-wide line-clamp-2 min-h-[2.75rem] transition-colors ${
                           isActive ? "text-foreground" : "text-muted-foreground"
                         }`}
                       >
