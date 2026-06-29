@@ -124,7 +124,7 @@ export function TrendingNow() {
                     <div className="relative aspect-square overflow-hidden bg-secondary">
                       {/* Delivery pill */}
                       <div
-                        className={`absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur ${
+                        className={`absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border bg-black/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur-xl backdrop-saturate-150 ${
                           isActive ? "border-gold/60 text-gold" : "border-gold/30 text-gold/80"
                         }`}
                       >
