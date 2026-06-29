@@ -7,6 +7,13 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { brand, reviews, whyUs, partners } from "@/config/site";
+import type { Database } from "@/integrations/supabase/types";
+
+type CategoryUpdate = Database["public"]["Tables"]["categories"]["Update"];
+type ProductUpdate = Database["public"]["Tables"]["products"]["Update"];
+type OrderInsert = Database["public"]["Tables"]["orders"]["Insert"];
+type OrderUpdate = Database["public"]["Tables"]["orders"]["Update"];
+type Json = Database["public"]["Tables"]["orders"]["Row"]["items"];
 
 const USD_TO_BDT = brand.usdToBdt || 120;
 
@@ -245,7 +252,7 @@ export const api = {
   },
 
   async updateCategory(id: string, patch: Partial<ApiCategory>): Promise<ApiCategory> {
-    const update: Record<string, unknown> = {};
+    const update: CategoryUpdate = {};
     if (patch.slug !== undefined) update.slug = patch.slug;
     if (patch.name !== undefined) update.name = patch.name;
     if (patch.emoji !== undefined) update.emoji = patch.emoji;
@@ -311,7 +318,7 @@ export const api = {
   },
 
   async updateProduct(id: string, patch: Partial<ApiProduct>): Promise<ApiProduct> {
-    const update: Record<string, unknown> = {};
+    const update: ProductUpdate = {};
     if (patch.slug !== undefined) update.slug = patch.slug;
     if (patch.name !== undefined) update.name = patch.name;
     if (patch.category_id !== undefined) update.category_id = patch.category_id;
@@ -352,11 +359,11 @@ export const api = {
   async placeOrder(
     data: Omit<ApiOrder, "id" | "status" | "created_at">,
   ): Promise<{ id: string; created_at: string; status: ApiOrder["status"] }> {
-    const payload = {
+    const payload: OrderInsert = {
       user_email: (data.user_email || "").toLowerCase(),
       customer_name: data.customer_name || "",
       contact: data.contact || "",
-      items: (data.items ?? []) as unknown as object,
+      items: (data.items ?? []) as unknown as Json,
       total_usd: Number(data.total_usd) || 0,
       total_bdt: Number(data.total_bdt) || 0,
       payment_method: data.payment_method || "",
@@ -364,7 +371,7 @@ export const api = {
       transaction_id: data.transaction_id || "",
       sender_number: data.sender_number || "",
       notes: data.notes || "",
-      notes_thread: (data.notes_thread ?? []) as unknown as object,
+      notes_thread: (data.notes_thread ?? []) as unknown as Json,
     };
     const { data: row, error } = await supabase
       .from("orders")
@@ -394,7 +401,7 @@ export const api = {
     id: string,
     patch: Partial<Pick<ApiOrder, "delivered_key" | "key_instructions" | "key_redeem_label">>,
   ): Promise<ApiOrder> {
-    const update: Record<string, unknown> = {};
+    const update: OrderUpdate = {};
     if (patch.delivered_key !== undefined) update.delivered_key = patch.delivered_key;
     if (patch.key_instructions !== undefined) update.key_instructions = patch.key_instructions;
     if (patch.key_redeem_label !== undefined) update.key_redeem_label = patch.key_redeem_label;
@@ -424,7 +431,7 @@ export const api = {
     thread.push({ ...note, at: new Date().toISOString() });
     const { data, error } = await supabase
       .from("orders")
-      .update({ notes_thread: thread as unknown as object })
+      .update({ notes_thread: thread as unknown as Json })
       .eq("id", id)
       .select("*")
       .single();
@@ -461,7 +468,7 @@ export const api = {
   async saveSite(content: Record<string, unknown>) {
     const { error } = await supabase
       .from("site_content")
-      .upsert({ id: 1, content: content as unknown as object });
+      .upsert({ id: 1, content: content as unknown as Json });
     if (error) throw new Error(error.message);
     return { ok: true as const };
   },
