@@ -297,7 +297,22 @@ function Index() {
       </section>
 
       {/* NEW ARRIVALS */}
-      <NewArrivals products={products.slice(0, 10)} />
+      {(() => {
+        const news = all.filter((p) =>
+          (p.badge || "").toLowerCase().includes("new"),
+        );
+        const source = news.length > 0 ? news : all.slice(0, 10);
+        const mapped: Product[] = source.slice(0, 10).map((p) => ({
+          id: p.slug,
+          name: p.name,
+          category: (p.category_slug as Product["category"]) ?? "top-up",
+          price: Number(p.price_bdt ?? 0),
+          image: p.image_url,
+          badge: p.badge || undefined,
+          delivery: p.delivery || undefined,
+        }));
+        return mapped.length > 0 ? <NewArrivals products={mapped} /> : null;
+      })()}
 
       {/* POPULAR */}
       <section className="container-wide py-16">
