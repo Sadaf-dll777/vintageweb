@@ -310,7 +310,7 @@ function Index() {
           id: p.slug,
           name: p.name,
           category: (p.category_slug as Product["category"]) ?? "top-up",
-          price: Number(p.price_bdt ?? 0),
+          price: Number(p.price_usd ?? 0),
           image: p.image_url,
           badge: p.badge || undefined,
           delivery: p.delivery || undefined,
