@@ -103,7 +103,10 @@ function UrgencyBadge({ kind }: { kind: FlashDeal["urgency"] }) {
 function TimeUnit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="relative h-7 w-[2.2rem] overflow-hidden text-center">
+      <div
+        className="relative grid h-11 min-w-[3.25rem] place-items-center overflow-hidden rounded-lg border border-primary/50 bg-background/70 px-2"
+        style={{ boxShadow: "inset 0 0 12px oklch(0.62 0.22 25 / 0.25), 0 0 14px oklch(0.62 0.22 25 / 0.25)" }}
+      >
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={value}
@@ -111,14 +114,14 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
             animate={{ y: "0%", opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 font-display text-[22px] leading-7 tabular-nums text-primary"
-            style={{ textShadow: "0 0 18px oklch(0.62 0.22 25 / 0.55)" }}
+            className="font-display text-2xl leading-none tabular-nums text-primary"
+            style={{ textShadow: "0 0 14px oklch(0.62 0.22 25 / 0.7)" }}
           >
             {pad(value)}
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+      <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
         {label}
       </span>
     </div>
@@ -130,9 +133,9 @@ function TimeDot() {
     <motion.span
       animate={{ opacity: [0.3, 1, 0.3] }}
       transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-      className="-mt-3 font-display text-2xl leading-none text-primary"
+      className="mb-4 font-display text-2xl leading-none text-primary"
     >
-      .
+      :
     </motion.span>
   );
 }
@@ -185,20 +188,18 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       </div>
 
       {/* countdown row */}
-      <div className="relative mt-4 flex items-end gap-1.5">
+      <div className="relative mt-4 flex items-center gap-1.5">
         <TimeUnit value={h} label="H" />
         <TimeDot />
         <TimeUnit value={m} label="M" />
         <TimeDot />
         <TimeUnit value={s} label="S" />
-        <span className="ml-auto mb-0.5 text-[11px] font-bold tabular-nums text-muted-foreground">
-          {pct}%
-        </span>
       </div>
 
       {/* urgency + progress */}
-      <div className="mt-3 flex items-center justify-between">
+      <div className="mt-3 flex items-center justify-between gap-3">
         <UrgencyBadge kind={deal.urgency ?? "moderate"} />
+        <span className="text-[11px] font-bold tabular-nums text-muted-foreground">{pct}%</span>
       </div>
       <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-border/60">
         <motion.div
