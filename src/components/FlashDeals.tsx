@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, Clock, Sparkles, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { api } from "@/lib/api";
+import { api, type ApiProduct } from "@/lib/api";
 
 export interface FlashDeal {
   id?: string;
@@ -60,6 +60,30 @@ const DEFAULTS: Required<Pick<FlashDealsConfig, "title" | "subtitleSuffix">> & {
     },
   ],
 };
+
+function productToDeal(p: ApiProduct, endsAt: string, i: number): FlashDeal {
+  const sale = Math.round(Number(p.price_bdt) || 0);
+  // Parse "-NN%" from badge like "FLASH -50%" to derive an original price.
+  const m = (p.badge || "").match(/-\s*(\d{1,2})\s*%/);
+  const discount = m ? Math.min(90, Math.max(1, Number(m[1]))) : 0;
+  const original =
+    discount > 0 && sale > 0
+      ? Math.round((sale * 100) / (100 - discount))
+      : Math.round(sale * 1.5);
+  const urgencies: FlashDeal["urgency"][] = ["rising", "moderate", "hot"];
+  return {
+    id: p.id,
+    name: p.name,
+    image: p.image_url,
+    originalPrice: original,
+    salePrice: sale,
+    currency: "BDT",
+    endsAt,
+    urgency: urgencies[i % urgencies.length],
+    soldPercent: Math.min(95, 15 + i * 12),
+    href: `/product/${p.slug}`,
+  };
+}
 
 function useCountdown(endsAt: string) {
   const target = useMemo(() => new Date(endsAt).getTime(), [endsAt]);
@@ -285,11 +309,28 @@ function DealCard({ deal }: { deal: FlashDeal }) {
 
 export function FlashDeals() {
   const site = useQuery({ queryKey: ["site"], queryFn: api.getSite });
+  const productsQuery = useQuery({ queryKey: ["products"], queryFn: api.listProducts });
   const cfg = (site.data?.flashDeals as FlashDealsConfig | undefined) ?? {};
   const enabled = cfg.enabled ?? true;
-  const deals = cfg.deals && cfg.deals.length > 0 ? cfg.deals : DEFAULTS.deals;
 
-  if (!enabled || deals.length === 0) return null;
+  // End-of-day UTC keeps SSR and CSR markup aligned (no hydration mismatch).
+  const endsAt = useMemo(() => {
+    const d = new Date();
+    d.setUTCHours(23, 59, 59, 0);
+    return d.toISOString();
+  }, []);
+
+  const deals: FlashDeal[] = useMemo(() => {
+    const all = productsQuery.data ?? [];
+    const flashes = all.filter((p) =>
+      (p.badge || "").toLowerCase().includes("flash"),
+    );
+    return flashes.map((p, i) => productToDeal(p, endsAt, i));
+  }, [productsQuery.data, endsAt]);
+
+  if (!enabled) return null;
+  if (productsQuery.isLoading) return null;
+  if (deals.length === 0) return null;
 
   return (
     <section className="container-wide py-12">
