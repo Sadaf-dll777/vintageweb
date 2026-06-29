@@ -91,7 +91,7 @@ export function NewArrivals({ products }: { products: Product[] }) {
                       <div className="mt-auto flex items-end justify-between gap-3">
                         <div>
                           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
-                          <div className="font-display text-lg text-primary">{formatPrice(p.price, currency)}</div>
+                          <div className="font-display text-lg font-medium text-primary">{formatPrice(p.price, currency)}</div>
                         </div>
                         <button
                           onClick={(e) => {
