@@ -267,12 +267,11 @@ function DealCard({ deal }: { deal: FlashDeal }) {
         href={deal.href ?? "#"}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.97 }}
-        className="group/btn relative mt-4 flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl font-display text-sm uppercase tracking-widest text-white"
+        className="group/btn relative mt-4 flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl font-display text-sm font-light uppercase tracking-widest text-white"
         style={{
           background:
             "linear-gradient(90deg, #ffb020 0%, #ff7a18 45%, #e2253a 100%)",
           backgroundSize: "200% 100%",
-          boxShadow: "0 10px 30px -10px oklch(0.62 0.22 25 / 0.8)",
           transform: "translateZ(25px)",
           animation: "deal-cta-shift 4s ease-in-out infinite",
         }}
