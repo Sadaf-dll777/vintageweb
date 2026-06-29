@@ -184,7 +184,7 @@ export function TrendingNow() {
                           }`}
                         >
                           <Zap className="h-3.5 w-3.5 fill-current" strokeWidth={0} />
-                          <span className="flex flex-col items-center leading-[1.05]">
+                          <span className="flex flex-col items-center gap-0.5 leading-none">
                             <span>Buy</span>
                             <span>Now</span>
                           </span>
