@@ -280,12 +280,12 @@ function Index() {
             { id: "gift-cards", label: "Gift Cards", Icon: Gift, color: "from-orange-500/30 to-orange-600/10", icon: "text-orange-400" },
             { id: "accounts", label: "Accounts", Icon: User, color: "from-violet-500/30 to-violet-600/10", icon: "text-violet-300" },
             { id: "games", label: "Games", Icon: Joystick, color: "from-pink-500/30 to-pink-600/10", icon: "text-pink-400" },
-            { id: "region-change", label: "Region Change", Icon: Globe, color: "from-cyan-500/30 to-cyan-600/10", icon: "text-cyan-400" },
+            { id: "software", label: "Software", Icon: Globe, color: "from-cyan-500/30 to-cyan-600/10", icon: "text-cyan-400" },
           ].map((c) => (
             <Link
               key={c.id}
               to="/shop"
-              search={{ cat: c.id as "top-up" | "subscriptions" | "gift-cards" | "accounts" | "games" | "region-change" }}
+              search={{ cat: c.id as "top-up" | "subscriptions" | "gift-cards" | "accounts" | "games" | "software" }}
               className="group relative flex aspect-square flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/70 hover:shadow-[0_10px_40px_-10px_var(--color-primary)]"
             >
               <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 opacity-0 transition-opacity duration-300 group-hover:from-primary/15 group-hover:to-primary/0 group-hover:opacity-100" />
@@ -348,7 +348,7 @@ function Index() {
       <CategorySection category="top-up" title="Top-Up" Icon={Gamepad2} accent="text-purple-400" />
       <CategorySection category="subscriptions" title="Subscriptions" Icon={Tv} accent="text-blue-400" />
       <CategorySection category="gift-cards" title="Gift Cards" Icon={Gift} accent="text-orange-400" />
-      <CategorySection category="region-change" title="Region Change" Icon={Globe} accent="text-cyan-400" />
+      <CategorySection category="software" title="Software" Icon={Globe} accent="text-cyan-400" />
 
       {/* WHY US */}
       <WhyUs />
