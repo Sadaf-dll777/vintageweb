@@ -284,24 +284,29 @@ function ProductsAdmin() {
         <Field label="Badge — controls Hero & Flash Deals">
           <div className="flex flex-wrap gap-2">
             {[
-              { v: "", label: "None" },
+              { v: "__NONE__", label: "None" },
               { v: "FEATURED", label: "Featured (Hero)" },
               { v: "HOT", label: "Hot (Hero)" },
               { v: "NEW", label: "New" },
               { v: "__FLASH__", label: "⚡ Flash Deal" },
             ].map((b) => {
               const active =
-                b.v === "__FLASH__" ? isFlash : (form.badge ?? "") === b.v;
+                b.v === "__FLASH__"
+                  ? isFlash
+                  : b.v === "__NONE__"
+                  ? !badge.trim()
+                  : hasToken(b.v);
               return (
                 <button
                   type="button"
                   key={b.label}
                   onClick={() => {
-                    if (b.v === "__FLASH__") {
-                      const pct = currentPercent || 50;
-                      applyFlashPercent(pct);
+                    if (b.v === "__NONE__") {
+                      setForm({ ...form, badge: "" });
+                    } else if (b.v === "__FLASH__") {
+                      toggleFlash();
                     } else {
-                      setForm({ ...form, badge: b.v });
+                      toggleToken(b.v);
                     }
                   }}
                   className={`rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
