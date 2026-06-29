@@ -1,36 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, MessageCircle, Mail, Zap, ShieldCheck, Award, Headphones, ArrowRight } from "lucide-react";
+import { Facebook, Mail, Zap } from "lucide-react";
 
 export function Footer() {
   return (
     <footer className="border-t border-border/60 bg-card/30 mt-24">
-      {/* Trust bar */}
-      <div className="border-b border-border/60">
-        <div className="container-wide grid grid-cols-1 items-center gap-4 py-4 md:grid-cols-[minmax(0,1fr)_auto]">
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Secure payments
-            </span>
-            <span className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" fill="currentColor" strokeWidth={0} /> Instant delivery
-            </span>
-            <span className="flex items-center gap-2">
-              <Award className="h-4 w-4 text-primary" /> Warranty support
-            </span>
-            <span className="flex items-center gap-2">
-              <Headphones className="h-4 w-4 text-primary" /> 24/7 support
-            </span>
-          </div>
-          <a
-            href="mailto:vintagestoresofficial@gmail.com"
-            className="inline-flex items-center justify-center gap-2 justify-self-start rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground glow-red transition hover:brightness-110 md:justify-self-end"
-          >
-            Contact Support <ArrowRight className="h-4 w-4" />
-          </a>
-        </div>
-      </div>
-
-      <div className="container-wide grid grid-cols-1 gap-10 py-14 md:grid-cols-4">
+      <div className="container-wide grid grid-cols-1 gap-10 py-14 md:grid-cols-3">
         <div>
           <Link to="/" className="flex items-center gap-2">
             <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
@@ -45,7 +19,11 @@ export function Footer() {
           </p>
           <div className="mt-5 flex gap-2">
             <a className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground" href="#"><Facebook className="h-4 w-4" /></a>
-            <a className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground" href="#"><MessageCircle className="h-4 w-4" /></a>
+            <a className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground" href="#" aria-label="Discord">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
+                <path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3a14.5 14.5 0 0 0-.69 1.418 18.27 18.27 0 0 0-5.736 0A14.5 14.5 0 0 0 9.442 3a19.74 19.74 0 0 0-3.76 1.369C2.21 9.58 1.27 14.65 1.74 19.65a19.92 19.92 0 0 0 6.06 3.07c.49-.66.92-1.36 1.29-2.1-.71-.27-1.39-.6-2.04-.99.17-.13.34-.26.5-.4a14.23 14.23 0 0 0 12.82 0c.16.14.33.27.5.4-.65.39-1.33.73-2.04 1 .37.74.8 1.43 1.29 2.09a19.9 19.9 0 0 0 6.06-3.07c.55-5.81-.94-10.84-3.86-15.28ZM8.52 16.36c-1.2 0-2.18-1.1-2.18-2.45 0-1.35.96-2.46 2.18-2.46 1.22 0 2.2 1.11 2.18 2.46 0 1.35-.97 2.45-2.18 2.45Zm6.96 0c-1.2 0-2.18-1.1-2.18-2.45 0-1.35.96-2.46 2.18-2.46 1.22 0 2.2 1.11 2.18 2.46 0 1.35-.96 2.45-2.18 2.45Z"/>
+              </svg>
+            </a>
           </div>
         </div>
 
@@ -57,24 +35,20 @@ export function Footer() {
           { label: "PlayStation", to: "/shop" },
           { label: "Top-Up", to: "/top-up" },
           { label: "Subscriptions", to: "/subscriptions" },
-        ]} />
-
-        <FooterCol title="Links" links={[
-          { label: "Browse Shop", to: "/shop" },
-          { label: "Blog & Guides", to: "/shop" },
-          { label: "My Cart", to: "/cart" },
-          { label: "My Orders", to: "/shop" },
-          { label: "Sign In", to: "/shop" },
-          { label: "My Account", to: "/shop" },
-        ]} />
+        ]} bulleted />
 
         <div>
-          <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Contact</h4>
-          <a href="mailto:vintagestoresofficial@gmail.com" className="flex items-center gap-2 text-sm text-foreground hover:text-primary">
+          <FooterCol title="Links" links={[
+            { label: "Browse Shop", to: "/shop" },
+            { label: "Blog & Guides", to: "/shop" },
+            { label: "My Cart", to: "/cart" },
+            { label: "My Orders", to: "/profile" },
+            { label: "My Account", to: "/profile" },
+          ]} />
+          <a href="mailto:vintagestoresofficial@gmail.com" className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
             <Mail className="h-4 w-4 text-primary" />
             vintagestoresofficial@gmail.com
           </a>
-          <p className="mt-4 text-xs text-muted-foreground">24/7 support · Instant delivery</p>
         </div>
       </div>
       <div className="border-t border-border/60 py-5">
@@ -86,7 +60,7 @@ export function Footer() {
   );
 }
 
-function FooterCol({ title, links }: { title: string; links: { label: string; to: string }[] }) {
+function FooterCol({ title, links, bulleted }: { title: string; links: { label: string; to: string }[]; bulleted?: boolean }) {
   return (
     <div>
       <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">{title}</h4>
@@ -94,7 +68,8 @@ function FooterCol({ title, links }: { title: string; links: { label: string; to
         {links.map((l) => (
           <li key={l.label}>
             <Link to={l.to} className="flex items-center gap-2 text-sm text-foreground/80 transition-colors hover:text-primary">
-              <span className="text-primary">⚡</span>{l.label}
+              {bulleted && <Zap className="h-3.5 w-3.5 text-primary fill-current" strokeWidth={0} />}
+              {l.label}
             </Link>
           </li>
         ))}
