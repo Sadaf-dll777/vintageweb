@@ -118,6 +118,7 @@ type DbProduct = {
   delivery: string;
   tagline: string;
   created_at: string;
+  flash_ends_at?: string | null;
   categories?: { slug: string; name: string } | null;
 };
 
@@ -142,6 +143,7 @@ function mapProduct(p: DbProduct): ApiProduct {
     delivery: p.delivery,
     tagline: p.tagline,
     created_at: p.created_at,
+    flash_ends_at: p.flash_ends_at ?? null,
   };
 }
 
@@ -308,6 +310,7 @@ export const api = {
       sort_order: Number(data.sort_order ?? 0),
       delivery: data.delivery ?? "",
       tagline: data.tagline ?? "",
+      flash_ends_at: data.flash_ends_at ?? null,
     };
     const { data: row, error } = await supabase
       .from("products")
@@ -331,6 +334,7 @@ export const api = {
     if (patch.sort_order !== undefined) update.sort_order = Number(patch.sort_order);
     if (patch.delivery !== undefined) update.delivery = patch.delivery;
     if (patch.tagline !== undefined) update.tagline = patch.tagline;
+    if (patch.flash_ends_at !== undefined) update.flash_ends_at = patch.flash_ends_at;
     const { data: row, error } = await supabase
       .from("products")
       .update(update)
