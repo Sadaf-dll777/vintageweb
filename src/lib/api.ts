@@ -45,6 +45,7 @@ export interface ApiProduct {
   delivery: string;
   tagline: string;
   created_at: string;
+  flash_ends_at?: string | null;
 }
 
 export interface ApiOrder {
