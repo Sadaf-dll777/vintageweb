@@ -22,6 +22,7 @@ const EMPTY: FormState = {
   sort_order: 0,
   delivery: "",
   tagline: "",
+  flash_ends_at: null,
 };
 
 function ProductsAdmin() {
@@ -387,6 +388,62 @@ function ProductsAdmin() {
                   </span>
                 </div>
               )}
+              <div className="space-y-2 border-t border-primary/20 pt-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                    Offer ends at
+                  </span>
+                  {form.flash_ends_at && (
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, flash_ends_at: null }))}
+                      className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-destructive"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="datetime-local"
+                  value={toLocalInput(form.flash_ends_at)}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      flash_ends_at: fromLocalInput(e.target.value),
+                    }))
+                  }
+                  className="input"
+                />
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { label: "+1h", ms: 3600_000 },
+                    { label: "+6h", ms: 6 * 3600_000 },
+                    { label: "+24h", ms: 24 * 3600_000 },
+                    { label: "+3d", ms: 3 * 24 * 3600_000 },
+                    { label: "+7d", ms: 7 * 24 * 3600_000 },
+                  ].map((p) => (
+                    <button
+                      type="button"
+                      key={p.label}
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          flash_ends_at: new Date(Date.now() + p.ms).toISOString(),
+                        }))
+                      }
+                      className="rounded-md border border-border bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:border-primary/60 hover:text-foreground"
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+                {form.flash_ends_at && (
+                  <p className="text-[10px] text-muted-foreground">
+                    Ends {new Date(form.flash_ends_at).toLocaleString()} ·{" "}
+                    <span className="text-primary">{formatRemaining(form.flash_ends_at)}</span>
+                  </p>
+                )}
+              </div>
             </div>
           )}
           <input
