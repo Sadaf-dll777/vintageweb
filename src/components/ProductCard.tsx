@@ -99,10 +99,10 @@ export function ProductCard({ product }: { product: Product }) {
         className="h-px w-full bg-[linear-gradient(to_right,transparent,var(--color-primary),transparent)] opacity-80"
       />
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-display text-base font-medium leading-tight tracking-wide text-foreground transition-colors duration-300 group-hover:text-primary">
+        <h3 className="font-display text-base font-medium leading-snug tracking-wide text-foreground transition-colors duration-300 group-hover:text-primary">
           {product.name}
         </h3>
-        <div className="mt-auto border-t border-border pt-2 flex items-end justify-between gap-3">
+        <div className="mt-auto pt-3 border-t border-border flex items-end justify-between gap-3">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
             <div className="font-display text-xl font-medium text-primary">{formatPrice(product.price, currency)}</div>

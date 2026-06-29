@@ -86,13 +86,13 @@ export function NewArrivals({ products }: { products: Product[] }) {
                     />
                     <div className="flex flex-1 flex-col gap-3 p-4">
                       <h3
-                        className={`font-display font-medium text-base leading-tight tracking-wide transition-colors ${
+                        className={`font-display font-medium text-base leading-snug tracking-wide transition-colors ${
                           isActive ? "text-foreground" : "text-muted-foreground"
                         }`}
                       >
                         {p.name}
                       </h3>
-                      <div className="mt-auto border-t border-border pt-2 flex items-end justify-between gap-3">
+                      <div className="mt-auto pt-3 border-t border-border flex items-end justify-between gap-3">
                         <div>
                           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
                           <div className="font-display text-lg font-medium text-primary">{formatPrice(p.price, currency)}</div>
