@@ -260,7 +260,7 @@ function Index() {
               <span className={`relative grid h-14 w-14 place-items-center rounded-xl bg-gradient-to-br ${c.color} transition-transform duration-300 group-hover:scale-110`}>
                 <c.Icon className={`h-7 w-7 ${c.icon} transition-colors duration-300 group-hover:text-primary`} strokeWidth={2} />
               </span>
-              <span className="relative font-display text-xs uppercase tracking-widest text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
+              <span className="relative font-display font-medium text-xs uppercase tracking-widest text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
                 {c.label}
               </span>
             </Link>
