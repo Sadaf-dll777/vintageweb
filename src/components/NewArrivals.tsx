@@ -47,7 +47,7 @@ export function NewArrivals({ products }: { products: Product[] }) {
         </Link>
       </div>
 
-      <div className="relative">
+      <div className="group/carousel relative">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
             {products.map((p, i) => {
@@ -123,14 +123,14 @@ export function NewArrivals({ products }: { products: Product[] }) {
         <button
           onClick={() => embla?.scrollPrev()}
           aria-label="Previous"
-          className="absolute left-0 top-1/2 z-10 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/90 backdrop-blur transition hover:border-primary hover:text-primary"
+          className="absolute left-0 top-1/2 z-10 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border/60 bg-card/30 text-foreground/70 opacity-0 backdrop-blur transition-all duration-300 hover:border-primary hover:text-primary group-hover/carousel:opacity-100 focus-visible:opacity-100"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
         <button
           onClick={() => embla?.scrollNext()}
           aria-label="Next"
-          className="absolute right-0 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full border border-border bg-card/90 backdrop-blur transition hover:border-primary hover:text-primary"
+          className="absolute right-0 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full border border-border/60 bg-card/30 text-foreground/70 opacity-0 backdrop-blur transition-all duration-300 hover:border-primary hover:text-primary group-hover/carousel:opacity-100 focus-visible:opacity-100"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
