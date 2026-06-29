@@ -19,7 +19,7 @@ export function CategorySection({
   return (
     <section className="container-wide py-10">
       <div className="mb-6 flex items-end justify-between">
-        <h3 className="flex items-center gap-3 font-display text-3xl uppercase">
+        <h3 className="flex items-center gap-3 font-display font-medium text-3xl uppercase">
           <Icon className={`h-7 w-7 ${accent}`} /> {title}
         </h3>
         <Link
