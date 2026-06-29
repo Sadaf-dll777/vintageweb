@@ -203,13 +203,10 @@ function DealCard({ deal }: { deal: FlashDeal }) {
 
       <div className="relative flex gap-4" style={{ transform: "translateZ(20px)" }}>
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-background">
-          <motion.img
+          <img
             src={deal.image}
             alt={deal.name}
-            className="h-full w-full object-cover"
-            animate={{ scale: 1 }}
-            whileHover={{ scale: 1.08 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           />
         </div>
         <div className="min-w-0 flex-1">
