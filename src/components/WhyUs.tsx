@@ -20,7 +20,7 @@ export function WhyUs() {
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
             ⚡ Why Us
           </span>
-          <h2 className="mt-3 font-display text-4xl uppercase sm:text-5xl">
+          <h2 className="mt-3 font-display text-4xl sm:text-5xl">
             Why Choose <span className="text-primary">VintageStore</span>
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">Built for gamers, by gamers</p>
