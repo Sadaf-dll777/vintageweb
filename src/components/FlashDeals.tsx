@@ -325,7 +325,9 @@ export function FlashDeals() {
     const flashes = all.filter((p) =>
       (p.badge || "").toLowerCase().includes("flash"),
     );
-    return flashes.map((p, i) => productToDeal(p, endsAt, i));
+    return flashes
+      .map((p, i) => productToDeal(p, p.flash_ends_at || endsAt, i))
+      .filter((d) => new Date(d.endsAt).getTime() > Date.now());
   }, [productsQuery.data, endsAt]);
 
   if (!enabled) return null;
