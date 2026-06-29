@@ -13,6 +13,7 @@ import { Reviews } from "@/components/Reviews";
 import { WhyUs } from "@/components/WhyUs";
 import { Partners } from "@/components/Partners";
 import { FlashDeals } from "@/components/FlashDeals";
+import { TrendingNow } from "@/components/TrendingNow";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -319,30 +320,7 @@ function Index() {
       })()}
 
       {/* POPULAR */}
-      <section className="container-wide py-16">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-primary">⚡ Popular Right Now</span>
-            <h2 className="mt-2 font-display text-4xl uppercase sm:text-5xl">Top Picks</h2>
-          </div>
-          <Link to="/shop" className="hidden text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary md:block">
-            Browse all →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {products.slice(0, 10).map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: (i % 5) * 0.06, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <ProductCard product={p} />
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      <TrendingNow />
 
       {/* CATEGORY SECTIONS */}
       <CategorySection category="top-up" title="Top-Up" Icon={Gamepad2} accent="text-purple-400" />
