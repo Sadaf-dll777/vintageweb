@@ -26,7 +26,7 @@ import { products, categories, type Category } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { cn } from "@/lib/utils";
 
-const CATEGORY_IDS = ["all", "top-up", "subscriptions", "gift-cards", "accounts", "games", "region-change"] as const;
+const CATEGORY_IDS = ["all", "top-up", "subscriptions", "gift-cards", "accounts", "games", "software"] as const;
 const shopSearchSchema = z.object({
   cat: fallback(z.enum(CATEGORY_IDS), "all").default("all"),
 });
@@ -58,7 +58,7 @@ const CATEGORY_META: Record<Category | "all", { Icon: LucideIcon; tagline: strin
   "gift-cards": { Icon: Gift, tagline: "Send credit to anyone, instantly", tint: "from-orange-500/30 via-primary/10 to-transparent" },
   accounts: { Icon: UserIcon, tagline: "Verified accounts, ready to play", tint: "from-violet-500/30 via-primary/10 to-transparent" },
   games: { Icon: Joystick, tagline: "PC & console titles at the best prices", tint: "from-pink-500/30 via-primary/10 to-transparent" },
-  "region-change": { Icon: Globe, tagline: "Switch your store region in minutes", tint: "from-cyan-500/30 via-primary/10 to-transparent" },
+  software: { Icon: Globe, tagline: "Licensed software & productivity tools", tint: "from-cyan-500/30 via-primary/10 to-transparent" },
 };
 
 // Brand sub-chips per category (shown only when a real category is selected)
@@ -88,9 +88,8 @@ const BRANDS: Partial<Record<Category, { id: string; label: string; Icon: Lucide
     { id: "youtube", label: "YouTube", Icon: Tv },
     { id: "discord", label: "Discord", Icon: UserIcon },
   ],
-  "region-change": [
-    { id: "all", label: "All Regions", Icon: Sparkles },
-    { id: "steam", label: "Steam", Icon: Joystick },
+  software: [
+    { id: "all", label: "All Software", Icon: Sparkles },
   ],
 };
 
