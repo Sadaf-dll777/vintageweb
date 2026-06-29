@@ -199,7 +199,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       {/* urgency + progress */}
       <div className="mt-3 flex items-center justify-between gap-3">
         <UrgencyBadge kind={deal.urgency ?? "moderate"} />
-        <span className="text-[11px] font-bold tabular-nums text-muted-foreground">{pct}%</span>
+        <span className="text-[11px] font-medium tabular-nums text-muted-foreground">{pct}%</span>
       </div>
       <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-border/60">
         <motion.div
