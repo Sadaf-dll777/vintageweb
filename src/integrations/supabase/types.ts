@@ -14,6 +14,179 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          contact: string
+          created_at: string
+          customer_name: string
+          delivered_key: string
+          id: string
+          items: Json
+          key_instructions: string
+          key_redeem_label: string
+          notes: string
+          notes_thread: Json
+          payment_method: string
+          payment_proof_url: string
+          sender_number: string
+          status: Database["public"]["Enums"]["order_status"]
+          total_bdt: number
+          total_usd: number
+          transaction_id: string
+          updated_at: string
+          user_email: string
+        }
+        Insert: {
+          contact?: string
+          created_at?: string
+          customer_name?: string
+          delivered_key?: string
+          id?: string
+          items?: Json
+          key_instructions?: string
+          key_redeem_label?: string
+          notes?: string
+          notes_thread?: Json
+          payment_method?: string
+          payment_proof_url?: string
+          sender_number?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          total_bdt?: number
+          total_usd?: number
+          transaction_id?: string
+          updated_at?: string
+          user_email?: string
+        }
+        Update: {
+          contact?: string
+          created_at?: string
+          customer_name?: string
+          delivered_key?: string
+          id?: string
+          items?: Json
+          key_instructions?: string
+          key_redeem_label?: string
+          notes?: string
+          notes_thread?: Json
+          payment_method?: string
+          payment_proof_url?: string
+          sender_number?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          total_bdt?: number
+          total_usd?: number
+          transaction_id?: string
+          updated_at?: string
+          user_email?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          badge: string
+          category_id: string | null
+          created_at: string
+          delivery: string
+          description: string
+          id: string
+          image_url: string
+          name: string
+          price_bdt: number
+          slug: string
+          sort_order: number
+          stock: number
+          tagline: string
+          updated_at: string
+        }
+        Insert: {
+          badge?: string
+          category_id?: string | null
+          created_at?: string
+          delivery?: string
+          description?: string
+          id?: string
+          image_url?: string
+          name: string
+          price_bdt?: number
+          slug: string
+          sort_order?: number
+          stock?: number
+          tagline?: string
+          updated_at?: string
+        }
+        Update: {
+          badge?: string
+          category_id?: string | null
+          created_at?: string
+          delivery?: string
+          description?: string
+          id?: string
+          image_url?: string
+          name?: string
+          price_bdt?: number
+          slug?: string
+          sort_order?: number
+          stock?: number
+          tagline?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_content: {
+        Row: {
+          content: Json
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -50,6 +223,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "manager" | "customer"
+      order_status:
+        | "review"
+        | "verified"
+        | "processing"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -178,6 +357,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "manager", "customer"],
+      order_status: [
+        "review",
+        "verified",
+        "processing",
+        "completed",
+        "cancelled",
+      ],
     },
   },
 } as const

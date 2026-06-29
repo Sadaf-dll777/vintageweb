@@ -1,45 +1,23 @@
 /**
- * VintageStore API client.
+ * VintageStore API client — Lovable Cloud (Supabase) edition.
  *
- * Two modes:
- *   1. REAL — when VITE_API_URL is set, talks to the Node/Postgres backend
- *      in ./backend (deploy this on your VPS).
- *   2. MOCK — when VITE_API_URL is unset (current setup), uses a
- *      localStorage-backed mock seeded from src/data/products.ts and
- *      src/config/site.ts so you can preview and style the admin in
- *      Lovable without running the real backend.
- *
- * The interface is identical, so flipping VITE_API_URL switches modes
- * with no other code changes.
+ * The app talks directly to Supabase. The exported `api` surface matches the
+ * previous Fastify/mock client so existing route code keeps working.
  */
 
-import { products as seedProducts, categories as seedCategories } from "@/data/products";
-import * as siteConfig from "@/config/site";
+import { supabase } from "@/integrations/supabase/client";
+import { brand, reviews, whyUs, partners } from "@/config/site";
+import type { Database } from "@/integrations/supabase/types";
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") || "";
+type CategoryUpdate = Database["public"]["Tables"]["categories"]["Update"];
+type ProductUpdate = Database["public"]["Tables"]["products"]["Update"];
+type OrderInsert = Database["public"]["Tables"]["orders"]["Insert"];
+type OrderUpdate = Database["public"]["Tables"]["orders"]["Update"];
+type Json = Database["public"]["Tables"]["orders"]["Row"]["items"];
 
-/** True when a real backend URL is configured. */
-export const apiEnabled = true; // mock mode counts as enabled
-export const usingMock = !API_URL;
+const USD_TO_BDT = brand.usdToBdt || 120;
 
-const TOKEN_KEY = "vintage_admin_token";
-
-export const adminToken = {
-  get(): string | null {
-    if (typeof window === "undefined") return null;
-    return window.localStorage.getItem(TOKEN_KEY);
-  },
-  set(token: string) {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(TOKEN_KEY, token);
-  },
-  clear() {
-    if (typeof window === "undefined") return;
-    window.localStorage.removeItem(TOKEN_KEY);
-  },
-};
-
-// ============ Types (mirror backend shape) ============
+// ============ Types ============
 
 export interface ApiCategory {
   id: string;
@@ -57,8 +35,8 @@ export interface ApiProduct {
   category_slug?: string | null;
   category_name?: string | null;
   description: string;
-  price_bdt: number | string;
-  price_usd?: number | string;
+  price_bdt: number;
+  price_usd?: number;
   image_url: string;
   badge: string;
   stock: number;
@@ -83,8 +61,8 @@ export interface ApiOrder {
     price_bdt?: number;
     image_url?: string;
   }>;
-  total_usd: number | string;
-  total_bdt: number | string;
+  total_usd: number;
+  total_bdt: number;
   payment_method: string;
   payment_proof_url: string;
   transaction_id: string;
@@ -98,152 +76,229 @@ export interface ApiOrder {
   created_at: string;
 }
 
-// ============ Real network client ============
+// ============ Legacy compat exports ============
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  if (!API_URL) throw new Error("VITE_API_URL is not set");
-  const headers = new Headers(init.headers);
-  if (!headers.has("Content-Type") && init.body && !(init.body instanceof FormData)) {
-    headers.set("Content-Type", "application/json");
-  }
-  const token = adminToken.get();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
+export const apiEnabled = true;
+export const usingMock = false;
 
-  const res = await fetch(`${API_URL}${path}`, { ...init, headers });
-  if (!res.ok) {
-    let msg = `${res.status} ${res.statusText}`;
-    try {
-      const data = (await res.json()) as { error?: string };
-      if (data?.error) msg = data.error;
-    } catch {}
-    throw new Error(msg);
-  }
-  if (res.status === 204) return undefined as T;
-  return (await res.json()) as T;
+/** Legacy localStorage token shim — no-op. Auth is handled by Supabase. */
+export const adminToken = {
+  get: () => null as string | null,
+  set: (_t: string) => {},
+  clear: () => {},
+};
+
+/** Legacy mock reset — no-op in Cloud mode. */
+export function resetMockDB() {
+  /* no-op: data lives in Lovable Cloud now */
 }
 
-// ============ Mock backend (localStorage) ============
+// ============ Helpers ============
 
-const MOCK_KEY = "vintage_mock_db_v3";
+type DbCategory = {
+  id: string;
+  slug: string;
+  name: string;
+  emoji: string;
+  sort_order: number;
+};
 
-interface MockDB {
-  admins: { email: string; password: string }[];
-  categories: ApiCategory[];
-  products: ApiProduct[];
-  orders: ApiOrder[];
-  site: Record<string, unknown>;
-}
+type DbProduct = {
+  id: string;
+  slug: string;
+  name: string;
+  category_id: string | null;
+  description: string;
+  price_bdt: number | string;
+  image_url: string;
+  badge: string;
+  stock: number;
+  sort_order: number;
+  delivery: string;
+  tagline: string;
+  created_at: string;
+  categories?: { slug: string; name: string } | null;
+};
 
-const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
-
-function seedDB(): MockDB {
-  const categories: ApiCategory[] = seedCategories
-    .filter((c) => c.id !== "all")
-    .map((c, i) => ({
-      id: uid(),
-      slug: c.id,
-      name: c.label,
-      emoji: c.emoji,
-      sort_order: i,
-    }));
-  const catBySlug = new Map(categories.map((c) => [c.slug, c.id]));
-  const products: ApiProduct[] = seedProducts.map((p, i) => ({
-    id: uid(),
-    slug: p.id,
-    name: p.name,
-    category_id: catBySlug.get(p.category) ?? null,
-    category_slug: p.category,
-    category_name: categories.find((c) => c.slug === p.category)?.name ?? null,
-    description: p.description ?? "",
-    price_bdt: Math.round(p.price * 120),
-    image_url: p.image,
-    badge: p.badge ?? "",
-    stock: 10,
-    sort_order: i,
-    delivery: p.delivery ?? "",
-    tagline: p.tagline ?? "",
-    created_at: new Date(Date.now() - i * 3600_000).toISOString(),
-  }));
+function mapProduct(p: DbProduct): ApiProduct {
+  const priceBdt = Number(p.price_bdt) || 0;
+  const priceUsd = priceBdt / USD_TO_BDT;
   return {
-    admins: [{ email: "admin@vintagestore.local", password: "admin" }],
-    categories,
-    products,
-    orders: [],
-    site: {
-      brand: siteConfig.brand,
-      reviews: siteConfig.reviews,
-      whyUs: siteConfig.whyUs,
-      partners: siteConfig.partners,
-    },
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    category_id: p.category_id,
+    category_slug: p.categories?.slug ?? null,
+    category_name: p.categories?.name ?? null,
+    description: p.description,
+    price_bdt: priceBdt,
+    price_usd: priceUsd,
+    image_url: p.image_url,
+    badge: p.badge,
+    stock: p.stock,
+    in_stock: p.stock > 0,
+    sort_order: p.sort_order,
+    delivery: p.delivery,
+    tagline: p.tagline,
+    created_at: p.created_at,
   };
 }
 
-function loadDB(): MockDB {
-  if (typeof window === "undefined") return seedDB();
-  const raw = window.localStorage.getItem(MOCK_KEY);
-  if (!raw) {
-    const fresh = seedDB();
-    window.localStorage.setItem(MOCK_KEY, JSON.stringify(fresh));
-    return fresh;
-  }
-  try {
-    return JSON.parse(raw) as MockDB;
-  } catch {
-    const fresh = seedDB();
-    window.localStorage.setItem(MOCK_KEY, JSON.stringify(fresh));
-    return fresh;
-  }
+type DbOrder = {
+  id: string;
+  user_email: string;
+  customer_name: string;
+  contact: string;
+  items: unknown;
+  total_usd: number | string;
+  total_bdt: number | string;
+  payment_method: string;
+  payment_proof_url: string;
+  transaction_id: string;
+  sender_number: string;
+  notes: string;
+  status: ApiOrder["status"];
+  delivered_key: string;
+  key_instructions: string;
+  key_redeem_label: string;
+  notes_thread: unknown;
+  created_at: string;
+};
+
+function mapOrder(o: DbOrder): ApiOrder {
+  return {
+    id: o.id,
+    user_email: o.user_email,
+    customer_name: o.customer_name,
+    contact: o.contact,
+    items: Array.isArray(o.items) ? (o.items as ApiOrder["items"]) : [],
+    total_usd: Number(o.total_usd) || 0,
+    total_bdt: Number(o.total_bdt) || 0,
+    payment_method: o.payment_method,
+    payment_proof_url: o.payment_proof_url,
+    transaction_id: o.transaction_id,
+    sender_number: o.sender_number,
+    notes: o.notes,
+    status: o.status,
+    delivered_key: o.delivered_key,
+    key_instructions: o.key_instructions,
+    key_redeem_label: o.key_redeem_label,
+    notes_thread: Array.isArray(o.notes_thread)
+      ? (o.notes_thread as ApiOrder["notes_thread"])
+      : [],
+    created_at: o.created_at,
+  };
 }
 
-function saveDB(db: MockDB) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(MOCK_KEY, JSON.stringify(db));
+function rethrow<T>(p: PromiseLike<{ data: T | null; error: { message: string } | null }>): Promise<T> {
+  return (async () => {
+    const { data, error } = await p;
+    if (error) throw new Error(error.message);
+    return data as T;
+  })();
 }
 
-/** Reset the mock DB to its seeded state. */
-export function resetMockDB() {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(MOCK_KEY);
-  window.localStorage.removeItem(TOKEN_KEY);
-}
+// ============ API surface ============
 
-const delay = (ms = 120) => new Promise((r) => setTimeout(r, ms));
-
-const mockApi = {
+export const api = {
+  // ---- Auth ----
   async login(email: string, password: string) {
-    await delay();
-    const db = loadDB();
-    const found = db.admins.find(
-      (a) => a.email.toLowerCase() === email.toLowerCase() && a.password === password,
-    );
-    if (!found) throw new Error("Invalid credentials");
-    return { token: "mock-token-" + uid(), admin: { id: "mock", email: found.email } };
-  },
-  async me() {
-    return { admin: { sub: "mock", email: "admin@vintagestore.local" } };
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (error) throw new Error(error.message);
+    return {
+      token: data.session?.access_token ?? "",
+      admin: { id: data.user?.id ?? "", email: data.user?.email ?? "" },
+    };
   },
 
-  async listProducts() {
-    await delay();
-    return loadDB().products;
+  async me() {
+    const { data } = await supabase.auth.getUser();
+    return {
+      admin: {
+        sub: data.user?.id ?? "",
+        email: data.user?.email ?? "",
+      },
+    };
   },
-  async getProduct(slug: string) {
-    await delay();
-    const p = loadDB().products.find((p) => p.slug === slug);
-    if (!p) throw new Error("Not found");
-    return p;
+
+  // ---- Categories ----
+  async listCategories(): Promise<ApiCategory[]> {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id, slug, name, emoji, sort_order")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as ApiCategory[];
   },
-  async createProduct(data: Partial<ApiProduct>) {
-    await delay();
-    const db = loadDB();
-    const cat = db.categories.find((c) => c.id === data.category_id);
-    const p: ApiProduct = {
-      id: uid(),
-      slug: data.slug || uid(),
-      name: data.name || "Untitled",
+
+  async createCategory(data: Partial<ApiCategory>): Promise<ApiCategory> {
+    const payload = {
+      slug: (data.slug || "").trim(),
+      name: (data.name || "").trim(),
+      emoji: data.emoji ?? "",
+      sort_order: Number(data.sort_order ?? 0),
+    };
+    if (!payload.slug) payload.slug = payload.name.toLowerCase().replace(/\s+/g, "-");
+    const { data: row, error } = await supabase
+      .from("categories")
+      .insert(payload)
+      .select("id, slug, name, emoji, sort_order")
+      .single();
+    if (error) throw new Error(error.message);
+    return row as ApiCategory;
+  },
+
+  async updateCategory(id: string, patch: Partial<ApiCategory>): Promise<ApiCategory> {
+    const update: CategoryUpdate = {};
+    if (patch.slug !== undefined) update.slug = patch.slug;
+    if (patch.name !== undefined) update.name = patch.name;
+    if (patch.emoji !== undefined) update.emoji = patch.emoji;
+    if (patch.sort_order !== undefined) update.sort_order = Number(patch.sort_order);
+    const { data: row, error } = await supabase
+      .from("categories")
+      .update(update)
+      .eq("id", id)
+      .select("id, slug, name, emoji, sort_order")
+      .single();
+    if (error) throw new Error(error.message);
+    return row as ApiCategory;
+  },
+
+  async deleteCategory(id: string) {
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  },
+
+  // ---- Products ----
+  async listProducts(): Promise<ApiProduct[]> {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, categories(slug, name)")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((p) => mapProduct(p as unknown as DbProduct));
+  },
+
+  async getProduct(slug: string): Promise<ApiProduct> {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, categories(slug, name)")
+      .eq("slug", slug)
+      .single();
+    if (error) throw new Error(error.message);
+    return mapProduct(data as unknown as DbProduct);
+  },
+
+  async createProduct(data: Partial<ApiProduct>): Promise<ApiProduct> {
+    const payload = {
+      slug: (data.slug || "").trim() || (data.name || "").toLowerCase().replace(/\s+/g, "-"),
+      name: (data.name || "Untitled").trim(),
       category_id: data.category_id ?? null,
-      category_slug: cat?.slug ?? null,
-      category_name: cat?.name ?? null,
       description: data.description ?? "",
       price_bdt: Number(data.price_bdt ?? 0),
       image_url: data.image_url ?? "",
@@ -252,224 +307,190 @@ const mockApi = {
       sort_order: Number(data.sort_order ?? 0),
       delivery: data.delivery ?? "",
       tagline: data.tagline ?? "",
-      created_at: new Date().toISOString(),
     };
-    db.products.unshift(p);
-    saveDB(db);
-    return p;
+    const { data: row, error } = await supabase
+      .from("products")
+      .insert(payload)
+      .select("*, categories(slug, name)")
+      .single();
+    if (error) throw new Error(error.message);
+    return mapProduct(row as unknown as DbProduct);
   },
-  async updateProduct(id: string, data: Partial<ApiProduct>) {
-    await delay();
-    const db = loadDB();
-    const idx = db.products.findIndex((p) => p.id === id);
-    if (idx === -1) throw new Error("Not found");
-    const cat = data.category_id ? db.categories.find((c) => c.id === data.category_id) : null;
-    db.products[idx] = {
-      ...db.products[idx],
-      ...data,
-      price_bdt: data.price_bdt !== undefined ? Number(data.price_bdt) : db.products[idx].price_bdt,
-      stock: data.stock !== undefined ? Number(data.stock) : db.products[idx].stock,
-      sort_order: data.sort_order !== undefined ? Number(data.sort_order) : db.products[idx].sort_order,
-      category_slug: cat?.slug ?? db.products[idx].category_slug ?? null,
-      category_name: cat?.name ?? db.products[idx].category_name ?? null,
-    };
-    saveDB(db);
-    return db.products[idx];
+
+  async updateProduct(id: string, patch: Partial<ApiProduct>): Promise<ApiProduct> {
+    const update: ProductUpdate = {};
+    if (patch.slug !== undefined) update.slug = patch.slug;
+    if (patch.name !== undefined) update.name = patch.name;
+    if (patch.category_id !== undefined) update.category_id = patch.category_id;
+    if (patch.description !== undefined) update.description = patch.description;
+    if (patch.price_bdt !== undefined) update.price_bdt = Number(patch.price_bdt);
+    if (patch.image_url !== undefined) update.image_url = patch.image_url;
+    if (patch.badge !== undefined) update.badge = patch.badge;
+    if (patch.stock !== undefined) update.stock = Number(patch.stock);
+    if (patch.sort_order !== undefined) update.sort_order = Number(patch.sort_order);
+    if (patch.delivery !== undefined) update.delivery = patch.delivery;
+    if (patch.tagline !== undefined) update.tagline = patch.tagline;
+    const { data: row, error } = await supabase
+      .from("products")
+      .update(update)
+      .eq("id", id)
+      .select("*, categories(slug, name)")
+      .single();
+    if (error) throw new Error(error.message);
+    return mapProduct(row as unknown as DbProduct);
   },
+
   async deleteProduct(id: string) {
-    await delay();
-    const db = loadDB();
-    db.products = db.products.filter((p) => p.id !== id);
-    saveDB(db);
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) throw new Error(error.message);
     return { ok: true as const };
   },
 
-  async listCategories() {
-    await delay();
-    return loadDB().categories;
-  },
-  async createCategory(data: Partial<ApiCategory>) {
-    await delay();
-    const db = loadDB();
-    const c: ApiCategory = {
-      id: uid(),
-      slug: data.slug || uid(),
-      name: data.name || "Untitled",
-      emoji: data.emoji ?? "",
-      sort_order: Number(data.sort_order ?? 0),
-    };
-    db.categories.push(c);
-    saveDB(db);
-    return c;
-  },
-  async updateCategory(id: string, data: Partial<ApiCategory>) {
-    await delay();
-    const db = loadDB();
-    const idx = db.categories.findIndex((c) => c.id === id);
-    if (idx === -1) throw new Error("Not found");
-    db.categories[idx] = { ...db.categories[idx], ...data };
-    saveDB(db);
-    return db.categories[idx];
-  },
-  async deleteCategory(id: string) {
-    await delay();
-    const db = loadDB();
-    db.categories = db.categories.filter((c) => c.id !== id);
-    saveDB(db);
-    return { ok: true as const };
+  // ---- Orders ----
+  async listOrders(): Promise<ApiOrder[]> {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((o) => mapOrder(o as unknown as DbOrder));
   },
 
-  async listOrders() {
-    await delay();
-    return loadDB().orders;
-  },
-  async placeOrder(data: Omit<ApiOrder, "id" | "status" | "created_at">) {
-    await delay();
-    const db = loadDB();
-    const o: ApiOrder = {
-      ...data,
-      id: uid(),
-      status: "review",
-      notes_thread: data.notes_thread ?? [],
-      created_at: new Date().toISOString(),
+  async placeOrder(
+    data: Omit<ApiOrder, "id" | "status" | "created_at">,
+  ): Promise<{ id: string; created_at: string; status: ApiOrder["status"] }> {
+    const payload: OrderInsert = {
+      user_email: (data.user_email || "").toLowerCase(),
+      customer_name: data.customer_name || "",
+      contact: data.contact || "",
+      items: (data.items ?? []) as unknown as Json,
+      total_usd: Number(data.total_usd) || 0,
+      total_bdt: Number(data.total_bdt) || 0,
+      payment_method: data.payment_method || "",
+      payment_proof_url: data.payment_proof_url || "",
+      transaction_id: data.transaction_id || "",
+      sender_number: data.sender_number || "",
+      notes: data.notes || "",
+      notes_thread: (data.notes_thread ?? []) as unknown as Json,
     };
-    db.orders.unshift(o);
-    saveDB(db);
-    return { id: o.id, created_at: o.created_at, status: o.status };
+    const { data: row, error } = await supabase
+      .from("orders")
+      .insert(payload)
+      .select("id, created_at, status")
+      .single();
+    if (error) throw new Error(error.message);
+    return {
+      id: row!.id,
+      created_at: row!.created_at,
+      status: row!.status as ApiOrder["status"],
+    };
   },
-  async updateOrderStatus(id: string, status: ApiOrder["status"]) {
-    await delay();
-    const db = loadDB();
-    const idx = db.orders.findIndex((o) => o.id === id);
-    if (idx === -1) throw new Error("Not found");
-    db.orders[idx].status = status;
-    saveDB(db);
-    return db.orders[idx];
+
+  async updateOrderStatus(id: string, status: ApiOrder["status"]): Promise<ApiOrder> {
+    const { data, error } = await supabase
+      .from("orders")
+      .update({ status })
+      .eq("id", id)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return mapOrder(data as unknown as DbOrder);
   },
+
   async updateOrderDelivery(
     id: string,
     patch: Partial<Pick<ApiOrder, "delivered_key" | "key_instructions" | "key_redeem_label">>,
-  ) {
-    await delay();
-    const db = loadDB();
-    const idx = db.orders.findIndex((o) => o.id === id);
-    if (idx === -1) throw new Error("Not found");
-    db.orders[idx] = { ...db.orders[idx], ...patch };
-    saveDB(db);
-    return db.orders[idx];
-  },
-  async appendOrderNote(id: string, note: { from: "support" | "customer"; text: string }) {
-    await delay();
-    const db = loadDB();
-    const idx = db.orders.findIndex((o) => o.id === id);
-    if (idx === -1) throw new Error("Not found");
-    const thread = db.orders[idx].notes_thread ?? [];
-    thread.push({ ...note, at: new Date().toISOString() });
-    db.orders[idx].notes_thread = thread;
-    saveDB(db);
-    return db.orders[idx];
-  },
-  async deleteOrder(id: string) {
-    await delay();
-    const db = loadDB();
-    db.orders = db.orders.filter((o) => o.id !== id);
-    saveDB(db);
-    return { ok: true as const };
+  ): Promise<ApiOrder> {
+    const update: OrderUpdate = {};
+    if (patch.delivered_key !== undefined) update.delivered_key = patch.delivered_key;
+    if (patch.key_instructions !== undefined) update.key_instructions = patch.key_instructions;
+    if (patch.key_redeem_label !== undefined) update.key_redeem_label = patch.key_redeem_label;
+    const { data, error } = await supabase
+      .from("orders")
+      .update(update)
+      .eq("id", id)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return mapOrder(data as unknown as DbOrder);
   },
 
-  async getSite() {
-    await delay();
-    return loadDB().site;
-  },
-  async saveSite(content: Record<string, unknown>) {
-    await delay();
-    const db = loadDB();
-    db.site = content;
-    saveDB(db);
-    return { ok: true as const };
-  },
-
-  async upload(file: File) {
-    // Read as data URL so the image renders in preview without a server.
-    return new Promise<{ url: string; filename: string }>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () =>
-        resolve({ url: reader.result as string, filename: file.name });
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
-  },
-};
-
-// ============ Real backend client ============
-
-const realApi = {
-  // Auth
-  login: (email: string, password: string) =>
-    request<{ token: string; admin: { id: string; email: string } }>("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    }),
-  me: () => request<{ admin: { sub: string; email: string } }>("/api/auth/me"),
-
-  // Products
-  listProducts: () => request<ApiProduct[]>("/api/products"),
-  getProduct: (slug: string) => request<ApiProduct>(`/api/products/${encodeURIComponent(slug)}`),
-  createProduct: (data: Partial<ApiProduct>) =>
-    request<ApiProduct>("/api/products", { method: "POST", body: JSON.stringify(data) }),
-  updateProduct: (id: string, data: Partial<ApiProduct>) =>
-    request<ApiProduct>(`/api/products/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteProduct: (id: string) =>
-    request<{ ok: true }>(`/api/products/${id}`, { method: "DELETE" }),
-
-  // Categories
-  listCategories: () => request<ApiCategory[]>("/api/categories"),
-  createCategory: (data: Partial<ApiCategory>) =>
-    request<ApiCategory>("/api/categories", { method: "POST", body: JSON.stringify(data) }),
-  updateCategory: (id: string, data: Partial<ApiCategory>) =>
-    request<ApiCategory>(`/api/categories/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteCategory: (id: string) =>
-    request<{ ok: true }>(`/api/categories/${id}`, { method: "DELETE" }),
-
-  // Orders
-  listOrders: () => request<ApiOrder[]>("/api/orders"),
-  placeOrder: (data: Omit<ApiOrder, "id" | "status" | "created_at">) =>
-    request<{ id: string; created_at: string; status: string }>("/api/orders", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-  updateOrderStatus: (id: string, status: ApiOrder["status"]) =>
-    request<ApiOrder>(`/api/orders/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
-  updateOrderDelivery: (
+  async appendOrderNote(
     id: string,
-    patch: Partial<Pick<ApiOrder, "delivered_key" | "key_instructions" | "key_redeem_label">>,
-  ) =>
-    request<ApiOrder>(`/api/orders/${id}/delivery`, {
-      method: "PATCH",
-      body: JSON.stringify(patch),
-    }),
-  appendOrderNote: (id: string, note: { from: "support" | "customer"; text: string }) =>
-    request<ApiOrder>(`/api/orders/${id}/notes`, {
-      method: "POST",
-      body: JSON.stringify(note),
-    }),
-  deleteOrder: (id: string) =>
-    request<{ ok: true }>(`/api/orders/${id}`, { method: "DELETE" }),
+    note: { from: "support" | "customer"; text: string },
+  ): Promise<ApiOrder> {
+    const { data: current, error: readErr } = await supabase
+      .from("orders")
+      .select("notes_thread")
+      .eq("id", id)
+      .single();
+    if (readErr) throw new Error(readErr.message);
+    const thread = Array.isArray(current?.notes_thread)
+      ? (current!.notes_thread as ApiOrder["notes_thread"])!
+      : [];
+    thread.push({ ...note, at: new Date().toISOString() });
+    const { data, error } = await supabase
+      .from("orders")
+      .update({ notes_thread: thread as unknown as Json })
+      .eq("id", id)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return mapOrder(data as unknown as DbOrder);
+  },
 
-  // Site content (single JSON blob)
-  getSite: () => request<Record<string, unknown>>("/api/site"),
-  saveSite: (content: Record<string, unknown>) =>
-    request<{ ok: true }>("/api/site", { method: "PUT", body: JSON.stringify(content) }),
+  async deleteOrder(id: string) {
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  },
 
-  // Upload
-  upload: async (file: File): Promise<{ url: string; filename: string }> => {
-    const fd = new FormData();
-    fd.append("file", file);
-    return request<{ url: string; filename: string }>("/api/upload", {
-      method: "POST",
-      body: fd,
+  // ---- Site content ----
+  async getSite(): Promise<Record<string, unknown>> {
+    const { data, error } = await supabase
+      .from("site_content")
+      .select("content")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    const stored = (data?.content as Record<string, unknown> | null) ?? {};
+    // Fall back to local site config defaults so the admin UI shows something
+    // even before the row has been edited.
+    return {
+      brand,
+      reviews,
+      whyUs,
+      partners,
+      ...stored,
+    };
+  },
+
+  async saveSite(content: Record<string, unknown>) {
+    const { error } = await supabase
+      .from("site_content")
+      .upsert({ id: 1, content: content as unknown as Json });
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  },
+
+  // ---- Uploads ----
+  async upload(
+    file: File,
+    bucket: "product-images" | "payment-proofs" = "product-images",
+  ): Promise<{ url: string; filename: string }> {
+    const ext = file.name.split(".").pop() || "bin";
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from(bucket).upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || undefined,
     });
+    if (error) throw new Error(error.message);
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+    return { url: data.publicUrl, filename: file.name };
   },
 };
 
-export const api = usingMock ? mockApi : realApi;
+// Silence the unused-import lint when the rethrow helper is intentionally
+// exported for future use by ad-hoc callers.
+void rethrow;
