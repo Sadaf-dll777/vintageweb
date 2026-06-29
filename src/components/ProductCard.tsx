@@ -102,8 +102,7 @@ export function ProductCard({ product }: { product: Product }) {
         <h3 className="font-display text-base font-medium leading-tight tracking-wide text-foreground transition-colors duration-300 group-hover:text-primary">
           {product.name}
         </h3>
-        <div className="my-4 border-t border-border" />
-        <div className="mt-auto flex items-end justify-between gap-3">
+        <div className="mt-auto border-t border-border pt-2 flex items-end justify-between gap-3">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
             <div className="font-display text-xl font-medium text-primary">{formatPrice(product.price, currency)}</div>

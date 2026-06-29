@@ -173,8 +173,7 @@ export function TrendingNow() {
                           <Flame className="h-3 w-3 fill-current" strokeWidth={0} /> {p.sold} sold recently
                         </div>
                       ) : null}
-                      <div aria-hidden className="border-t border-border" />
-                      <div className="mt-auto flex items-end justify-between gap-3">
+                      <div className="mt-auto border-t border-border pt-2 flex items-end justify-between gap-3">
                         <div>
                           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
                           <div className="font-display text-xl font-medium text-primary">{formatPrice(p.price, currency)}</div>
