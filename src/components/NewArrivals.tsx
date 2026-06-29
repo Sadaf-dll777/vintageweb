@@ -80,6 +80,10 @@ export function NewArrivals({ products }: { products: Product[] }) {
                         <div className="absolute top-1/2 left-1/2 h-[260%] w-[40%] -translate-x-[260%] -translate-y-1/2 rotate-45 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-all duration-[1600ms] ease-out group-hover:translate-x-[160%] group-hover:opacity-100" />
                       </div>
                     </div>
+                    <div
+                      aria-hidden
+                      className="h-px w-full bg-[linear-gradient(to_right,transparent,var(--color-primary),transparent)] opacity-80"
+                    />
                     <div className="flex flex-1 flex-col gap-3 p-4">
                       <h3
                         className={`font-display font-medium text-base leading-tight tracking-wide transition-colors ${
@@ -88,6 +92,7 @@ export function NewArrivals({ products }: { products: Product[] }) {
                       >
                         {p.name}
                       </h3>
+                      <div aria-hidden className="border-t border-border" />
                       <div className="mt-auto flex items-end justify-between gap-3">
                         <div>
                           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</div>
