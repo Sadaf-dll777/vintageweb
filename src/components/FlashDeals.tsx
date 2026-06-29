@@ -196,20 +196,20 @@ function DealCard({ deal }: { deal: FlashDeal }) {
         <TimeUnit value={s} label="S" />
       </div>
 
-      {/* urgency + progress */}
-      <div className="mt-3 flex items-center justify-between gap-3">
+      {/* urgency + progress + percent (single row) */}
+      <div className="mt-3 flex items-center gap-3">
         <UrgencyBadge kind={deal.urgency ?? "moderate"} />
+        <div className="relative h-1 flex-1 overflow-hidden rounded-full bg-border/60">
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: `${pct}%` }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+            className="relative h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-primary"
+            style={{ boxShadow: "0 0 12px oklch(0.62 0.22 25 / 0.6)" }}
+          />
+        </div>
         <span className="text-[11px] font-medium tabular-nums text-muted-foreground">{pct}%</span>
-      </div>
-      <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-border/60">
-        <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: `${pct}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-          className="relative h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-primary"
-          style={{ boxShadow: "0 0 12px oklch(0.62 0.22 25 / 0.6)" }}
-        />
       </div>
 
       {/* CTA */}
