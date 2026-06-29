@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, Clock, Sparkles, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { api } from "@/lib/api";
+import { api, type ApiProduct } from "@/lib/api";
 
 export interface FlashDeal {
   id?: string;
@@ -285,11 +285,28 @@ function DealCard({ deal }: { deal: FlashDeal }) {
 
 export function FlashDeals() {
   const site = useQuery({ queryKey: ["site"], queryFn: api.getSite });
+  const productsQuery = useQuery({ queryKey: ["products"], queryFn: api.listProducts });
   const cfg = (site.data?.flashDeals as FlashDealsConfig | undefined) ?? {};
   const enabled = cfg.enabled ?? true;
-  const deals = cfg.deals && cfg.deals.length > 0 ? cfg.deals : DEFAULTS.deals;
 
-  if (!enabled || deals.length === 0) return null;
+  // End-of-day UTC keeps SSR and CSR markup aligned (no hydration mismatch).
+  const endsAt = useMemo(() => {
+    const d = new Date();
+    d.setUTCHours(23, 59, 59, 0);
+    return d.toISOString();
+  }, []);
+
+  const deals: FlashDeal[] = useMemo(() => {
+    const all = productsQuery.data ?? [];
+    const flashes = all.filter((p) =>
+      (p.badge || "").toLowerCase().includes("flash"),
+    );
+    return flashes.map((p, i) => productToDeal(p, endsAt, i));
+  }, [productsQuery.data, endsAt]);
+
+  if (!enabled) return null;
+  if (productsQuery.isLoading) return null;
+  if (deals.length === 0) return null;
 
   return (
     <section className="container-wide py-12">
