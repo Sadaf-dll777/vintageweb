@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, Clock, Sparkles, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -148,24 +148,50 @@ function DealCard({ deal }: { deal: FlashDeal }) {
     deal.originalPrice > deal.salePrice
       ? Math.round(((deal.originalPrice - deal.salePrice) / deal.originalPrice) * 100)
       : 0;
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    el.style.setProperty("--mx", `${px * 100}%`);
+    el.style.setProperty("--my", `${py * 100}%`);
+  };
 
   return (
-    <motion.div
-      whileHover={{ y: -6 }}
-      transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-card/70 p-4 transition-[border-color,box-shadow] duration-500 hover:border-primary/60 hover:shadow-[0_25px_60px_-15px_oklch(0.62_0.22_25_/_0.55),0_0_0_1px_oklch(0.62_0.22_25_/_0.35)]"
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-[border-color,box-shadow] duration-300 ease-out hover:border-primary hover:shadow-[0_20px_50px_-20px_var(--color-primary)]"
     >
-      {/* ambient glow on hover */}
+      {/* white + maroon smoke cursor glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(120% 80% at 50% 0%, oklch(0.62 0.22 25 / 0.18) 0%, transparent 60%)",
+            "radial-gradient(380px circle at var(--mx,50%) var(--my,50%), oklch(1 0 0 / 0.12), oklch(0.62 0.22 25 / 0.10) 35%, transparent 60%)",
+        }}
+      />
+      {/* border smoke trace */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          padding: "1px",
+          background:
+            "radial-gradient(180px circle at var(--mx,50%) var(--my,50%), oklch(0.95 0.02 25 / 0.9), oklch(0.62 0.22 25 / 0.5) 60%, transparent 75%)",
+          WebkitMask:
+            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
         }}
       />
 
-      <div className="flex gap-4">
+      <div className="relative z-10 flex gap-4">
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-background">
           <img src={deal.image} alt={deal.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
         </div>
@@ -188,7 +214,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       </div>
 
       {/* countdown row */}
-      <div className="relative mt-4 flex items-center gap-1.5">
+      <div className="relative z-10 mt-4 flex items-center gap-1.5">
         <TimeUnit value={h} label="H" />
         <TimeDot />
         <TimeUnit value={m} label="M" />
@@ -197,11 +223,11 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       </div>
 
       {/* urgency + progress */}
-      <div className="mt-3 flex items-center justify-between gap-3">
+      <div className="relative z-10 mt-3 flex items-center justify-between gap-3">
         <UrgencyBadge kind={deal.urgency ?? "moderate"} />
         <span className="text-[11px] font-bold tabular-nums text-muted-foreground">{pct}%</span>
       </div>
-      <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-border/60">
+      <div className="relative z-10 mt-2 h-1 w-full overflow-hidden rounded-full bg-border/60">
         <motion.div
           initial={{ width: 0 }}
           whileInView={{ width: `${pct}%` }}
@@ -215,7 +241,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       {/* CTA */}
       <a
         href={deal.href ?? "#"}
-        className="group/btn relative mt-4 flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl font-display text-sm uppercase tracking-widest text-white"
+        className="group/btn relative z-10 mt-4 flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl font-display text-sm uppercase tracking-widest text-white"
         style={{
           background: "linear-gradient(90deg, #ffb020 0%, #ff7a18 45%, #e2253a 100%)",
           boxShadow: "0 10px 30px -10px oklch(0.62 0.22 25 / 0.8)",
@@ -227,7 +253,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
         />
         <Zap className="h-4 w-4 fill-current" strokeWidth={0} /> Grab Deal
       </a>
-    </motion.div>
+    </div>
   );
 }
 
