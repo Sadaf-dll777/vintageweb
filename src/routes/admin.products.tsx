@@ -48,10 +48,31 @@ function ProductsAdmin() {
       ? Math.round((price * 100) / (100 - currentPercent))
       : price;
 
+  function hasToken(token: string) {
+    return new RegExp(`\\b${token}\\b`, "i").test(badge);
+  }
+  function normalize(s: string) {
+    return s.replace(/\s+/g, " ").trim();
+  }
+  function toggleToken(token: string) {
+    if (hasToken(token)) {
+      const next = normalize(badge.replace(new RegExp(`\\b${token}\\b`, "ig"), ""));
+      setForm((f) => ({ ...f, badge: next }));
+    } else {
+      setForm((f) => ({ ...f, badge: normalize(`${badge} ${token}`) }));
+    }
+  }
+  function stripFlash(s: string) {
+    return normalize(s.replace(/\bFLASH\b\s*-?\s*\d{0,2}\s*%?/gi, ""));
+  }
+
   function applyFlashPercent(pct: number) {
     const clamped = Math.max(1, Math.min(90, Math.round(pct)));
     setFlashPercent(clamped);
-    setForm((f) => ({ ...f, badge: `FLASH -${clamped}%` }));
+    setForm((f) => ({
+      ...f,
+      badge: normalize(`${stripFlash(f.badge ?? "")} FLASH -${clamped}%`),
+    }));
   }
 
   function applyFlashOffer(offer: number) {
@@ -61,9 +82,19 @@ function ProductsAdmin() {
     const pct = Math.round(((original - offer) / original) * 100);
     const clamped = Math.max(1, Math.min(90, pct));
     setFlashPercent(clamped);
-    // Store the sale price as the product price; FlashDeals reconstructs the
-    // strikethrough original via the badge percent.
-    setForm((f) => ({ ...f, price_bdt: offer, badge: `FLASH -${clamped}%` }));
+    setForm((f) => ({
+      ...f,
+      price_bdt: offer,
+      badge: normalize(`${stripFlash(f.badge ?? "")} FLASH -${clamped}%`),
+    }));
+  }
+
+  function toggleFlash() {
+    if (isFlash) {
+      setForm((f) => ({ ...f, badge: stripFlash(f.badge ?? "") }));
+    } else {
+      applyFlashPercent(currentPercent || flashPercent || 50);
+    }
   }
 
   const save = useMutation({
