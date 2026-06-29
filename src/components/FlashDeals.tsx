@@ -153,28 +153,15 @@ function DealCard({ deal }: { deal: FlashDeal }) {
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="group relative overflow-hidden rounded-2xl border border-border p-4 transition-[border-color,box-shadow] duration-500 hover:border-primary/60 hover:shadow-[0_25px_60px_-15px_oklch(0.35_0.14_15_/_0.7),0_0_0_1px_oklch(0.55_0.18_18_/_0.4)]"
-      style={{
-        background:
-          "radial-gradient(130% 90% at 0% 0%, oklch(0.98 0.01 20 / 0.16) 0%, transparent 45%), linear-gradient(135deg, oklch(0.32 0.13 18) 0%, oklch(0.22 0.09 18) 55%, oklch(0.16 0.05 18) 100%)",
-      }}
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card/70 p-4 transition-[border-color,box-shadow] duration-500 hover:border-primary/60 hover:shadow-[0_25px_60px_-15px_oklch(0.62_0.22_25_/_0.55),0_0_0_1px_oklch(0.62_0.22_25_/_0.35)]"
     >
-      {/* premium white sheen */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-2xl"
-        style={{
-          background:
-            "linear-gradient(160deg, oklch(1 0 0 / 0.18) 0%, oklch(1 0 0 / 0.04) 28%, transparent 55%)",
-        }}
-      />
       {/* ambient glow on hover */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(120% 80% at 100% 100%, oklch(0.62 0.22 25 / 0.28) 0%, transparent 60%)",
+            "radial-gradient(120% 80% at 50% 0%, oklch(0.62 0.22 25 / 0.18) 0%, transparent 60%)",
         }}
       />
 
