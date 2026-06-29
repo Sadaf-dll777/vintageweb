@@ -179,8 +179,8 @@ export function TrendingNow() {
                             useShop.getState().add(p);
                             navigate({ to: "/checkout" });
                           }}
-                          className={`inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110 active:scale-[0.97] ${
-                            isActive ? "glow-red scale-110" : ""
+                          className={`inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110 active:scale-[0.97] ${
+                            isActive ? "glow-red" : ""
                           }`}
                         >
                           <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> Buy Now
