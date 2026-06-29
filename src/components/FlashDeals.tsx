@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, Clock, Sparkles, Zap } from "lucide-react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { api } from "@/lib/api";
 
 export interface FlashDeal {
@@ -100,21 +100,40 @@ function UrgencyBadge({ kind }: { kind: FlashDeal["urgency"] }) {
   );
 }
 
-function TimeBox({ value, accent }: { value: number; accent?: boolean }) {
+function TimeUnit({ value, label }: { value: number; label: string }) {
   return (
-    <motion.div
-      key={value}
-      initial={{ y: -4, opacity: 0.6 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className={`grid h-9 min-w-[2.4rem] place-items-center rounded-md border px-2 font-display text-base tabular-nums ${
-        accent
-          ? "border-primary/40 bg-[oklch(0.62_0.22_25_/_0.12)] text-primary"
-          : "border-border bg-background/60 text-foreground"
-      }`}
+    <div className="flex flex-col items-center">
+      <div className="relative h-7 w-[2.2rem] overflow-hidden text-center">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={value}
+            initial={{ y: "-100%", opacity: 0 }}
+            animate={{ y: "0%", opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 font-display text-[22px] leading-7 tabular-nums text-primary"
+            style={{ textShadow: "0 0 18px oklch(0.62 0.22 25 / 0.55)" }}
+          >
+            {pad(value)}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+      <span className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function TimeDot() {
+  return (
+    <motion.span
+      animate={{ opacity: [0.3, 1, 0.3] }}
+      transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+      className="-mt-3 font-display text-2xl leading-none text-primary"
     >
-      {pad(value)}
-    </motion.div>
+      .
+    </motion.span>
   );
 }
 
@@ -122,18 +141,25 @@ function DealCard({ deal }: { deal: FlashDeal }) {
   const { h, m, s } = useCountdown(deal.endsAt);
   const currency = deal.currency ?? "BDT";
   const pct = Math.max(0, Math.min(100, deal.soldPercent ?? 0));
+  const discount =
+    deal.originalPrice > deal.salePrice
+      ? Math.round(((deal.originalPrice - deal.salePrice) / deal.originalPrice) * 100)
+      : 0;
 
   return (
     <motion.div
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-card/70 p-4 shadow-[0_10px_40px_-20px_oklch(0.62_0.22_25_/_0.5)]"
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card/70 p-4 transition-[border-color,box-shadow] duration-500 hover:border-primary/60 hover:shadow-[0_25px_60px_-15px_oklch(0.62_0.22_25_/_0.55),0_0_0_1px_oklch(0.62_0.22_25_/_0.35)]"
     >
-      {/* glow */}
+      {/* ambient glow on hover */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{ boxShadow: "0 0 0 1px oklch(0.62 0.22 25 / 0.5), 0 20px 60px -20px oklch(0.62 0.22 25 / 0.7)" }}
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(120% 80% at 50% 0%, oklch(0.62 0.22 25 / 0.18) 0%, transparent 60%)",
+        }}
       />
 
       <div className="flex gap-4">
@@ -142,39 +168,46 @@ function DealCard({ deal }: { deal: FlashDeal }) {
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="line-clamp-2 text-sm font-bold leading-tight">{deal.name}</h4>
-          <div className="mt-1.5 flex items-baseline gap-2">
+          <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="font-display text-xl text-primary">
               {deal.salePrice} {currency}
             </span>
             <span className="text-xs text-muted-foreground line-through">
               {deal.originalPrice} {currency}
             </span>
+            {discount > 0 && (
+              <span className="rounded-md bg-[oklch(0.62_0.22_25_/_0.18)] px-1.5 py-0.5 text-[10px] font-black tabular-nums text-primary">
+                -{discount}%
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* countdown row */}
-      <div className="mt-4 flex items-center gap-2">
-        <TimeBox value={h} accent />
-        <span className="font-display text-base text-muted-foreground">:</span>
-        <TimeBox value={m} accent />
-        <span className="font-display text-base text-muted-foreground">:</span>
-        <TimeBox value={s} accent />
-        <span className="ml-auto text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+      <div className="relative mt-4 flex items-end gap-1.5">
+        <TimeUnit value={h} label="H" />
+        <TimeDot />
+        <TimeUnit value={m} label="M" />
+        <TimeDot />
+        <TimeUnit value={s} label="S" />
+        <span className="ml-auto mb-0.5 text-[11px] font-bold tabular-nums text-muted-foreground">
           {pct}%
         </span>
       </div>
 
       {/* urgency + progress */}
-      <div className="mt-2 flex items-center justify-between">
+      <div className="mt-3 flex items-center justify-between">
         <UrgencyBadge kind={deal.urgency ?? "moderate"} />
       </div>
       <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-border/60">
         <motion.div
           initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-primary"
+          whileInView={{ width: `${pct}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+          className="relative h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-primary"
+          style={{ boxShadow: "0 0 12px oklch(0.62 0.22 25 / 0.6)" }}
         />
       </div>
 
