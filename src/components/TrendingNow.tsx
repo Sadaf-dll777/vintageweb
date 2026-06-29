@@ -179,11 +179,15 @@ export function TrendingNow() {
                             useShop.getState().add(p);
                             navigate({ to: "/checkout" });
                           }}
-                          className={`inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110 active:scale-[0.97] ${
+                          className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-xs font-bold uppercase leading-tight tracking-wider text-primary-foreground transition-all duration-300 hover:brightness-110 active:scale-[0.97] ${
                             isActive ? "glow-red" : ""
                           }`}
                         >
-                          <Zap className="h-3 w-3 fill-current" strokeWidth={0} /> Buy Now
+                          <Zap className="h-3.5 w-3.5 fill-current" strokeWidth={0} />
+                          <span className="flex flex-col items-start leading-[1.05]">
+                            <span>Buy</span>
+                            <span>Now</span>
+                          </span>
                         </button>
                       </div>
                     </div>
