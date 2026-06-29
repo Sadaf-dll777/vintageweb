@@ -117,6 +117,7 @@ export type Database = {
           created_at: string
           delivery: string
           description: string
+          flash_ends_at: string | null
           id: string
           image_url: string
           name: string
@@ -133,6 +134,7 @@ export type Database = {
           created_at?: string
           delivery?: string
           description?: string
+          flash_ends_at?: string | null
           id?: string
           image_url?: string
           name: string
@@ -149,6 +151,7 @@ export type Database = {
           created_at?: string
           delivery?: string
           description?: string
+          flash_ends_at?: string | null
           id?: string
           image_url?: string
           name?: string
