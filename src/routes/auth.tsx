@@ -40,7 +40,23 @@ function AuthPage() {
 
   // If already signed in (or session arrives after OAuth), bounce to destination.
   useEffect(() => {
-    if (user) navigate({ to: redirectTo });
+    if (!user) return;
+    (async () => {
+      let dest = redirectTo;
+      if (dest === "/profile") {
+        const { data: auth } = await supabase.auth.getUser();
+        if (auth.user) {
+          const { data } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", auth.user.id)
+            .eq("role", "admin")
+            .maybeSingle();
+          if (data) dest = "/admin";
+        }
+      }
+      navigate({ to: dest });
+    })();
   }, [user, navigate, redirectTo]);
 
   async function handleSubmit(e: React.FormEvent) {
