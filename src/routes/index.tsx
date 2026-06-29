@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Zap, ShoppingBag, Gamepad2, Tv, Gift, User, Joystick, Globe, ShieldCheck, Tag, Package, Users, Award } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { products } from "@/data/products";
+import { useQuery } from "@tanstack/react-query";
+import { api, type ApiProduct } from "@/lib/api";
+import type { Product } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
 import { ProductCard } from "@/components/ProductCard";
 import { NewArrivals } from "@/components/NewArrivals";
@@ -23,17 +25,43 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const featured = products.filter((p) => p.featured);
+  const productsQuery = useQuery({ queryKey: ["products"], queryFn: api.listProducts });
+  const all = productsQuery.data ?? [];
+  const featuredFromDb = all.filter((p) =>
+    (p.badge || "").toLowerCase().includes("featured"),
+  );
+  const featured: ApiProduct[] =
+    featuredFromDb.length > 0 ? featuredFromDb : all.slice(0, 3);
   const [idx, setIdx] = useState(0);
   const currency = useShop((s) => s.currency);
   const add = useShop((s) => s.add);
 
   useEffect(() => {
+    if (featured.length === 0) return;
     const t = setInterval(() => setIdx((i) => (i + 1) % featured.length), 6000);
     return () => clearInterval(t);
   }, [featured.length]);
 
-  const hero = featured[idx];
+  const hero = featured[idx % Math.max(1, featured.length)];
+
+  if (!hero) {
+    return (
+      <div className="container-wide py-32 text-center text-muted-foreground">
+        Loading featured products…
+      </div>
+    );
+  }
+
+  const heroAsProduct: Product = {
+    id: hero.id,
+    name: hero.name,
+    category: (hero.category_slug as Product["category"]) ?? "top-up",
+    price: hero.price_usd ?? 0,
+    image: hero.image_url,
+    badge: hero.badge || undefined,
+    tagline: hero.tagline || undefined,
+    delivery: hero.delivery || undefined,
+  };
 
   return (
     <div>
@@ -48,7 +76,7 @@ function Index() {
             transition={{ duration: 0.9, ease: "easeOut" }}
             className="absolute inset-0"
             style={{
-              backgroundImage: `url(${hero.image})`,
+              backgroundImage: `url(${hero.image_url})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               filter: "blur(40px)",
