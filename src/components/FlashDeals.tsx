@@ -207,16 +207,9 @@ function DealCard({ deal }: { deal: FlashDeal }) {
             src={deal.image}
             alt={deal.name}
             className="h-full w-full object-cover"
-            whileHover={{ scale: 1.15, rotate: 1.5 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-            style={{
-              background:
-                "linear-gradient(135deg, transparent 40%, oklch(1 0 0 / 0.25) 50%, transparent 60%)",
-            }}
+            animate={{ scale: 1 }}
+            whileHover={{ scale: 1.08 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           />
         </div>
         <div className="min-w-0 flex-1">
