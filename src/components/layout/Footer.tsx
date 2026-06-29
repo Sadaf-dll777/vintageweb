@@ -19,7 +19,9 @@ export function Footer() {
           </p>
           <div className="mt-5 flex gap-2">
             <a
-              href="#"
+              href="https://www.facebook.com/profile.php?id=61579235810448"
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Facebook"
               className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-all duration-300 ease-out hover:border-primary hover:text-primary hover:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.15),0_8px_24px_-6px_oklch(0.62_0.22_25_/_0.45)]"
             >
@@ -28,7 +30,9 @@ export function Footer() {
               </svg>
             </a>
             <a
-              href="#"
+              href="https://discord.gg/ZNmUY3S6P7"
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Discord"
               className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-all duration-300 ease-out hover:border-primary hover:text-primary hover:shadow-[0_0_0_4px_oklch(0.62_0.22_25_/_0.15),0_8px_24px_-6px_oklch(0.62_0.22_25_/_0.45)]"
             >
