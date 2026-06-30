@@ -129,13 +129,19 @@ function ProductsAdmin() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["product"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
       setForm(EMPTY);
     },
   });
 
   const del = useMutation({
     mutationFn: (id: string) => api.deleteProduct(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-products"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["product"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+    },
   });
 
   async function handleUpload(file: File) {
