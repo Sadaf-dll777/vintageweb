@@ -1,3 +1,5 @@
+import netflixImg from "@/assets/netflix-premium.webp.asset.json";
+
 export type Category = "top-up" | "subscriptions" | "gift-cards" | "accounts" | "games" | "software";
 
 export interface ProductOption {
@@ -28,8 +30,6 @@ export interface Product {
 
 const img = (q: string, seed: number) =>
   `https://images.unsplash.com/photo-${seed}?auto=format&fit=crop&w=800&q=80&${q}`;
-
-import netflixImg from "@/assets/netflix-premium.webp.asset.json";
 
 export const products: Product[] = [
   {
