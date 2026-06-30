@@ -67,7 +67,8 @@ function ProductPage() {
     queryKey: ["product", product.id],
     queryFn: () => api.getProduct(product.id),
     retry: false,
-    staleTime: 60_000,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
   const usdToBdt = brand.usdToBdt || 120;
   const options = useMemo<ProductOption[]>(() => {
