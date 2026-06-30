@@ -327,6 +327,7 @@ export const api = {
       delivery: data.delivery ?? "",
       tagline: data.tagline ?? "",
       flash_ends_at: data.flash_ends_at ?? null,
+      options: (data.options ?? []) as unknown as Json,
     };
     const { data: row, error } = await supabase
       .from("products")
@@ -351,6 +352,9 @@ export const api = {
     if (patch.delivery !== undefined) update.delivery = patch.delivery;
     if (patch.tagline !== undefined) update.tagline = patch.tagline;
     if (patch.flash_ends_at !== undefined) update.flash_ends_at = patch.flash_ends_at;
+    if (patch.options !== undefined) {
+      (update as unknown as { options: Json }).options = (patch.options ?? []) as unknown as Json;
+    }
     const { data: row, error } = await supabase
       .from("products")
       .update(update)
@@ -363,6 +367,38 @@ export const api = {
 
   async deleteProduct(id: string) {
     const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  },
+
+  // ---- Option Presets (reusable variant/duration sets) ----
+  async listOptionPresets(): Promise<ApiOptionPreset[]> {
+    const { data, error } = await supabase
+      .from("option_presets" as never)
+      .select("id, name, options, created_at")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Array<{ id: string; name: string; options: unknown; created_at: string }>).map((r) => ({
+      id: r.id,
+      name: r.name,
+      options: Array.isArray(r.options) ? (r.options as ProductOption[]) : [],
+      created_at: r.created_at,
+    }));
+  },
+
+  async createOptionPreset(name: string, options: ProductOption[]): Promise<ApiOptionPreset> {
+    const { data, error } = await supabase
+      .from("option_presets" as never)
+      .insert({ name, options: options as unknown as Json } as never)
+      .select("id, name, options, created_at")
+      .single();
+    if (error) throw new Error(error.message);
+    const r = data as unknown as { id: string; name: string; options: unknown; created_at: string };
+    return { id: r.id, name: r.name, options: Array.isArray(r.options) ? (r.options as ProductOption[]) : [], created_at: r.created_at };
+  },
+
+  async deleteOptionPreset(id: string) {
+    const { error } = await supabase.from("option_presets" as never).delete().eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   },
