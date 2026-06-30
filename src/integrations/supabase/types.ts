@@ -147,6 +147,7 @@ export type Database = {
           name: string
           options: Json
           price_bdt: number
+          show_stock_count: boolean
           slug: string
           sort_order: number
           stock: number
@@ -165,6 +166,7 @@ export type Database = {
           name: string
           options?: Json
           price_bdt?: number
+          show_stock_count?: boolean
           slug: string
           sort_order?: number
           stock?: number
@@ -183,6 +185,7 @@ export type Database = {
           name?: string
           options?: Json
           price_bdt?: number
+          show_stock_count?: boolean
           slug?: string
           sort_order?: number
           stock?: number

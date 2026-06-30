@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS show_stock_count boolean NOT NULL DEFAULT false;
