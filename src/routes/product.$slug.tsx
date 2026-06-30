@@ -147,12 +147,12 @@ function ProductPage() {
   return (
     <div className="container-wide py-10">
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-        <Link to="/" className="hover:text-primary">Home</Link>
-        <span>/</span>
-        <Link to="/shop" className="hover:text-primary">Shop</Link>
-        <span>/</span>
-        <span className="text-foreground">{product.name}</span>
+      <nav className="mb-6 flex items-center gap-2 text-xs font-medium text-muted-foreground/60">
+        <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
+        <ChevronRight className="h-3 w-3 opacity-60" />
+        <Link to="/shop" className="transition-colors hover:text-foreground">Shop</Link>
+        <ChevronRight className="h-3 w-3 opacity-60" />
+        <span className="font-semibold text-foreground/80">{product.name}</span>
       </nav>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
