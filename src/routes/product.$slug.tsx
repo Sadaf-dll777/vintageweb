@@ -93,7 +93,10 @@ function ProductPage() {
 
   const opt = options[selected];
   const totalPrice = opt.price * qty;
-  const stock = product.stock ?? 30;
+  const dbStock = Number(dbProduct.data?.stock ?? product.stock ?? 0);
+  const showStockCount = !!dbProduct.data?.show_stock_count;
+  const stock = dbStock > 0 ? dbStock : (product.stock ?? 30);
+  const inStock = dbStock > 0;
   const sold = product.sold ?? 7;
   const rating = product.rating ?? 5.0;
   const reviews = product.reviews ?? 1;
@@ -309,30 +312,35 @@ function ProductPage() {
           </div>
 
           {/* QTY row */}
-          <div className="mt-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="mt-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-5">
               <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Qty</span>
-              <div className="flex items-center gap-2 rounded-full border border-border bg-card px-1.5 py-1.5">
+              <div className="flex items-center overflow-hidden rounded-xl border border-border bg-card">
                 <button
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary"
+                  className="grid h-11 w-11 place-items-center text-muted-foreground transition hover:bg-secondary hover:text-foreground"
                   aria-label="Decrease"
                 >
-                  <Minus className="h-3.5 w-3.5" />
+                  <Minus className="h-4 w-4" />
                 </button>
-                <span className="min-w-6 text-center font-bold">{qty}</span>
+                <span className="grid h-11 min-w-12 place-items-center border-x border-border px-3 text-base font-bold">
+                  {qty}
+                </span>
                 <button
                   onClick={() => setQty((q) => Math.min(stock, q + 1))}
-                  className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary"
+                  className="grid h-11 w-11 place-items-center text-muted-foreground transition hover:bg-secondary hover:text-foreground"
                   aria-label="Increase"
                 >
-                  <Plus className="h-3.5 w-3.5" />
+                  <Plus className="h-4 w-4" />
                 </button>
               </div>
             </div>
-            <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <span className="h-2 w-2 rounded-full bg-success" /> {stock} in stock
-            </span>
+            {inStock && (
+              <span className="flex items-center gap-2 text-sm font-bold text-success">
+                <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_8px_var(--color-success)]" />
+                {showStockCount ? `${stock} in stock` : "In Stock"}
+              </span>
+            )}
           </div>
 
           {/* CTA */}
