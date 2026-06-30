@@ -474,6 +474,129 @@ function ProductsAdmin() {
             FEATURED = shown in Hero carousel · FLASH (with -NN%) = shown in Flash Deals
           </p>
         </Field>
+        <Field label="Options (durations / variants)">
+          <div className="space-y-2">
+            {opts.length === 0 && (
+              <p className="rounded border border-dashed border-border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
+                No options yet. Add a row below or apply a saved preset.
+              </p>
+            )}
+            {opts.map((o, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  value={o.label}
+                  onChange={(e) => {
+                    const next = [...opts];
+                    next[i] = { ...o, label: e.target.value };
+                    setOpts(next);
+                  }}
+                  placeholder="1 Month"
+                  className="input flex-1"
+                />
+                <input
+                  type="number"
+                  step="1"
+                  value={o.price_bdt}
+                  onChange={(e) => {
+                    const next = [...opts];
+                    next[i] = { ...o, price_bdt: Number(e.target.value) };
+                    setOpts(next);
+                  }}
+                  placeholder="৳ price"
+                  className="input w-24"
+                />
+                <label
+                  title="Out of stock"
+                  className={`flex h-9 cursor-pointer items-center gap-1 rounded-md border px-2 text-[10px] font-bold uppercase tracking-wider transition ${
+                    o.out_of_stock
+                      ? "border-destructive/50 bg-destructive/10 text-destructive"
+                      : "border-border bg-card text-muted-foreground hover:border-primary/40"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={!!o.out_of_stock}
+                    onChange={(e) => {
+                      const next = [...opts];
+                      next[i] = { ...o, out_of_stock: e.target.checked };
+                      setOpts(next);
+                    }}
+                    className="h-3 w-3"
+                  />
+                  OOS
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setOpts(opts.filter((_, j) => j !== i))}
+                  className="grid h-9 w-9 place-items-center rounded-md border border-border text-muted-foreground transition hover:border-destructive/50 hover:text-destructive"
+                  title="Remove"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setOpts([...opts, { label: "", price_bdt: Number(form.price_bdt ?? 0), out_of_stock: false }])}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-card px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition hover:border-primary/60 hover:text-foreground"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add option row
+            </button>
+
+            {/* Saved presets */}
+            <div className="mt-3 space-y-2 rounded-lg border border-border bg-muted/20 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Saved presets
+              </div>
+              {presets.data && presets.data.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {presets.data.map((p) => (
+                    <span key={p.id} className="inline-flex items-center gap-1 rounded-full border border-border bg-card pl-2.5 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setOpts(p.options)}
+                        title={`Apply ${p.options.length} option(s)`}
+                        className="py-1 font-semibold text-foreground hover:text-primary"
+                      >
+                        {p.name}
+                        <span className="ml-1 text-[9px] text-muted-foreground">({p.options.length})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => confirm(`Delete preset "${p.name}"?`) && delPreset.mutate(p.id)}
+                        className="grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:text-destructive"
+                        title="Delete preset"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[11px] text-muted-foreground">No presets saved yet.</p>
+              )}
+              <div className="flex gap-2">
+                <input
+                  value={presetName}
+                  onChange={(e) => setPresetName(e.target.value)}
+                  placeholder="Preset name (e.g. Subscription durations)"
+                  className="input flex-1"
+                />
+                <button
+                  type="button"
+                  disabled={!presetName.trim() || opts.length === 0 || savePreset.isPending}
+                  onClick={() => savePreset.mutate()}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 text-[11px] font-bold uppercase tracking-wider text-secondary-foreground transition hover:bg-secondary/80 disabled:opacity-50"
+                >
+                  <BookmarkPlus className="h-3.5 w-3.5" /> Save
+                </button>
+              </div>
+              {savePreset.error && (
+                <p className="text-[11px] text-destructive">{(savePreset.error as Error).message}</p>
+              )}
+            </div>
+          </div>
+        </Field>
         <Field label="Tagline">
           <input value={form.tagline ?? ""} onChange={(e) => setForm({ ...form, tagline: e.target.value })} className="input" />
         </Field>
