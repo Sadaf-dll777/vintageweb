@@ -1,3 +1,5 @@
+import netflixImg from "@/assets/netflix-premium.webp.asset.json";
+
 export type Category = "top-up" | "subscriptions" | "gift-cards" | "accounts" | "games" | "software";
 
 export interface ProductOption {
@@ -46,7 +48,7 @@ export const products: Product[] = [
     name: "Netflix Premium Subscription",
     category: "subscriptions",
     price: 4.99,
-    image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1200&q=80",
+    image: netflixImg.url,
     featured: true,
     tagline: "Stream unlimited movies & series in 4K.",
     delivery: "30min - 360mins",
