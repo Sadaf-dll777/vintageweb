@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Gauge,
+  Clock,
 } from "lucide-react";
 import { products, type Product, type ProductOption } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
