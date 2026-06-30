@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { api, type ApiProduct, type ProductOption } from "@/lib/api";
-import { Pencil, Trash2, Plus, ImagePlus, Package, X, Save, BookmarkPlus } from "lucide-react";
+import { Pencil, Trash2, Plus, ImagePlus, Package, X, BookmarkPlus } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: ProductsAdmin,
