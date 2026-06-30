@@ -160,7 +160,7 @@ function ProductPage() {
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
         {/* IMAGE */}
-        <div>
+        <div className="self-start lg:sticky lg:top-6">
           <div className="relative overflow-hidden rounded-3xl border border-border bg-card">
             <div className="absolute left-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-gold/40 bg-background/70 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-gold backdrop-blur">
               <Flame className="h-3 w-3" /> {product.delivery ?? "Instant"}
