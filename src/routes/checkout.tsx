@@ -213,34 +213,42 @@ function CheckoutPage() {
             </div>
           </section>
 
-          {/* Game / Account Details */}
-          <section className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl" style={{ animationDelay: "80ms" }}>
-            <div className="mb-5 flex items-center gap-3">
-              <span className="grid h-7 w-7 place-items-center rounded-xl bg-primary/15 text-primary">
-                <Gamepad2 className="h-4 w-4" />
-              </span>
-              <h2 className="font-display text-2xl">Game / Account Details</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field
-                label="Epic Games Email ID"
-                required
-                placeholder="enter email id"
-                value={epicEmail}
-                onChange={(e) => setEpicEmail(e.target.value)}
-                invalid={errors.epicEmail}
-              />
-              <Field
-                label="Epic Games Password"
-                required
-                placeholder="enter password"
-                type="password"
-                value={epicPass}
-                onChange={(e) => setEpicPass(e.target.value)}
-                invalid={errors.epicPass}
-              />
-            </div>
-          </section>
+          {/* Game / Account Details — per product, configured in admin */}
+          {accountSections.map((s, sIdx) => (
+            <section
+              key={s.item.product.id}
+              className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl"
+              style={{ animationDelay: `${80 + sIdx * 60}ms` }}
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span className="grid h-7 w-7 place-items-center rounded-xl bg-primary/15 text-primary">
+                  <Gamepad2 className="h-4 w-4" />
+                </span>
+                <h2 className="font-display text-2xl">
+                  {s.item.product.name} — Account Details
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {s.db!.account_fields!.map((f, fIdx) => {
+                  const key = `${s.item.product.id}::${fIdx}::${f.label}`;
+                  return (
+                    <Field
+                      key={key}
+                      label={f.label || `Field ${fIdx + 1}`}
+                      required={f.required !== false}
+                      placeholder={f.placeholder ?? ""}
+                      type={f.type ?? "text"}
+                      value={accountValues[key] ?? ""}
+                      onChange={(e) =>
+                        setAccountValues((v) => ({ ...v, [key]: e.target.value }))
+                      }
+                      invalid={errors[key]}
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          ))}
 
           {/* Payment Stepper */}
           <section className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl" style={{ animationDelay: "160ms" }}>
