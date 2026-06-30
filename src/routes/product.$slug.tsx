@@ -336,8 +336,8 @@ function ProductPage() {
               </div>
             </div>
             {inStock && (
-              <span className="flex items-center gap-2 text-sm font-bold text-success">
-                <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_8px_var(--color-success)]" />
+              <span className="flex items-center gap-1.5 text-xs font-bold text-success">
+                <span className="h-1.5 w-1.5 rounded-full bg-success shadow-[0_0_6px_var(--color-success)]" />
                 {showStockCount ? `${stock} in stock` : "In Stock"}
               </span>
             )}
