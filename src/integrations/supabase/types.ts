@@ -44,6 +44,30 @@ export type Database = {
         }
         Relationships: []
       }
+      option_presets: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          options: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          options?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          options?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           contact: string
@@ -121,6 +145,7 @@ export type Database = {
           id: string
           image_url: string
           name: string
+          options: Json
           price_bdt: number
           slug: string
           sort_order: number
@@ -138,6 +163,7 @@ export type Database = {
           id?: string
           image_url?: string
           name: string
+          options?: Json
           price_bdt?: number
           slug: string
           sort_order?: number
@@ -155,6 +181,7 @@ export type Database = {
           id?: string
           image_url?: string
           name?: string
+          options?: Json
           price_bdt?: number
           slug?: string
           sort_order?: number

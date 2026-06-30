@@ -1,5 +1,6 @@
 import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Star,
   Flame,
@@ -17,6 +18,8 @@ import {
 } from "lucide-react";
 import { products, type Product, type ProductOption } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
+import { api } from "@/lib/api";
+import { brand } from "@/config/site";
 import { ProductCard } from "@/components/ProductCard";
 import { cn } from "@/lib/utils";
 
@@ -59,9 +62,30 @@ function ProductPage() {
   const add = useShop((s) => s.add);
   const navigate = useNavigate();
 
-  const options = useMemo(() => defaultOptions(product), [product]);
+  // Pull DB product to read its custom options (durations/variants)
+  const dbProduct = useQuery({
+    queryKey: ["product", product.id],
+    queryFn: () => api.getProduct(product.id),
+    retry: false,
+    staleTime: 60_000,
+  });
+  const usdToBdt = brand.usdToBdt || 120;
+  const options = useMemo<ProductOption[]>(() => {
+    const dbOpts = dbProduct.data?.options ?? [];
+    if (dbOpts.length > 0) {
+      return dbOpts.map((o) => ({
+        label: o.label,
+        price: (Number(o.price_bdt) || 0) / usdToBdt,
+        outOfStock: !!o.out_of_stock,
+      }));
+    }
+    return defaultOptions(product);
+  }, [dbProduct.data, product, usdToBdt]);
   const firstAvailable = options.findIndex((o) => !o.outOfStock);
-  const [selected, setSelected] = useState(firstAvailable >= 0 ? firstAvailable : 0);
+  const [selected, setSelected] = useState(0);
+  useEffect(() => {
+    setSelected(firstAvailable >= 0 ? firstAvailable : 0);
+  }, [firstAvailable, options.length]);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState<"description" | "reviews">("description");
   const [readMore, setReadMore] = useState(false);
