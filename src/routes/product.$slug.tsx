@@ -207,9 +207,11 @@ function ProductPage() {
             </span>
           </div>
 
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-            <Eye className="h-3 w-3" /> 1 viewing now
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/30 px-3 py-1.5 text-xs animate-border-pulse">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
+            <span className="font-semibold text-primary">1</span>
+            <Eye className="h-3.5 w-3.5 text-muted-foreground/70" />
+            <span className="text-muted-foreground/80">viewing now</span>
           </div>
 
           {/* Price */}
