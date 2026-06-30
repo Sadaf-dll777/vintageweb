@@ -30,6 +30,11 @@ const img = (q: string, seed: number) =>
   `https://images.unsplash.com/photo-${seed}?auto=format&fit=crop&w=800&q=80&${q}`;
 
 export const products: Product[] = [
+  // Netflix image asset
+];
+import netflixImg from "@/assets/netflix-premium.webp.asset.json";
+
+export const _products: Product[] = [
   {
     id: "fortnite-crew",
     name: "Fortnite Crew Pass Subscription",
