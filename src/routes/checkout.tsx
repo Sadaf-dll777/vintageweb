@@ -613,8 +613,13 @@ function CheckoutPage() {
               const next: Record<string, boolean> = {};
               if (!fullName.trim()) next.fullName = true;
               if (!phone.trim()) next.phone = true;
-              if (!epicEmail.trim()) next.epicEmail = true;
-              if (!epicPass.trim()) next.epicPass = true;
+              for (const s of accountSections) {
+                s.db!.account_fields!.forEach((f, fIdx) => {
+                  if (f.required === false) return;
+                  const key = `${s.item.product.id}::${fIdx}::${f.label}`;
+                  if (!(accountValues[key] ?? "").trim()) next[key] = true;
+                });
+              }
               if (stage !== "pay" || !provider) {
                 setErrors(next);
                 return alert("Choose a payment provider");
@@ -655,6 +660,7 @@ function CheckoutPage() {
                 transaction_id: txn.trim(),
                 sender_number: sender.trim(),
                 notes: notes.trim(),
+                // account details are appended to notes for the admin to read
               }).then(() => {
                 clear();
                 setDone(true);
