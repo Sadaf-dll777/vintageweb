@@ -136,6 +136,8 @@ export type Database = {
       }
       products: {
         Row: {
+          account_fields: Json
+          account_fields_enabled: boolean
           badge: string
           category_id: string | null
           created_at: string
@@ -155,6 +157,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          account_fields?: Json
+          account_fields_enabled?: boolean
           badge?: string
           category_id?: string | null
           created_at?: string
@@ -174,6 +178,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          account_fields?: Json
+          account_fields_enabled?: boolean
           badge?: string
           category_id?: string | null
           created_at?: string

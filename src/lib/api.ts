@@ -48,12 +48,21 @@ export interface ApiProduct {
   created_at: string;
   flash_ends_at?: string | null;
   options?: ProductOption[];
+  account_fields_enabled?: boolean;
+  account_fields?: AccountField[];
 }
 
 export interface ProductOption {
   label: string;
   price_bdt: number;
   out_of_stock?: boolean;
+}
+
+export interface AccountField {
+  label: string;
+  placeholder?: string;
+  type?: "text" | "email" | "password" | "tel";
+  required?: boolean;
 }
 
 export interface ApiOptionPreset {
@@ -136,6 +145,8 @@ type DbProduct = {
   flash_ends_at?: string | null;
   show_stock_count?: boolean;
   options?: unknown;
+  account_fields_enabled?: boolean;
+  account_fields?: unknown;
   categories?: { slug: string; name: string } | null;
 };
 
@@ -163,6 +174,8 @@ function mapProduct(p: DbProduct): ApiProduct {
     created_at: p.created_at,
     flash_ends_at: p.flash_ends_at ?? null,
     options: Array.isArray(p.options) ? (p.options as ProductOption[]) : [],
+    account_fields_enabled: !!p.account_fields_enabled,
+    account_fields: Array.isArray(p.account_fields) ? (p.account_fields as AccountField[]) : [],
   };
 }
 
@@ -332,6 +345,8 @@ export const api = {
       flash_ends_at: data.flash_ends_at ?? null,
       show_stock_count: !!data.show_stock_count,
       options: (data.options ?? []) as unknown as Json,
+      account_fields_enabled: !!data.account_fields_enabled,
+      account_fields: (data.account_fields ?? []) as unknown as Json,
     };
     const { data: row, error } = await supabase
       .from("products")
@@ -361,6 +376,12 @@ export const api = {
     if (patch.flash_ends_at !== undefined) update.flash_ends_at = patch.flash_ends_at;
     if (patch.options !== undefined) {
       (update as unknown as { options: Json }).options = (patch.options ?? []) as unknown as Json;
+    }
+    if (patch.account_fields_enabled !== undefined) {
+      (update as unknown as { account_fields_enabled: boolean }).account_fields_enabled = !!patch.account_fields_enabled;
+    }
+    if (patch.account_fields !== undefined) {
+      (update as unknown as { account_fields: Json }).account_fields = (patch.account_fields ?? []) as unknown as Json;
     }
     const { data: row, error } = await supabase
       .from("products")

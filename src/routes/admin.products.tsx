@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api, type ApiProduct, type ProductOption } from "@/lib/api";
-import { Pencil, Trash2, Plus, ImagePlus, Package, X, BookmarkPlus } from "lucide-react";
+import { api, type ApiProduct, type ProductOption, type AccountField } from "@/lib/api";
+import { Pencil, Trash2, Plus, ImagePlus, Package, X, BookmarkPlus, Gamepad2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: ProductsAdmin,
@@ -25,6 +25,8 @@ const EMPTY: FormState = {
   tagline: "",
   flash_ends_at: null,
   options: [],
+  account_fields_enabled: false,
+  account_fields: [],
 };
 
 function ProductsAdmin() {
@@ -41,6 +43,10 @@ function ProductsAdmin() {
 
   const opts: ProductOption[] = form.options ?? [];
   const setOpts = (next: ProductOption[]) => setForm((f) => ({ ...f, options: next }));
+
+  const acctFields: AccountField[] = form.account_fields ?? [];
+  const setAcctFields = (next: AccountField[]) =>
+    setForm((f) => ({ ...f, account_fields: next }));
 
   const savePreset = useMutation({
     mutationFn: () => api.createOptionPreset(presetName.trim(), opts),
@@ -613,6 +619,106 @@ function ProductsAdmin() {
               )}
             </div>
           </div>
+        </Field>
+        <Field label="Game / Account Details (checkout)">
+          <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
+            <input
+              type="checkbox"
+              checked={!!form.account_fields_enabled}
+              onChange={(e) =>
+                setForm({ ...form, account_fields_enabled: e.target.checked })
+              }
+            />
+            <span className="flex items-center gap-1.5 text-muted-foreground">
+              <Gamepad2 className="h-3.5 w-3.5" />
+              Ask buyer for account details at checkout
+            </span>
+          </label>
+
+          {form.account_fields_enabled && (
+            <div className="mt-2 space-y-2">
+              {acctFields.length === 0 && (
+                <p className="rounded border border-dashed border-border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
+                  No fields yet. Add the inputs buyers must fill in (e.g. Email, Password, Player ID).
+                </p>
+              )}
+              {acctFields.map((f, i) => (
+                <div key={i} className="rounded-lg border border-border bg-background p-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={f.label}
+                      onChange={(e) => {
+                        const next = [...acctFields];
+                        next[i] = { ...f, label: e.target.value };
+                        setAcctFields(next);
+                      }}
+                      placeholder="Field label (e.g. Epic Games Email)"
+                      className="input flex-1"
+                    />
+                    <select
+                      value={f.type ?? "text"}
+                      onChange={(e) => {
+                        const next = [...acctFields];
+                        next[i] = { ...f, type: e.target.value as AccountField["type"] };
+                        setAcctFields(next);
+                      }}
+                      className="input w-28"
+                    >
+                      <option value="text">Text</option>
+                      <option value="email">Email</option>
+                      <option value="password">Password</option>
+                      <option value="tel">Phone</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => setAcctFields(acctFields.filter((_, j) => j !== i))}
+                      className="grid h-9 w-9 place-items-center rounded-md border border-border text-muted-foreground transition hover:border-destructive/50 hover:text-destructive"
+                      title="Remove"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <input
+                      value={f.placeholder ?? ""}
+                      onChange={(e) => {
+                        const next = [...acctFields];
+                        next[i] = { ...f, placeholder: e.target.value };
+                        setAcctFields(next);
+                      }}
+                      placeholder="Placeholder (e.g. enter email id)"
+                      className="input flex-1"
+                    />
+                    <label className="flex h-9 cursor-pointer items-center gap-1 rounded-md border border-border bg-card px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={f.required !== false}
+                        onChange={(e) => {
+                          const next = [...acctFields];
+                          next[i] = { ...f, required: e.target.checked };
+                          setAcctFields(next);
+                        }}
+                        className="h-3 w-3"
+                      />
+                      Required
+                    </label>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() =>
+                  setAcctFields([
+                    ...acctFields,
+                    { label: "", placeholder: "", type: "text", required: true },
+                  ])
+                }
+                className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-card px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition hover:border-primary/60 hover:text-foreground"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add field
+              </button>
+            </div>
+          )}
         </Field>
         <Field label="Tagline">
           <input value={form.tagline ?? ""} onChange={(e) => setForm({ ...form, tagline: e.target.value })} className="input" />

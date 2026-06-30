@@ -8,6 +8,7 @@ import {
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { useAuth } from "@/lib/store";
 import { api } from "@/lib/api";
+import { useQueries } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import bracBankLogo from "@/assets/brac-bank.png.asset.json";
 import {
@@ -56,8 +57,7 @@ function CheckoutPage() {
   const [bankName, setBankName] = useState("");
   const [receiptName, setReceiptName] = useState<string | null>(null);
   const [phone, setPhone] = useState("");
-  const [epicEmail, setEpicEmail] = useState("");
-  const [epicPass, setEpicPass] = useState("");
+  const [accountValues, setAccountValues] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
   const [email, setEmail] = useState(user?.email ?? "");
@@ -68,6 +68,28 @@ function CheckoutPage() {
   const [fullName, setFullName] = useState("");
   const [addressesOpen, setAddressesOpen] = useState(false);
   const addrRef = useRef<HTMLDivElement>(null);
+
+  // Fetch DB product info for cart items so we can render per-product
+  // "Game / Account Details" sections configured in admin.
+  const dbProducts = useQueries({
+    queries: items.map((i) => ({
+      queryKey: ["product", i.product.id],
+      queryFn: () => api.getProduct(i.product.id),
+      staleTime: 30_000,
+      retry: false,
+    })),
+  });
+  const accountSections = items
+    .map((i, idx) => ({
+      item: i,
+      db: dbProducts[idx]?.data,
+    }))
+    .filter(
+      (s) =>
+        s.db?.account_fields_enabled &&
+        Array.isArray(s.db?.account_fields) &&
+        s.db!.account_fields!.length > 0,
+    );
   const savedAddresses = [
     { name: "MD FARUQ HOSSAIN", phone: "" },
     { name: "Saif Al Sadaf", phone: "+880 1737-784088" },
@@ -191,34 +213,42 @@ function CheckoutPage() {
             </div>
           </section>
 
-          {/* Game / Account Details */}
-          <section className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl" style={{ animationDelay: "80ms" }}>
-            <div className="mb-5 flex items-center gap-3">
-              <span className="grid h-7 w-7 place-items-center rounded-xl bg-primary/15 text-primary">
-                <Gamepad2 className="h-4 w-4" />
-              </span>
-              <h2 className="font-display text-2xl">Game / Account Details</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field
-                label="Epic Games Email ID"
-                required
-                placeholder="enter email id"
-                value={epicEmail}
-                onChange={(e) => setEpicEmail(e.target.value)}
-                invalid={errors.epicEmail}
-              />
-              <Field
-                label="Epic Games Password"
-                required
-                placeholder="enter password"
-                type="password"
-                value={epicPass}
-                onChange={(e) => setEpicPass(e.target.value)}
-                invalid={errors.epicPass}
-              />
-            </div>
-          </section>
+          {/* Game / Account Details — per product, configured in admin */}
+          {accountSections.map((s, sIdx) => (
+            <section
+              key={s.item.product.id}
+              className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl"
+              style={{ animationDelay: `${80 + sIdx * 60}ms` }}
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span className="grid h-7 w-7 place-items-center rounded-xl bg-primary/15 text-primary">
+                  <Gamepad2 className="h-4 w-4" />
+                </span>
+                <h2 className="font-display text-2xl">
+                  {s.item.product.name} — Account Details
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {s.db!.account_fields!.map((f, fIdx) => {
+                  const key = `${s.item.product.id}::${fIdx}::${f.label}`;
+                  return (
+                    <Field
+                      key={key}
+                      label={f.label || `Field ${fIdx + 1}`}
+                      required={f.required !== false}
+                      placeholder={f.placeholder ?? ""}
+                      type={f.type ?? "text"}
+                      value={accountValues[key] ?? ""}
+                      onChange={(e) =>
+                        setAccountValues((v) => ({ ...v, [key]: e.target.value }))
+                      }
+                      invalid={errors[key]}
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          ))}
 
           {/* Payment Stepper */}
           <section className="checkout-card-in rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl" style={{ animationDelay: "160ms" }}>
@@ -583,8 +613,13 @@ function CheckoutPage() {
               const next: Record<string, boolean> = {};
               if (!fullName.trim()) next.fullName = true;
               if (!phone.trim()) next.phone = true;
-              if (!epicEmail.trim()) next.epicEmail = true;
-              if (!epicPass.trim()) next.epicPass = true;
+              for (const s of accountSections) {
+                s.db!.account_fields!.forEach((f, fIdx) => {
+                  if (f.required === false) return;
+                  const key = `${s.item.product.id}::${fIdx}::${f.label}`;
+                  if (!(accountValues[key] ?? "").trim()) next[key] = true;
+                });
+              }
               if (stage !== "pay" || !provider) {
                 setErrors(next);
                 return alert("Choose a payment provider");
@@ -606,6 +641,18 @@ function CheckoutPage() {
                 return;
               }
               const paymentMethod = method === "bank" ? "Bank" : method === "crypto" ? (provider?.name ?? "Crypto") : (provider?.name ?? "Mobile");
+              const acctNote = accountSections
+                .map((s) => {
+                  const lines = s.db!.account_fields!.map((f, fIdx) => {
+                    const key = `${s.item.product.id}::${fIdx}::${f.label}`;
+                    return `  ${f.label}: ${accountValues[key] ?? ""}`;
+                  });
+                  return `${s.item.product.name}\n${lines.join("\n")}`;
+                })
+                .join("\n\n");
+              const mergedNotes = [notes.trim(), acctNote && `--- Account Details ---\n${acctNote}`]
+                .filter(Boolean)
+                .join("\n\n");
               api.placeOrder({
                 user_email: (email || user?.email || "").toLowerCase(),
                 customer_name: fullName.trim(),
@@ -624,7 +671,7 @@ function CheckoutPage() {
                 payment_proof_url: "",
                 transaction_id: txn.trim(),
                 sender_number: sender.trim(),
-                notes: notes.trim(),
+                notes: mergedNotes,
               }).then(() => {
                 clear();
                 setDone(true);
