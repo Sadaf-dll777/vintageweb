@@ -641,6 +641,18 @@ function CheckoutPage() {
                 return;
               }
               const paymentMethod = method === "bank" ? "Bank" : method === "crypto" ? (provider?.name ?? "Crypto") : (provider?.name ?? "Mobile");
+              const acctNote = accountSections
+                .map((s) => {
+                  const lines = s.db!.account_fields!.map((f, fIdx) => {
+                    const key = `${s.item.product.id}::${fIdx}::${f.label}`;
+                    return `  ${f.label}: ${accountValues[key] ?? ""}`;
+                  });
+                  return `${s.item.product.name}\n${lines.join("\n")}`;
+                })
+                .join("\n\n");
+              const mergedNotes = [notes.trim(), acctNote && `--- Account Details ---\n${acctNote}`]
+                .filter(Boolean)
+                .join("\n\n");
               api.placeOrder({
                 user_email: (email || user?.email || "").toLowerCase(),
                 customer_name: fullName.trim(),
@@ -659,8 +671,7 @@ function CheckoutPage() {
                 payment_proof_url: "",
                 transaction_id: txn.trim(),
                 sender_number: sender.trim(),
-                notes: notes.trim(),
-                // account details are appended to notes for the admin to read
+                notes: mergedNotes,
               }).then(() => {
                 clear();
                 setDone(true);
