@@ -41,6 +41,7 @@ export interface ApiProduct {
   badge: string;
   stock: number;
   in_stock?: boolean;
+  show_stock_count?: boolean;
   sort_order: number;
   delivery: string;
   tagline: string;
@@ -133,6 +134,7 @@ type DbProduct = {
   tagline: string;
   created_at: string;
   flash_ends_at?: string | null;
+  show_stock_count?: boolean;
   options?: unknown;
   categories?: { slug: string; name: string } | null;
 };
@@ -154,6 +156,7 @@ function mapProduct(p: DbProduct): ApiProduct {
     badge: p.badge,
     stock: p.stock,
     in_stock: p.stock > 0,
+    show_stock_count: !!p.show_stock_count,
     sort_order: p.sort_order,
     delivery: p.delivery,
     tagline: p.tagline,
@@ -327,6 +330,7 @@ export const api = {
       delivery: data.delivery ?? "",
       tagline: data.tagline ?? "",
       flash_ends_at: data.flash_ends_at ?? null,
+      show_stock_count: !!data.show_stock_count,
       options: (data.options ?? []) as unknown as Json,
     };
     const { data: row, error } = await supabase
@@ -348,6 +352,9 @@ export const api = {
     if (patch.image_url !== undefined) update.image_url = patch.image_url;
     if (patch.badge !== undefined) update.badge = patch.badge;
     if (patch.stock !== undefined) update.stock = Number(patch.stock);
+    if (patch.show_stock_count !== undefined) {
+      (update as unknown as { show_stock_count: boolean }).show_stock_count = !!patch.show_stock_count;
+    }
     if (patch.sort_order !== undefined) update.sort_order = Number(patch.sort_order);
     if (patch.delivery !== undefined) update.delivery = patch.delivery;
     if (patch.tagline !== undefined) update.tagline = patch.tagline;
