@@ -184,6 +184,15 @@ function ProductPage() {
 
         {/* DETAILS */}
         <div>
+          {options.length > 0 && (
+            <div className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+              <Clock className="h-3.5 w-3.5" />
+              <span>
+                {options[0].label}
+                {options.length > 1 ? ` - ${options[options.length - 1].label}` : ""}
+              </span>
+            </div>
+          )}
           <h1 className="font-display text-4xl uppercase leading-[0.95] tracking-wide sm:text-5xl">
             {product.name}
           </h1>
