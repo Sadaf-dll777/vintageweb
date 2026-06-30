@@ -19,6 +19,7 @@ const EMPTY: FormState = {
   image_url: "",
   badge: "",
   stock: 0,
+  show_stock_count: false,
   sort_order: 0,
   delivery: "",
   tagline: "",
