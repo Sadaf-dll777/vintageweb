@@ -312,7 +312,7 @@ function ProductPage() {
           </div>
 
           {/* QTY row */}
-          <div className="mt-6 flex items-center justify-between gap-4">
+          <div className="mt-6 flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-5">
               <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Qty</span>
               <div className="flex items-center overflow-hidden rounded-xl border border-border bg-card">
