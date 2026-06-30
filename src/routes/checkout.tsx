@@ -8,6 +8,7 @@ import {
 import { useShop, USD_TO_BDT, type Currency } from "@/lib/store";
 import { useAuth } from "@/lib/store";
 import { api } from "@/lib/api";
+import { useQueries } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import bracBankLogo from "@/assets/brac-bank.png.asset.json";
 import {
@@ -56,8 +57,7 @@ function CheckoutPage() {
   const [bankName, setBankName] = useState("");
   const [receiptName, setReceiptName] = useState<string | null>(null);
   const [phone, setPhone] = useState("");
-  const [epicEmail, setEpicEmail] = useState("");
-  const [epicPass, setEpicPass] = useState("");
+  const [accountValues, setAccountValues] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
   const [email, setEmail] = useState(user?.email ?? "");
@@ -68,6 +68,28 @@ function CheckoutPage() {
   const [fullName, setFullName] = useState("");
   const [addressesOpen, setAddressesOpen] = useState(false);
   const addrRef = useRef<HTMLDivElement>(null);
+
+  // Fetch DB product info for cart items so we can render per-product
+  // "Game / Account Details" sections configured in admin.
+  const dbProducts = useQueries({
+    queries: items.map((i) => ({
+      queryKey: ["product", i.product.id],
+      queryFn: () => api.getProduct(i.product.id),
+      staleTime: 30_000,
+      retry: false,
+    })),
+  });
+  const accountSections = items
+    .map((i, idx) => ({
+      item: i,
+      db: dbProducts[idx]?.data,
+    }))
+    .filter(
+      (s) =>
+        s.db?.account_fields_enabled &&
+        Array.isArray(s.db?.account_fields) &&
+        s.db!.account_fields!.length > 0,
+    );
   const savedAddresses = [
     { name: "MD FARUQ HOSSAIN", phone: "" },
     { name: "Saif Al Sadaf", phone: "+880 1737-784088" },
