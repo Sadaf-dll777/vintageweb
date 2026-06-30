@@ -620,8 +620,6 @@ function ProductsAdmin() {
             </div>
           </div>
         </Field>
-        <Field label="Tagline">
-        </Field>
         <Field label="Game / Account Details (checkout)">
           <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
             <input
@@ -722,7 +720,7 @@ function ProductsAdmin() {
             </div>
           )}
         </Field>
-        <Field label="Tagline-dup">
+        <Field label="Tagline">
           <input value={form.tagline ?? ""} onChange={(e) => setForm({ ...form, tagline: e.target.value })} className="input" />
         </Field>
         <Field label="Delivery">
