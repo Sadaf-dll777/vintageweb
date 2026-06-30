@@ -93,10 +93,10 @@ function ProductPage() {
 
   const opt = options[selected];
   const totalPrice = opt.price * qty;
-  const dbStock = Number(dbProduct.data?.stock ?? product.stock ?? 0);
+  const dbStock = Number(dbProduct.data?.stock ?? 0);
   const showStockCount = !!dbProduct.data?.show_stock_count;
   const stock = dbStock > 0 ? dbStock : (product.stock ?? 30);
-  const inStock = dbStock > 0;
+  const inStock = options.some((o) => !o.outOfStock);
   const sold = product.sold ?? 7;
   const rating = product.rating ?? 5.0;
   const reviews = product.reviews ?? 1;
