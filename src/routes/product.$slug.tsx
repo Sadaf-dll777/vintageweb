@@ -15,7 +15,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Gauge,
-  Clock,
 } from "lucide-react";
 import { products, type Product, type ProductOption } from "@/data/products";
 import { formatPrice, useShop } from "@/lib/store";
@@ -93,13 +92,6 @@ function ProductPage() {
   const [readMore, setReadMore] = useState(false);
 
   const opt = options[selected];
-  const durationRange = useMemo(() => {
-    if (!options.length) return null;
-    const labels = options.map((o) => o.label).filter(Boolean);
-    if (labels.length === 0) return null;
-    if (labels.length === 1) return labels[0];
-    return `${labels[0]} - ${labels[labels.length - 1]}`;
-  }, [options]);
   const totalPrice = opt.price * qty;
   const stock = product.stock ?? 30;
   const sold = product.sold ?? 7;
@@ -191,12 +183,6 @@ function ProductPage() {
 
         {/* DETAILS */}
         <div>
-          {durationRange && (
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/5 px-3 py-1 text-xs font-bold text-primary">
-              <Clock className="h-3.5 w-3.5" />
-              {durationRange}
-            </div>
-          )}
           <h1 className="font-display text-4xl uppercase leading-[0.95] tracking-wide sm:text-5xl">
             {product.name}
           </h1>
