@@ -222,6 +222,7 @@ function ProductPage() {
             <div
               key={`${selected}-${qty}`}
               className="font-display text-5xl text-foreground animate-price-pop"
+              style={{ fontWeight: 650 }}
             >
               {formatPrice(totalPrice, currency)}
             </div>
