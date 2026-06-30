@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api, type ApiProduct, type ProductOption } from "@/lib/api";
-import { Pencil, Trash2, Plus, ImagePlus, Package, X, BookmarkPlus } from "lucide-react";
+import { api, type ApiProduct, type ProductOption, type AccountField } from "@/lib/api";
+import { Pencil, Trash2, Plus, ImagePlus, Package, X, BookmarkPlus, Gamepad2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: ProductsAdmin,
@@ -25,6 +25,8 @@ const EMPTY: FormState = {
   tagline: "",
   flash_ends_at: null,
   options: [],
+  account_fields_enabled: false,
+  account_fields: [],
 };
 
 function ProductsAdmin() {
@@ -41,6 +43,10 @@ function ProductsAdmin() {
 
   const opts: ProductOption[] = form.options ?? [];
   const setOpts = (next: ProductOption[]) => setForm((f) => ({ ...f, options: next }));
+
+  const acctFields: AccountField[] = form.account_fields ?? [];
+  const setAcctFields = (next: AccountField[]) =>
+    setForm((f) => ({ ...f, account_fields: next }));
 
   const savePreset = useMutation({
     mutationFn: () => api.createOptionPreset(presetName.trim(), opts),
