@@ -392,7 +392,7 @@ function ProductPage() {
         </div>
         <div className="p-8">
           {tab === "description" ? (
-            <div className="max-w-3xl text-sm leading-relaxed text-muted-foreground animate-fade-in">
+            <div className="max-w-3xl whitespace-pre-line text-sm leading-relaxed text-muted-foreground animate-fade-in">
               {readMore ? description : `${short}${description.length > short.length ? "…" : ""}`}
               {description.length > short.length && (
                 <div className="mt-5">
