@@ -19,6 +19,7 @@ const EMPTY: FormState = {
   image_url: "",
   badge: "",
   stock: 0,
+  show_stock_count: false,
   sort_order: 0,
   delivery: "",
   tagline: "",
@@ -281,6 +282,16 @@ function ProductsAdmin() {
         </Field>
         <Field label="Stock quantity">
           <input type="number" step="1" min="0" value={form.stock ?? 0} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} className="input" />
+        </Field>
+        <Field label="Show stock count">
+          <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
+            <input
+              type="checkbox"
+              checked={!!form.show_stock_count}
+              onChange={(e) => setForm({ ...form, show_stock_count: e.target.checked })}
+            />
+            <span className="text-muted-foreground">If on, the product page shows the exact stock number. If off, it just shows "In Stock".</span>
+          </label>
         </Field>
         <Field label="Image">
           <div className="flex items-start gap-3">
