@@ -186,7 +186,7 @@ function ProductPage() {
 
         {/* DETAILS */}
         <div>
-          <h1 className="font-display text-4xl capitalize leading-[0.95] tracking-wide sm:text-5xl" style={{ fontWeight: 650 }}>
+          <h1 className="font-display text-4xl capitalize leading-[0.95] tracking-wide sm:text-5xl" style={{ fontWeight: 750 }}>
             {product.name}
           </h1>
 
