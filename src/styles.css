@@ -328,3 +328,11 @@
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
+
+@keyframes border-pulse {
+  0%, 100% { border-color: color-mix(in oklab, var(--color-primary) 25%, transparent); }
+  50% { border-color: color-mix(in oklab, var(--color-primary) 60%, transparent); }
+}
+@utility animate-border-pulse {
+  animation: border-pulse 2s ease-in-out infinite;
+}
