@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api, type ApiProduct } from "@/lib/api";
-import { Pencil, Trash2, Plus, ImagePlus, Package } from "lucide-react";
+import { api, type ApiProduct, type ProductOption } from "@/lib/api";
+import { Pencil, Trash2, Plus, ImagePlus, Package, X, Save, BookmarkPlus } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: ProductsAdmin,
@@ -23,17 +23,35 @@ const EMPTY: FormState = {
   delivery: "",
   tagline: "",
   flash_ends_at: null,
+  options: [],
 };
 
 function ProductsAdmin() {
   const qc = useQueryClient();
   const products = useQuery({ queryKey: ["admin-products"], queryFn: api.listProducts });
   const categories = useQuery({ queryKey: ["admin-categories"], queryFn: api.listCategories });
+  const presets = useQuery({ queryKey: ["admin-option-presets"], queryFn: api.listOptionPresets });
   const [form, setForm] = useState<FormState>(EMPTY);
   const [uploading, setUploading] = useState(false);
   const [flashMode, setFlashMode] = useState<"percent" | "price">("percent");
   const [flashPercent, setFlashPercent] = useState<number>(50);
   const [flashOffer, setFlashOffer] = useState<number>(0);
+  const [presetName, setPresetName] = useState("");
+
+  const opts: ProductOption[] = form.options ?? [];
+  const setOpts = (next: ProductOption[]) => setForm((f) => ({ ...f, options: next }));
+
+  const savePreset = useMutation({
+    mutationFn: () => api.createOptionPreset(presetName.trim(), opts),
+    onSuccess: () => {
+      setPresetName("");
+      qc.invalidateQueries({ queryKey: ["admin-option-presets"] });
+    },
+  });
+  const delPreset = useMutation({
+    mutationFn: (id: string) => api.deleteOptionPreset(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-option-presets"] }),
+  });
 
   const badge = form.badge ?? "";
   const isFlash = /flash/i.test(badge);
