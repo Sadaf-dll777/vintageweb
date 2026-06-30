@@ -186,7 +186,7 @@ function ProductPage() {
 
         {/* DETAILS */}
         <div>
-          <h1 className="font-display text-4xl uppercase leading-[0.95] tracking-wide sm:text-5xl">
+          <h1 className="font-display text-4xl capitalize leading-[0.95] tracking-wide sm:text-5xl">
             {product.name}
           </h1>
 
