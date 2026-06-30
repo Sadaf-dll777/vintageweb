@@ -46,6 +46,20 @@ export interface ApiProduct {
   tagline: string;
   created_at: string;
   flash_ends_at?: string | null;
+  options?: ProductOption[];
+}
+
+export interface ProductOption {
+  label: string;
+  price_bdt: number;
+  out_of_stock?: boolean;
+}
+
+export interface ApiOptionPreset {
+  id: string;
+  name: string;
+  options: ProductOption[];
+  created_at: string;
 }
 
 export interface ApiOrder {
@@ -119,6 +133,7 @@ type DbProduct = {
   tagline: string;
   created_at: string;
   flash_ends_at?: string | null;
+  options?: unknown;
   categories?: { slug: string; name: string } | null;
 };
 
@@ -144,6 +159,7 @@ function mapProduct(p: DbProduct): ApiProduct {
     tagline: p.tagline,
     created_at: p.created_at,
     flash_ends_at: p.flash_ends_at ?? null,
+    options: Array.isArray(p.options) ? (p.options as ProductOption[]) : [],
   };
 }
 
