@@ -86,7 +86,7 @@ export function NewArrivals({ products }: { products: Product[] }) {
                     />
                     <div className="flex flex-1 flex-col gap-3 p-4">
                       <h3
-                className={`font-display font-medium text-base leading-snug tracking-wide line-clamp-2 min-h-[2.75rem] transition-colors ${
+                className={`font-display font-medium text-base leading-snug tracking-wide line-clamp-2 min-h-[3.25rem] mb-1 transition-colors ${
                           isActive ? "text-foreground" : "text-muted-foreground"
                         }`}
                       >
