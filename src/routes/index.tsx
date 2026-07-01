@@ -171,7 +171,7 @@ function Index() {
           </div>
 
           {/* Right product card preview */}
-          <div className="relative" style={{ perspective: 1000 }}>
+          <div className="relative mx-auto w-full max-w-sm lg:max-w-[22rem]" style={{ perspective: 1000 }}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={`card-${idx}`}
@@ -189,12 +189,16 @@ function Index() {
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 />
                 <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                  whileHover={{ y: -14, scale: 1.03, rotateY: 5, rotateX: -2 }}
-                  className="relative overflow-hidden rounded-3xl border border-border bg-card glow-red"
+                  whileHover={{ scale: 1.03, rotateY: 5, rotateX: -2 }}
+                  transition={{ type: "spring", stiffness: 220, damping: 20 }}
+                  className="relative"
                   style={{ transformStyle: "preserve-3d" }}
                 >
+                  <motion.div
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative overflow-hidden rounded-3xl border border-border bg-card glow-red"
+                  >
                   <div className="aspect-[4/3] overflow-hidden">
                     <motion.img
                       src={hero.image_url}
@@ -204,15 +208,16 @@ function Index() {
                       transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                     />
                   </div>
-                  <div className="space-y-3 p-5">
-                    <h3 className="font-display text-xl font-bold">{hero.name}</h3>
+                  <div className="space-y-2.5 p-4">
+                    <h3 className="font-display text-lg font-bold">{hero.name}</h3>
                     <div className="flex items-center justify-between">
-                      <span className="font-display text-2xl font-bold text-gold">{formatPrice(hero.price_usd ?? 0, currency)}</span>
+                      <span className="font-display text-xl font-bold text-gold">{formatPrice(hero.price_usd ?? 0, currency)}</span>
                       <span className="flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">
                         <span className="h-1.5 w-1.5 rounded-full bg-success" /> In Stock
                       </span>
                     </div>
                   </div>
+                  </motion.div>
                 </motion.div>
               </motion.div>
             </AnimatePresence>
