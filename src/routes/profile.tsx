@@ -70,7 +70,11 @@ function DashboardPage() {
 
   const ordersQ = useQuery({ queryKey: ["my-orders"], queryFn: api.listOrders, refetchInterval: 4000 });
   const orders = useMemo(
-    () => (ordersQ.data ?? []).filter((o) => user && o.user_email && o.user_email === user.email.toLowerCase()),
+    () => (ordersQ.data ?? []).filter((o) => {
+      if (!user) return false;
+      if (o.user_id) return o.user_id === user.id;
+      return o.user_email === user.email.toLowerCase();
+    }),
     [ordersQ.data, user],
   );
 
