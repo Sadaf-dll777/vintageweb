@@ -167,7 +167,7 @@ export function Header() {
               USD
             </button>
           </div>
-          <div ref={quickRef} className="relative">
+          <div ref={quickRef} className="relative hidden sm:block">
             <button
               onClick={() => {
                 setQuickOpen((v) => !v);
