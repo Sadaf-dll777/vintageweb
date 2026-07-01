@@ -301,7 +301,7 @@ export function Header() {
               <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground glow-red">
                 <Zap className="h-5 w-5 fill-current" strokeWidth={0} />
               </div>
-              <span className="font-display text-lg tracking-wider">
+              <span className="font-display text-lg font-light tracking-wider">
                 VINTAGE<span className="text-primary">STORE</span>
               </span>
             </Link>
