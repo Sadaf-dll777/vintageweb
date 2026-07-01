@@ -351,9 +351,8 @@ export function FlashDeals() {
               className="absolute inset-1 rounded-xl bg-primary/20 blur-md"
             />
             <motion.span
-              aria-hidden
-              animate={{ opacity: [0.45, 1, 0.45], scale: [0.9, 1.08, 0.9] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ opacity: [0.35, 1, 0.35] }}
+              transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
               className="relative grid place-items-center"
               style={{ filter: "drop-shadow(0 0 10px oklch(0.62 0.22 25 / 0.72))" }}
             >
