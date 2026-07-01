@@ -335,37 +335,39 @@ export function FlashDeals() {
   return (
     <section className="container-wide py-12">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="flex items-center gap-3 font-display text-4xl">
+        <div className="flex items-center gap-3">
+          <motion.span
+            initial={{ opacity: 0, scale: 0.72, y: 8 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.7 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl border border-primary/25 bg-[oklch(0.62_0.22_25_/_0.14)] text-primary"
+            style={{ boxShadow: "inset 0 0 14px oklch(0.62 0.22 25 / 0.18)" }}
+          >
             <motion.span
-              initial={{ opacity: 0, scale: 0.72, y: 8 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.7 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="relative grid h-12 w-12 place-items-center overflow-hidden rounded-2xl border border-primary/15 bg-[oklch(0.62_0.22_25_/_0.14)] text-primary"
-              style={{ boxShadow: "inset 0 0 18px oklch(0.62 0.22 25 / 0.12)" }}
+              aria-hidden
+              animate={{ opacity: [0.18, 0.42, 0.18], scale: [0.72, 1.12, 0.72] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-1 rounded-xl bg-primary/20 blur-md"
+            />
+            <motion.span
+              aria-hidden
+              animate={{ opacity: [0.45, 1, 0.45], scale: [0.9, 1.08, 0.9] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              className="relative grid place-items-center"
+              style={{ filter: "drop-shadow(0 0 10px oklch(0.62 0.22 25 / 0.72))" }}
             >
-              <motion.span
-                aria-hidden
-                animate={{ opacity: [0.18, 0.42, 0.18], scale: [0.72, 1.12, 0.72] }}
-                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-1 rounded-2xl bg-primary/20 blur-md"
-              />
-              <motion.span
-                aria-hidden
-                animate={{ opacity: [0.45, 1, 0.45], scale: [0.9, 1.08, 0.9] }}
-                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                className="relative grid place-items-center"
-                style={{ filter: "drop-shadow(0 0 10px oklch(0.62 0.22 25 / 0.72))" }}
-              >
-                <Flame className="h-6 w-6" strokeWidth={2.4} />
-              </motion.span>
+              <Flame className="h-5 w-5 fill-current" strokeWidth={0} />
             </motion.span>
-            {cfg.title ?? DEFAULTS.title}
-          </h2>
-          <p className="mt-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" /> {deals.length} {cfg.subtitleSuffix ?? DEFAULTS.subtitleSuffix}
-          </p>
+          </motion.span>
+          <div className="min-w-0">
+            <h2 className="font-sans text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
+              {cfg.title ?? DEFAULTS.title}
+            </h2>
+            <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" /> {deals.length} {cfg.subtitleSuffix ?? DEFAULTS.subtitleSuffix}
+            </p>
+          </div>
         </div>
         <span className="animate-limited-glow inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-amber-400">
           <Sparkles className="h-3.5 w-3.5" /> Limited Time Active
