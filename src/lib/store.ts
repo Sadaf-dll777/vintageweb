@@ -57,6 +57,7 @@ export const formatPrice = (usd: number, currency: Currency) => {
 
 // ============ Mock Auth (temporary — swap for real DB later) ============
 export interface AuthUser {
+  id: string;
   email: string;
   displayName: string;
   phone?: string;
@@ -107,6 +108,7 @@ function sessionToUser(session: Awaited<ReturnType<typeof supabase.auth.getSessi
   const meta = (u.user_metadata ?? {}) as Record<string, unknown>;
   const str = (k: string) => (typeof meta[k] === "string" ? (meta[k] as string) : undefined);
   return {
+    id: u.id,
     email: (u.email ?? "").toLowerCase(),
     displayName: str("display_name") || str("full_name") || str("name") || (u.email ?? "").split("@")[0],
     phone: str("phone"),
