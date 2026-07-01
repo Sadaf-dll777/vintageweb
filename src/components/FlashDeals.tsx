@@ -367,20 +367,9 @@ export function FlashDeals() {
             <Clock className="h-3.5 w-3.5" /> {deals.length} {cfg.subtitleSuffix ?? DEFAULTS.subtitleSuffix}
           </p>
         </div>
-        <motion.span
-          animate={{
-            opacity: [0.55, 1, 0.55],
-            textShadow: [
-              "0 0 0px rgba(251,191,36,0)",
-              "0 0 14px rgba(251,191,36,0.85), 0 0 28px rgba(251,191,36,0.55)",
-              "0 0 0px rgba(251,191,36,0)",
-            ],
-          }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-          className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-amber-400"
-        >
+        <span className="animate-limited-glow inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-amber-400">
           <Sparkles className="h-3.5 w-3.5" /> Limited Time Active
-        </motion.span>
+        </span>
       </div>
 
       <div
