@@ -654,7 +654,8 @@ function CheckoutPage() {
                 .filter(Boolean)
                 .join("\n\n");
               api.placeOrder({
-                user_email: (email || user?.email || "").toLowerCase(),
+                user_id: user?.id ?? null,
+                user_email: (user?.email || email || "").toLowerCase(),
                 customer_name: fullName.trim(),
                 contact: phone.trim(),
                 items: items.map((i) => ({
