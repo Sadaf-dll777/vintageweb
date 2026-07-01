@@ -182,6 +182,7 @@ function mapProduct(p: DbProduct): ApiProduct {
 
 type DbOrder = {
   id: string;
+  user_id: string | null;
   user_email: string;
   customer_name: string;
   contact: string;
@@ -204,6 +205,7 @@ type DbOrder = {
 function mapOrder(o: DbOrder): ApiOrder {
   return {
     id: o.id,
+    user_id: o.user_id,
     user_email: o.user_email,
     customer_name: o.customer_name,
     contact: o.contact,
