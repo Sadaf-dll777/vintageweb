@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { LogIn, UserPlus, Mail, Lock, User, Eye, EyeOff, ShieldCheck, Zap, Sparkles, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +24,6 @@ function AuthPage() {
   const [mode, setMode] = useState<Mode>("signin");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -83,29 +81,6 @@ function AuthPage() {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleGoogle() {
-    setError(null);
-    setGoogleLoading(true);
-    try {
-      if (search.redirect) {
-        window.sessionStorage.setItem("vs-auth-redirect", search.redirect);
-      }
-
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-
-      if (result.error) throw result.error;
-      if (result.redirected) return;
-
-      navigate({ to: redirectTo });
-      // Browser will navigate to Google; nothing else to do.
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Google sign-in failed");
-      setGoogleLoading(false);
     }
   }
 
@@ -169,31 +144,14 @@ function AuthPage() {
             </div>
           )}
 
-          {/* Google */}
-          <button
-            type="button"
-            onClick={handleGoogle}
-            disabled={googleLoading || loading}
-            className="auth-row-in mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background/60 px-4 py-3 text-sm font-semibold tracking-wide transition-all hover:bg-background hover:-translate-y-0.5 disabled:opacity-60"
-            style={{ animationDelay: "180ms" }}
-          >
-            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
-              <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.5 29.5 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.5-4.5z"/>
-              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.5 29.5 4.5 24 4.5 16 4.5 9.1 9 6.3 14.7z"/>
-              <path fill="#4CAF50" d="M24 45.5c5.4 0 10.3-2 14-5.3l-6.5-5.3c-2 1.4-4.6 2.2-7.5 2.2-5.3 0-9.7-3.4-11.3-8l-6.6 5.1C9 41 16 45.5 24 45.5z"/>
-              <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.6l6.5 5.3C41.8 35.4 44.5 30.6 44.5 25c0-1.5-.2-3-.5-4.5z"/>
-            </svg>
-            {googleLoading ? "Connecting…" : "Continue with Google"}
-          </button>
-
-          <div className="auth-row-in my-5 flex items-center gap-3 text-[10px] uppercase tracking-widest text-muted-foreground" style={{ animationDelay: "200ms" }}>
-            <div className="h-px flex-1 bg-border" />
-            or
-            <div className="h-px flex-1 bg-border" />
-          </div>
+          {/* Divider */}
+          <div
+            className="auth-row-in mt-6 h-px bg-border"
+            style={{ animationDelay: "200ms" }}
+          />
 
           {/* Form */}
-          <form className="mt-2 space-y-4" onSubmit={handleSubmit}>
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             {!isSignIn && !isAdminLogin && (
               <Field label="Display Name" delay={260}>
                 <InputWithIcon icon={<User className="h-4 w-4" />} placeholder="Your name" value={name} onChange={setName} />
