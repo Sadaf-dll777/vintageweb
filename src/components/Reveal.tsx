@@ -39,8 +39,8 @@ export function Reveal({
 
   const style: React.CSSProperties = {
     opacity: shown ? 1 : 0,
-    transform: shown ? "translate3d(0,0,0)" : "translate3d(-40px,28px,0)",
-    transition: `opacity 380ms cubic-bezier(0.22,1,0.36,1) ${delay}ms, transform 420ms cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
+    transform: shown ? "translateY(0)" : "translateY(32px)",
+    transition: `opacity 700ms cubic-bezier(0.22,1,0.36,1) ${delay}ms, transform 700ms cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
     willChange: "opacity, transform",
   };
 
