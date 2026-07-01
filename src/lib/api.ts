@@ -74,6 +74,7 @@ export interface ApiOptionPreset {
 
 export interface ApiOrder {
   id: string;
+  user_id?: string | null;
   user_email: string;
   customer_name: string;
   contact: string;
