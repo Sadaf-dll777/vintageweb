@@ -134,6 +134,9 @@
   margin-inline: auto;
   padding-inline: 1rem;
 }
+@media (min-width: 640px) {
+  .container-wide { padding-inline: 1.5rem; }
+}
 
 @utility glow-red {
   box-shadow: 0 10px 40px -10px oklch(0.62 0.22 25 / 0.55);
