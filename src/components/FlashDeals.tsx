@@ -93,8 +93,7 @@ function useCountdown(endsAt: string) {
     return () => clearInterval(t);
   }, []);
   const diff = Math.max(0, target - now);
-  const totalH = Math.floor(diff / 3_600_000);
-  const h = totalH % 100;
+  const h = Math.floor(diff / 3_600_000);
   const m = Math.floor((diff % 3_600_000) / 60_000);
   const s = Math.floor((diff % 60_000) / 1000);
   return { h, m, s, expired: diff === 0 };
