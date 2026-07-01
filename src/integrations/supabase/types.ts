@@ -89,6 +89,7 @@ export type Database = {
           transaction_id: string
           updated_at: string
           user_email: string
+          user_id: string | null
         }
         Insert: {
           contact?: string
@@ -110,6 +111,7 @@ export type Database = {
           transaction_id?: string
           updated_at?: string
           user_email?: string
+          user_id?: string | null
         }
         Update: {
           contact?: string
@@ -131,6 +133,7 @@ export type Database = {
           transaction_id?: string
           updated_at?: string
           user_email?: string
+          user_id?: string | null
         }
         Relationships: []
       }
