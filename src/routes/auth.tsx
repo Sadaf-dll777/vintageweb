@@ -111,7 +111,7 @@ function AuthPage() {
 
           {/* Heading */}
           <h1
-            className="auth-row-in mt-5 text-center font-display text-4xl tracking-wide"
+            className="auth-row-in mt-5 text-center font-display text-3xl tracking-wide"
             style={{ animationDelay: "80ms" }}
           >
             {isAdminLogin ? "Admin Sign In" : isSignIn ? "Welcome Back" : "Create Account"}
