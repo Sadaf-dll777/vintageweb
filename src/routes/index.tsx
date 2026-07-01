@@ -171,7 +171,7 @@ function Index() {
           </div>
 
           {/* Right product card preview */}
-          <div className="relative mx-auto w-full max-w-sm lg:max-w-[22rem]" style={{ perspective: 1000 }}>
+          <div className="relative mx-auto hidden w-full max-w-sm lg:block lg:max-w-[22rem]" style={{ perspective: 1000 }}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={`card-${idx}`}
