@@ -108,7 +108,7 @@ function Index() {
                 </motion.span>
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
-                  className="mt-5 font-display font-light text-4xl uppercase leading-[0.95] tracking-wide sm:text-5xl lg:text-6xl xl:text-7xl"
+                  className="mt-5 font-display font-normal text-4xl uppercase leading-[0.95] tracking-wide sm:text-5xl lg:text-6xl xl:text-7xl"
                 >
                   {hero.name}
                 </motion.h1>
