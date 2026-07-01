@@ -14,6 +14,7 @@ import { WhyUs } from "@/components/WhyUs";
 import { Partners } from "@/components/Partners";
 import { FlashDeals } from "@/components/FlashDeals";
 import { TrendingNow } from "@/components/TrendingNow";
+import { Reveal } from "@/components/Reveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -226,7 +227,7 @@ function Index() {
       </section>
 
       {/* TRUST STRIP — features row */}
-      <section className="relative bg-card/20">
+      <Reveal as="section" className="relative bg-card/20">
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(to_right,transparent,oklch(0.62_0.22_25_/_0.35),transparent)]" />
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(to_right,transparent,oklch(0.62_0.22_25_/_0.35),transparent)]" />
         <div className="container-wide flex flex-wrap items-center justify-center gap-x-12 gap-y-4 py-5">
@@ -246,10 +247,10 @@ function Index() {
             </div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
       {/* STATS — trusted by gamers */}
-      <section className="container-wide py-14">
+      <Reveal as="section" className="container-wide py-14">
         <div className="mb-8 flex items-center justify-center gap-3">
           <span className="h-px w-10 bg-border" />
           <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
@@ -267,12 +268,12 @@ function Index() {
             <StatCard key={s.label} {...s} />
           ))}
         </div>
-      </section>
+      </Reveal>
 
       {/* POPULAR */}
       {/* BROWSE BY CATEGORY */}
-      <FlashDeals />
-      <section className="container-wide py-16">
+      <Reveal><FlashDeals /></Reveal>
+      <Reveal as="section" className="container-wide py-16">
         <div className="mb-10 text-center">
           <h2 className="font-display text-4xl uppercase sm:text-5xl">
             Browse by <span className="text-primary">Category</span>
@@ -304,7 +305,7 @@ function Index() {
             </Link>
           ))}
         </div>
-      </section>
+      </Reveal>
 
       {/* NEW ARRIVALS */}
       {(() => {
@@ -321,26 +322,26 @@ function Index() {
           badge: p.badge || undefined,
           delivery: p.delivery || undefined,
         }));
-        return mapped.length > 0 ? <NewArrivals products={mapped} /> : null;
+        return mapped.length > 0 ? <Reveal><NewArrivals products={mapped} /></Reveal> : null;
       })()}
 
       {/* POPULAR */}
-      <TrendingNow />
+      <Reveal><TrendingNow /></Reveal>
 
       {/* CATEGORY SECTIONS */}
-      <CategorySection category="top-up" title="Top-Up" Icon={Gamepad2} accent="text-purple-400" />
-      <CategorySection category="subscriptions" title="Subscriptions" Icon={Tv} accent="text-blue-400" />
-      <CategorySection category="gift-cards" title="Gift Cards" Icon={Gift} accent="text-orange-400" />
-      <CategorySection category="software" title="Software" Icon={Globe} accent="text-cyan-400" />
+      <Reveal><CategorySection category="top-up" title="Top-Up" Icon={Gamepad2} accent="text-purple-400" /></Reveal>
+      <Reveal><CategorySection category="subscriptions" title="Subscriptions" Icon={Tv} accent="text-blue-400" /></Reveal>
+      <Reveal><CategorySection category="gift-cards" title="Gift Cards" Icon={Gift} accent="text-orange-400" /></Reveal>
+      <Reveal><CategorySection category="software" title="Software" Icon={Globe} accent="text-cyan-400" /></Reveal>
 
       {/* WHY US */}
-      <WhyUs />
+      <Reveal><WhyUs /></Reveal>
 
       {/* REVIEWS */}
-      <Reviews />
+      <Reveal><Reviews /></Reveal>
 
       {/* PARTNERS */}
-      <Partners />
+      <Reveal><Partners /></Reveal>
     </div>
   );
 }
