@@ -448,6 +448,7 @@ export const api = {
     data: Omit<ApiOrder, "id" | "status" | "created_at">,
   ): Promise<{ id: string; created_at: string; status: ApiOrder["status"] }> {
     const payload: OrderInsert = {
+      user_id: data.user_id ?? null,
       user_email: (data.user_email || "").toLowerCase(),
       customer_name: data.customer_name || "",
       contact: data.contact || "",
