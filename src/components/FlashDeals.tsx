@@ -225,7 +225,7 @@ function DealCard({ deal }: { deal: FlashDeal }) {
       </div>
 
       <div className="relative flex gap-4" style={{ transform: "translateZ(20px)" }}>
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-background">
+        <div className="relative h-28 w-28 shrink-0 self-start overflow-hidden rounded-xl border border-border bg-background">
           <img
             src={deal.image}
             alt={deal.name}
@@ -247,20 +247,19 @@ function DealCard({ deal }: { deal: FlashDeal }) {
               </span>
             )}
           </div>
+          {/* countdown row (aligned with title column) */}
+          <div className="mt-2.5 flex items-center gap-1.5" style={{ transform: "translateZ(15px)" }}>
+            <TimeUnit value={h} label="H" />
+            <TimeDot />
+            <TimeUnit value={m} label="M" />
+            <TimeDot />
+            <TimeUnit value={s} label="S" />
+          </div>
         </div>
       </div>
 
-      {/* countdown row */}
-      <div className="relative mt-4 flex items-center gap-1.5" style={{ transform: "translateZ(15px)" }}>
-        <TimeUnit value={h} label="H" />
-        <TimeDot />
-        <TimeUnit value={m} label="M" />
-        <TimeDot />
-        <TimeUnit value={s} label="S" />
-      </div>
-
-      {/* urgency + progress + percent (single row) */}
-      <div className="mt-3 flex items-center gap-3">
+      {/* urgency + progress + percent (single row, full width) */}
+      <div className="relative mt-3 flex items-center gap-3">
         <UrgencyBadge kind={deal.urgency ?? "moderate"} />
         <div className="relative h-1 flex-1 overflow-hidden rounded-full bg-border/60">
           <motion.div
