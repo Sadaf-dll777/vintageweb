@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { products, categories, type Category } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
+import { Reveal } from "@/components/Reveal";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_IDS = ["all", "top-up", "subscriptions", "gift-cards", "accounts", "games", "software"] as const;
@@ -436,8 +437,10 @@ function ShopPage() {
         </div>
       ) : (
         <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} />
+          {filtered.map((p, i) => (
+            <Reveal key={p.id} delay={Math.min(i, 8) * 0.06}>
+              <ProductCard product={p} />
+            </Reveal>
           ))}
         </div>
       )}

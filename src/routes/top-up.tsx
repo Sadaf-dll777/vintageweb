@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { products } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
+import { Reveal } from "@/components/Reveal";
 
 export const Route = createFileRoute("/top-up")({
   head: () => ({ meta: [{ title: "Top-Up — VintageStore" }, { name: "description", content: "Game top-ups with instant delivery." }] }),
@@ -21,7 +22,11 @@ export function CategoryPage({ title, cat }: { title: string; cat: string }) {
       <span className="text-xs font-bold uppercase tracking-widest text-primary">⚡ Category</span>
       <h1 className="mt-3 font-display text-5xl uppercase sm:text-6xl">{title}</h1>
       <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {list.map((p) => <ProductCard key={p.id} product={p} />)}
+        {list.map((p, i) => (
+          <Reveal key={p.id} delay={Math.min(i, 8) * 0.06}>
+            <ProductCard product={p} />
+          </Reveal>
+        ))}
       </div>
     </div>
   );
