@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Search, ShoppingCart, Zap, User, Clock, TrendingUp, X } from "lucide-react";
+import { Search, ShoppingCart, Zap, User, Clock, TrendingUp, X, Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useShop, useAuth } from "@/lib/store";
 import { products } from "@/data/products";
@@ -27,6 +27,15 @@ export function Header() {
   const [quickQuery, setQuickQuery] = useState("");
   const quickRef = useRef<HTMLDivElement>(null);
   const quickInputRef = useRef<HTMLInputElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
+  useEffect(() => { setMobileOpen(false); }, [path]);
   const [recent, setRecent] = useState<string[]>([
     "Discord Nitro Premium Subscription",
     "Spotify Family Join Premium Subscription",
@@ -76,7 +85,7 @@ export function Header() {
           <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground glow-red">
             <Zap className="h-5 w-5 fill-current" strokeWidth={0} />
           </div>
-          <span className="font-display text-xl tracking-wider">
+          <span className="font-display text-lg tracking-wider sm:text-xl">
             VINTAGE<span className="text-primary">STORE</span>
           </span>
         </Link>
@@ -113,8 +122,8 @@ export function Header() {
         </nav>
 
         {/* Right cluster */}
-        <div className="ml-auto flex items-center gap-2">
-          <ThemeToggle />
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+          <div className="hidden sm:block"><ThemeToggle /></div>
           <div className="relative hidden items-center rounded-full border border-border/80 bg-card/80 p-0.5 text-xs font-bold backdrop-blur sm:flex shadow-[inset_0_1px_0_oklch(1_0_0_/_0.04)]">
             {/* Soft glow that crossfades color with the active currency */}
             <span
@@ -158,7 +167,7 @@ export function Header() {
               USD
             </button>
           </div>
-          <div ref={quickRef} className="relative">
+          <div ref={quickRef} className="relative hidden sm:block">
             <button
               onClick={() => {
                 setQuickOpen((v) => !v);
@@ -239,7 +248,7 @@ export function Header() {
           {user ? (
             <Link
               to="/profile"
-              className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/20"
+              className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-2 py-1 text-sm font-semibold text-primary hover:bg-primary/20 sm:px-3 sm:py-1.5"
             >
               {user.avatar ? (
                 <img src={user.avatar} alt="" className="h-6 w-6 rounded-full object-cover" />
@@ -253,15 +262,106 @@ export function Header() {
           ) : (
             <Link
               to="/auth"
-              className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground glow-red hover:brightness-110"
+              className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground glow-red hover:brightness-110 sm:flex"
             >
               <User className="h-4 w-4" />
               Sign In
             </Link>
           )}
+          {!user && (
+            <Link
+              to="/auth"
+              aria-label="Sign in"
+              className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground glow-red sm:hidden"
+            >
+              <User className="h-4 w-4" />
+            </Link>
+          )}
+          <button
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+            className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground md:hidden"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </header>
+
+    {/* Mobile menu drawer */}
+    {mobileOpen && (
+      <div className="fixed inset-0 z-50 md:hidden">
+        <div
+          className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        />
+        <aside className="absolute right-0 top-0 flex h-full w-[85%] max-w-sm flex-col border-l border-border/60 bg-background shadow-2xl animate-in slide-in-from-right duration-300">
+          <div className="flex h-16 items-center justify-between border-b border-border/60 px-4">
+            <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
+              <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground glow-red">
+                <Zap className="h-5 w-5 fill-current" strokeWidth={0} />
+              </div>
+              <span className="font-display text-lg tracking-wider">
+                VINTAGE<span className="text-primary">STORE</span>
+              </span>
+            </Link>
+            <button
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close menu"
+              className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <nav className="flex-1 overflow-y-auto p-2">
+            {navItems.map((n) => {
+              const active = path === n.to;
+              return (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "block border-b border-border/40 px-4 py-4 text-base transition-colors",
+                    active ? "text-primary" : "text-foreground/85 hover:text-primary",
+                  )}
+                >
+                  {n.label}
+                </Link>
+              );
+            })}
+            <div className="mt-6 flex items-center gap-3 px-4">
+              <ThemeToggle />
+              <div className="relative flex items-center rounded-full border border-border/80 bg-card/80 p-0.5 text-xs font-bold shadow-[inset_0_1px_0_oklch(1_0_0_/_0.04)]">
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full transition-all duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                    currency === "BDT"
+                      ? "left-0.5 bg-[linear-gradient(135deg,oklch(0.78_0.18_150),oklch(0.62_0.20_160))] shadow-[0_3px_10px_-4px_oklch(0.7_0.18_150_/_0.35)]"
+                      : "left-[calc(50%+0px)] bg-[linear-gradient(135deg,oklch(0.85_0.16_85),oklch(0.7_0.18_60))] shadow-[0_3px_10px_-4px_oklch(0.82_0.16_85_/_0.4)]",
+                  )}
+                />
+                <button
+                  onClick={() => setCurrency("BDT")}
+                  className={cn(
+                    "relative z-10 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide transition-all",
+                    currency === "BDT" ? "text-background" : "text-muted-foreground",
+                  )}
+                >BDT</button>
+                <button
+                  onClick={() => setCurrency("USD")}
+                  className={cn(
+                    "relative z-10 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide transition-all",
+                    currency === "USD" ? "text-background" : "text-muted-foreground",
+                  )}
+                >USD</button>
+              </div>
+            </div>
+          </nav>
+        </aside>
+      </div>
+    )}
 
     {/* Search row — not sticky, scrolls away with the page */}
     {path === "/" && (
